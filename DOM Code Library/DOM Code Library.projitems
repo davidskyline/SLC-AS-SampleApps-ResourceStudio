@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5430f6d4-cf65-4152-8df0-ac6560472f69</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>DOM_Code_Library</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Handlers\ResourceManagerHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\CapabilityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\CapabilityValueData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\CapacityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\DomIds.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\ResourceData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\ResourcePoolCapability.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\ResourcePoolData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
+  </ItemGroup>
+</Project>

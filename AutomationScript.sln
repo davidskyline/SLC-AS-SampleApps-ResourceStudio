@@ -1,0 +1,307 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Internal", "Internal", "{A3E11554-BD0E-4034-B273-C2EE13009645}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{87606168-4608-4881-8DCA-C402D1536967}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dlls", "Dlls", "{2A38C337-0323-452C-B74D-EDE67F9178E3}"
+	ProjectSection(SolutionItems) = preProject
+		Dlls\AboutThisFolder.md = Dlls\AboutThisFolder.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CompanionFiles", "CompanionFiles", "{E4956A12-0C6D-4A75-841F-61083971CC02}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Skyline DataMiner", "Skyline DataMiner", "{763D390F-A7D2-4FD9-AB1E-B1B07FC26B90}"
+	ProjectSection(SolutionItems) = preProject
+		CompanionFiles\Skyline DataMiner\AboutThisFolder.md = CompanionFiles\Skyline DataMiner\AboutThisFolder.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{8E04008E-03D5-40F5-B25B-5FBACA381E07}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\AboutThisFolder.md = Documentation\AboutThisFolder.md
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Code Analysis", "Code Analysis", "{06B7CD3C-D1A0-4CCE-A35F-99A2D8590473}"
+	ProjectSection(SolutionItems) = preProject
+		Internal\Code Analysis\qaction-debug.ruleset = Internal\Code Analysis\qaction-debug.ruleset
+		Internal\Code Analysis\qaction-release.ruleset = Internal\Code Analysis\qaction-release.ruleset
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_Resource_DOM Button", "ResourceManagement_Resource_DOM Button", "{44B50831-6B08-4271-9B81-C255C8768B36}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_Resource_DOM Button.xml = ResourceManagement_Resource_DOM Button.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{B205CFA3-2633-4C94-93FD-D0DC8CE21C36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Resource_DOM Button_1", "ResourceManagement_Resource_DOM Button_1\ResourceManagement_Resource_DOM Button_1.csproj", "{AA8AA143-DE76-466F-97EB-67E395AD93D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_Capability_New", "ResourceManagement_Capability_New", "{FF46D910-AB94-4086-AD2D-78F2D47E7609}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_Capability_New.xml = ResourceManagement_Capability_New.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{075DB4D1-830C-40EE-B1DA-52183ECD9899}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Capability_New_1", "ResourceManagement_Capability_New_1\ResourceManagement_Capability_New_1.csproj", "{C464BAAC-B89B-480C-AF7C-48C650EA5D1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{48237B28-ED49-4620-9613-3E859F44363B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capabilities", "Capabilities", "{BB24C47D-539A-4ECB-81E4-F9E618E8C917}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{D80EAF3A-09ED-473B-B22B-0F670CB451A9}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "IAS Code Library", "IAS Code Library\IAS Code Library.shproj", "{A5504232-378B-4645-819D-24F36F4D2303}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SRM Code Library", "SRM Code Library\SRM Code Library.shproj", "{433154B2-DBB5-450A-BB23-C95ED8F3D440}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DOM Code Library", "DOM Code Library\DOM Code Library.shproj", "{5430F6D4-CF65-4152-8DF0-AC6560472F69}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_Capability_Update", "ResourceManagement_Capability_Update", "{DCF4A247-18B1-4FBC-85B5-499616BB9C72}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_Capability_Update.xml = ResourceManagement_Capability_Update.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{BD3C0196-DA2B-4942-84DE-759FF7C23D86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Capability_Update_1", "ResourceManagement_Capability_Update_1\ResourceManagement_Capability_Update_1.csproj", "{2FAE8D6A-11E4-42D7-92E1-152E0C346535}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capacities", "Capacities", "{EA30CA80-252D-46BD-BCE8-C29D282E0AAC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_Capacity_New", "ResourceManagement_Capacity_New", "{BDBD38F7-230E-4BE1-9C2A-33BFB5BA6548}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_Capacity_New.xml = ResourceManagement_Capacity_New.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{43B27B34-CF7F-4964-9F98-C16D71D771B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Capacity_New_1", "ResourceManagement_Capacity_New_1\ResourceManagement_Capacity_New_1.csproj", "{AB1C0A35-5FF8-4E44-A24B-D30DC4CA6829}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resource Pools", "Resource Pools", "{26165E45-DBB0-4066-903B-EF2E17FB7E31}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_ResourcePool_DOM Button", "ResourceManagement_ResourcePool_DOM Button", "{1663C0B0-98B1-4A65-AC4C-947897692F70}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_ResourcePool_DOM Button.xml = ResourceManagement_ResourcePool_DOM Button.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{B1AEC1A4-2A75-4AA5-AB0C-11EC0BBD0B4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_ResourcePool_DOM Button_1", "ResourceManagement_ResourcePool_DOM Button_1\ResourceManagement_ResourcePool_DOM Button_1.csproj", "{0AB6321C-546E-4DAE-B4BC-909E6F6AB608}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_ResourcePool_Assign Resources", "ResourceManagement_ResourcePool_Assign Resources", "{E18AD379-6E7A-4A7A-A266-98BF46070094}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_ResourcePool_Assign Resources.xml = ResourceManagement_ResourcePool_Assign Resources.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{8BC00373-8AA5-4C8A-83F6-FA904E7A6328}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_ResourcePool_Assign Resources_1", "ResourceManagement_ResourcePool_Assign Resources_1\ResourceManagement_ResourcePool_Assign Resources_1.csproj", "{350126C3-B1F6-4BF3-95BD-B958066F2E21}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "General", "General", "{35AA9B75-F1B8-4F1D-95F4-A0A6ACFDE770}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_General_DOM CRUD", "ResourceManagement_General_DOM CRUD", "{21EAD04C-03E6-41D5-9970-212E0E45C11D}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_General_DOM CRUD.xml = ResourceManagement_General_DOM CRUD.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{39FB380B-87F3-4E80-ACCB-D9FDF3BB9602}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_General_DOM CRUD_1", "ResourceManagement_General_DOM CRUD_1\ResourceManagement_General_DOM CRUD_1.csproj", "{25276752-7D19-4B68-B383-8B195F57AD7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_ResourcePool_Unassign Resources", "ResourceManagement_ResourcePool_Unassign Resources", "{57D4E7E2-8135-449A-B2E1-623A6E145434}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_ResourcePool_Unassign Resources.xml = ResourceManagement_ResourcePool_Unassign Resources.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{E4CE4087-4670-443C-8DFC-929058227027}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_ResourcePool_Unassign Resources_1", "ResourceManagement_ResourcePool_Unassign Resources_1\ResourceManagement_ResourcePool_Unassign Resources_1.csproj", "{F17BD416-5E75-4229-9FB7-99AFD6E1726E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_Resource_Duplicate", "ResourceManagement_Resource_Duplicate", "{AED77798-6DA4-4CD7-A275-5F5DAF754356}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_Resource_Duplicate.xml = ResourceManagement_Resource_Duplicate.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{118E780F-9B52-494E-BB54-61C24D941517}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Resource_Duplicate_1", "ResourceManagement_Resource_Duplicate_1\ResourceManagement_Resource_Duplicate_1.csproj", "{B8FBAE8C-0BC5-4ED8-A069-D336511806E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_Capacity_Update", "ResourceManagement_Capacity_Update", "{48C929AA-8184-4E6D-A755-3866110F27AC}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_Capacity_Update.xml = ResourceManagement_Capacity_Update.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{7F7A12AC-ED97-4CD7-AC58-474DEEB7EF9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Capacity_Update_1", "ResourceManagement_Capacity_Update_1\ResourceManagement_Capacity_Update_1.csproj", "{A63ED33E-D47D-46F6-9CD0-8C09C93FEF8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_ResourcePool_Manage Capabilities", "ResourceManagement_ResourcePool_Manage Capabilities", "{E77B2B68-A68A-4F0D-AD18-71A221FEE0F3}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_ResourcePool_Manage Capabilities.xml = ResourceManagement_ResourcePool_Manage Capabilities.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{C2F33F23-3FE3-41E7-8497-6CEC1DDD629B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_ResourcePool_Manage Capabilities_1", "ResourceManagement_ResourcePool_Manage Capabilities_1\ResourceManagement_ResourcePool_Manage Capabilities_1.csproj", "{28873BC4-F97C-40BA-A4E3-BBC1E74E393B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GQI", "GQI", "{9F06CC50-DD0E-4CF0-8F64-F80B301B4D90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_GQI_Get Resource Pool Capabilities", "ResourceManagement_GQI_Get Resource Pool Capabilities", "{8F1E53DA-214E-480B-A5F4-C78974EAE0D2}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_GQI_Get Resource Pool Capabilities.xml = ResourceManagement_GQI_Get Resource Pool Capabilities.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{6EDD6AF6-285A-44D0-BF2F-7F3A781DF946}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_GQI_Get Resource Pool Capabilities_1", "ResourceManagement_GQI_Get Resource Pool Capabilities_1\ResourceManagement_GQI_Get Resource Pool Capabilities_1.csproj", "{2D9AE24F-EEAA-4C82-A6D4-A431E02270CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA8AA143-DE76-466F-97EB-67E395AD93D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA8AA143-DE76-466F-97EB-67E395AD93D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA8AA143-DE76-466F-97EB-67E395AD93D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA8AA143-DE76-466F-97EB-67E395AD93D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C464BAAC-B89B-480C-AF7C-48C650EA5D1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C464BAAC-B89B-480C-AF7C-48C650EA5D1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C464BAAC-B89B-480C-AF7C-48C650EA5D1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C464BAAC-B89B-480C-AF7C-48C650EA5D1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FAE8D6A-11E4-42D7-92E1-152E0C346535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FAE8D6A-11E4-42D7-92E1-152E0C346535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FAE8D6A-11E4-42D7-92E1-152E0C346535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FAE8D6A-11E4-42D7-92E1-152E0C346535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB1C0A35-5FF8-4E44-A24B-D30DC4CA6829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB1C0A35-5FF8-4E44-A24B-D30DC4CA6829}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB1C0A35-5FF8-4E44-A24B-D30DC4CA6829}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB1C0A35-5FF8-4E44-A24B-D30DC4CA6829}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AB6321C-546E-4DAE-B4BC-909E6F6AB608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AB6321C-546E-4DAE-B4BC-909E6F6AB608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AB6321C-546E-4DAE-B4BC-909E6F6AB608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AB6321C-546E-4DAE-B4BC-909E6F6AB608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{350126C3-B1F6-4BF3-95BD-B958066F2E21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{350126C3-B1F6-4BF3-95BD-B958066F2E21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{350126C3-B1F6-4BF3-95BD-B958066F2E21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{350126C3-B1F6-4BF3-95BD-B958066F2E21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25276752-7D19-4B68-B383-8B195F57AD7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25276752-7D19-4B68-B383-8B195F57AD7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25276752-7D19-4B68-B383-8B195F57AD7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25276752-7D19-4B68-B383-8B195F57AD7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F17BD416-5E75-4229-9FB7-99AFD6E1726E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F17BD416-5E75-4229-9FB7-99AFD6E1726E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F17BD416-5E75-4229-9FB7-99AFD6E1726E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F17BD416-5E75-4229-9FB7-99AFD6E1726E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8FBAE8C-0BC5-4ED8-A069-D336511806E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8FBAE8C-0BC5-4ED8-A069-D336511806E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8FBAE8C-0BC5-4ED8-A069-D336511806E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8FBAE8C-0BC5-4ED8-A069-D336511806E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A63ED33E-D47D-46F6-9CD0-8C09C93FEF8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A63ED33E-D47D-46F6-9CD0-8C09C93FEF8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A63ED33E-D47D-46F6-9CD0-8C09C93FEF8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A63ED33E-D47D-46F6-9CD0-8C09C93FEF8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28873BC4-F97C-40BA-A4E3-BBC1E74E393B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28873BC4-F97C-40BA-A4E3-BBC1E74E393B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28873BC4-F97C-40BA-A4E3-BBC1E74E393B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28873BC4-F97C-40BA-A4E3-BBC1E74E393B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D9AE24F-EEAA-4C82-A6D4-A431E02270CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D9AE24F-EEAA-4C82-A6D4-A431E02270CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D9AE24F-EEAA-4C82-A6D4-A431E02270CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D9AE24F-EEAA-4C82-A6D4-A431E02270CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{763D390F-A7D2-4FD9-AB1E-B1B07FC26B90} = {E4956A12-0C6D-4A75-841F-61083971CC02}
+		{06B7CD3C-D1A0-4CCE-A35F-99A2D8590473} = {A3E11554-BD0E-4034-B273-C2EE13009645}
+		{44B50831-6B08-4271-9B81-C255C8768B36} = {D80EAF3A-09ED-473B-B22B-0F670CB451A9}
+		{B205CFA3-2633-4C94-93FD-D0DC8CE21C36} = {44B50831-6B08-4271-9B81-C255C8768B36}
+		{AA8AA143-DE76-466F-97EB-67E395AD93D9} = {B205CFA3-2633-4C94-93FD-D0DC8CE21C36}
+		{FF46D910-AB94-4086-AD2D-78F2D47E7609} = {BB24C47D-539A-4ECB-81E4-F9E618E8C917}
+		{075DB4D1-830C-40EE-B1DA-52183ECD9899} = {FF46D910-AB94-4086-AD2D-78F2D47E7609}
+		{C464BAAC-B89B-480C-AF7C-48C650EA5D1F} = {075DB4D1-830C-40EE-B1DA-52183ECD9899}
+		{48237B28-ED49-4620-9613-3E859F44363B} = {87606168-4608-4881-8DCA-C402D1536967}
+		{BB24C47D-539A-4ECB-81E4-F9E618E8C917} = {87606168-4608-4881-8DCA-C402D1536967}
+		{D80EAF3A-09ED-473B-B22B-0F670CB451A9} = {87606168-4608-4881-8DCA-C402D1536967}
+		{A5504232-378B-4645-819D-24F36F4D2303} = {48237B28-ED49-4620-9613-3E859F44363B}
+		{433154B2-DBB5-450A-BB23-C95ED8F3D440} = {48237B28-ED49-4620-9613-3E859F44363B}
+		{5430F6D4-CF65-4152-8DF0-AC6560472F69} = {48237B28-ED49-4620-9613-3E859F44363B}
+		{DCF4A247-18B1-4FBC-85B5-499616BB9C72} = {BB24C47D-539A-4ECB-81E4-F9E618E8C917}
+		{BD3C0196-DA2B-4942-84DE-759FF7C23D86} = {DCF4A247-18B1-4FBC-85B5-499616BB9C72}
+		{2FAE8D6A-11E4-42D7-92E1-152E0C346535} = {BD3C0196-DA2B-4942-84DE-759FF7C23D86}
+		{EA30CA80-252D-46BD-BCE8-C29D282E0AAC} = {87606168-4608-4881-8DCA-C402D1536967}
+		{BDBD38F7-230E-4BE1-9C2A-33BFB5BA6548} = {EA30CA80-252D-46BD-BCE8-C29D282E0AAC}
+		{43B27B34-CF7F-4964-9F98-C16D71D771B9} = {BDBD38F7-230E-4BE1-9C2A-33BFB5BA6548}
+		{AB1C0A35-5FF8-4E44-A24B-D30DC4CA6829} = {43B27B34-CF7F-4964-9F98-C16D71D771B9}
+		{26165E45-DBB0-4066-903B-EF2E17FB7E31} = {87606168-4608-4881-8DCA-C402D1536967}
+		{1663C0B0-98B1-4A65-AC4C-947897692F70} = {26165E45-DBB0-4066-903B-EF2E17FB7E31}
+		{B1AEC1A4-2A75-4AA5-AB0C-11EC0BBD0B4E} = {1663C0B0-98B1-4A65-AC4C-947897692F70}
+		{0AB6321C-546E-4DAE-B4BC-909E6F6AB608} = {B1AEC1A4-2A75-4AA5-AB0C-11EC0BBD0B4E}
+		{E18AD379-6E7A-4A7A-A266-98BF46070094} = {26165E45-DBB0-4066-903B-EF2E17FB7E31}
+		{8BC00373-8AA5-4C8A-83F6-FA904E7A6328} = {E18AD379-6E7A-4A7A-A266-98BF46070094}
+		{350126C3-B1F6-4BF3-95BD-B958066F2E21} = {8BC00373-8AA5-4C8A-83F6-FA904E7A6328}
+		{35AA9B75-F1B8-4F1D-95F4-A0A6ACFDE770} = {87606168-4608-4881-8DCA-C402D1536967}
+		{21EAD04C-03E6-41D5-9970-212E0E45C11D} = {35AA9B75-F1B8-4F1D-95F4-A0A6ACFDE770}
+		{39FB380B-87F3-4E80-ACCB-D9FDF3BB9602} = {21EAD04C-03E6-41D5-9970-212E0E45C11D}
+		{25276752-7D19-4B68-B383-8B195F57AD7A} = {39FB380B-87F3-4E80-ACCB-D9FDF3BB9602}
+		{57D4E7E2-8135-449A-B2E1-623A6E145434} = {26165E45-DBB0-4066-903B-EF2E17FB7E31}
+		{E4CE4087-4670-443C-8DFC-929058227027} = {57D4E7E2-8135-449A-B2E1-623A6E145434}
+		{F17BD416-5E75-4229-9FB7-99AFD6E1726E} = {E4CE4087-4670-443C-8DFC-929058227027}
+		{AED77798-6DA4-4CD7-A275-5F5DAF754356} = {D80EAF3A-09ED-473B-B22B-0F670CB451A9}
+		{118E780F-9B52-494E-BB54-61C24D941517} = {AED77798-6DA4-4CD7-A275-5F5DAF754356}
+		{B8FBAE8C-0BC5-4ED8-A069-D336511806E9} = {118E780F-9B52-494E-BB54-61C24D941517}
+		{48C929AA-8184-4E6D-A755-3866110F27AC} = {EA30CA80-252D-46BD-BCE8-C29D282E0AAC}
+		{7F7A12AC-ED97-4CD7-AC58-474DEEB7EF9D} = {48C929AA-8184-4E6D-A755-3866110F27AC}
+		{A63ED33E-D47D-46F6-9CD0-8C09C93FEF8E} = {7F7A12AC-ED97-4CD7-AC58-474DEEB7EF9D}
+		{E77B2B68-A68A-4F0D-AD18-71A221FEE0F3} = {26165E45-DBB0-4066-903B-EF2E17FB7E31}
+		{C2F33F23-3FE3-41E7-8497-6CEC1DDD629B} = {E77B2B68-A68A-4F0D-AD18-71A221FEE0F3}
+		{28873BC4-F97C-40BA-A4E3-BBC1E74E393B} = {C2F33F23-3FE3-41E7-8497-6CEC1DDD629B}
+		{9F06CC50-DD0E-4CF0-8F64-F80B301B4D90} = {87606168-4608-4881-8DCA-C402D1536967}
+		{8F1E53DA-214E-480B-A5F4-C78974EAE0D2} = {9F06CC50-DD0E-4CF0-8F64-F80B301B4D90}
+		{6EDD6AF6-285A-44D0-BF2F-7F3A781DF946} = {8F1E53DA-214E-480B-A5F4-C78974EAE0D2}
+		{2D9AE24F-EEAA-4C82-A6D4-A431E02270CB} = {6EDD6AF6-285A-44D0-BF2F-7F3A781DF946}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58316B45-BB25-4B82-8940-C2B34838DE78}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DOM Code Library\DOM Code Library.projitems*{0ab6321c-546e-4dae-b4bc-909e6f6ab608}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{0ab6321c-546e-4dae-b4bc-909e6f6ab608}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{25276752-7d19-4b68-b383-8b195f57ad7a}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{25276752-7d19-4b68-b383-8b195f57ad7a}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{28873bc4-f97c-40ba-a4e3-bbc1e74e393b}*SharedItemsImports = 4
+		IAS Code Library\IAS Code Library.projitems*{28873bc4-f97c-40ba-a4e3-bbc1e74e393b}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{28873bc4-f97c-40ba-a4e3-bbc1e74e393b}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{2d9ae24f-eeaa-4c82-a6d4-a431e02270cb}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{2fae8d6a-11e4-42d7-92e1-152e0c346535}*SharedItemsImports = 4
+		IAS Code Library\IAS Code Library.projitems*{2fae8d6a-11e4-42d7-92e1-152e0c346535}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{2fae8d6a-11e4-42d7-92e1-152e0c346535}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{350126c3-b1f6-4bf3-95bd-b958066f2e21}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{350126c3-b1f6-4bf3-95bd-b958066f2e21}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{433154b2-dbb5-450a-bb23-c95ed8f3d440}*SharedItemsImports = 13
+		DOM Code Library\DOM Code Library.projitems*{5430f6d4-cf65-4152-8df0-ac6560472f69}*SharedItemsImports = 13
+		IAS Code Library\IAS Code Library.projitems*{a5504232-378b-4645-819d-24f36f4d2303}*SharedItemsImports = 13
+		DOM Code Library\DOM Code Library.projitems*{a63ed33e-d47d-46f6-9cd0-8c09c93fef8e}*SharedItemsImports = 4
+		IAS Code Library\IAS Code Library.projitems*{a63ed33e-d47d-46f6-9cd0-8c09c93fef8e}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{a63ed33e-d47d-46f6-9cd0-8c09c93fef8e}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{aa8aa143-de76-466f-97eb-67e395ad93d9}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{aa8aa143-de76-466f-97eb-67e395ad93d9}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{ab1c0a35-5ff8-4e44-a24b-d30dc4ca6829}*SharedItemsImports = 4
+		IAS Code Library\IAS Code Library.projitems*{ab1c0a35-5ff8-4e44-a24b-d30dc4ca6829}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{ab1c0a35-5ff8-4e44-a24b-d30dc4ca6829}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{b8fbae8c-0bc5-4ed8-a069-d336511806e9}*SharedItemsImports = 4
+		IAS Code Library\IAS Code Library.projitems*{b8fbae8c-0bc5-4ed8-a069-d336511806e9}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{b8fbae8c-0bc5-4ed8-a069-d336511806e9}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{c464baac-b89b-480c-af7c-48c650ea5d1f}*SharedItemsImports = 4
+		IAS Code Library\IAS Code Library.projitems*{c464baac-b89b-480c-af7c-48c650ea5d1f}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{c464baac-b89b-480c-af7c-48c650ea5d1f}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{f17bd416-5e75-4229-9fb7-99afd6e1726e}*SharedItemsImports = 4
+		SRM Code Library\SRM Code Library.projitems*{f17bd416-5e75-4229-9fb7-99afd6e1726e}*SharedItemsImports = 4
+	EndGlobalSection
+EndGlobal

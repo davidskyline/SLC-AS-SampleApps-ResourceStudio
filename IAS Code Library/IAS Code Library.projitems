@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a5504232-378b-4645-819d-24f36f4d2303</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>IAS_Code_Library</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\IAS\Dialogs\ErrorDialog\ErrorDialogModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\IAS\Dialogs\ErrorDialog\ErrorDialogPresenter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\IAS\Dialogs\ErrorDialog\ErrorDialogView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\IAS\Extensions\EngineExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\IAS\Objects\AutomationData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\IAS\Objects\ScriptDialog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\IAS\Objects\ScriptSection.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
+  </ItemGroup>
+</Project>
