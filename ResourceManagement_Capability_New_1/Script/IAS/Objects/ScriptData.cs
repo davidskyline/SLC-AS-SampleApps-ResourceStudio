@@ -20,7 +20,7 @@
 
 		public ScriptData(IEngine engine)
 		{
-			this.engine = engine;
+			this.engine = engine ?? throw new ArgumentNullException(nameof(engine));
 		}
 
 		#region Properties

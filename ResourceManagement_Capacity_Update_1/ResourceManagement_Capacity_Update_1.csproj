@@ -67,14 +67,24 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="..\DOM Code Library\DOM Code Library.projitems" Label="Shared" />
-  <Import Project="..\IAS Code Library\IAS Code Library.projitems" Label="Shared" />
-  <Import Project="..\SRM Code Library\SRM Code Library.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\ResourceManagement_Library_DOM Code_1\ResourceManagement_Library_DOM Code_1.csproj">
+      <Project>{efe22e6d-379d-4ea5-b0e1-d3f9ce51cb60}</Project>
+      <Name>ResourceManagement_Library_DOM Code_1</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ResourceManagement_Library_IAS Code_1\ResourceManagement_Library_IAS Code_1.csproj">
+      <Project>{f07c72b8-002e-41d7-a1ec-4f7074de5d66}</Project>
+      <Name>ResourceManagement_Library_IAS Code_1</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ResourceManagement_Library_SRM Code_1\ResourceManagement_Library_SRM Code_1.csproj">
+      <Project>{7cba9f59-73c6-458c-a9e5-c30a6c68d14b}</Project>
+      <Name>ResourceManagement_Library_SRM Code_1</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties DisLinkId="1" DisProjectType="automationScriptProject" DisLinkedXmlFile="..\ResourceManagement_Capacity_Update.xml" />
+      <UserProperties DisLinkedXmlFile="..\ResourceManagement_Capacity_Update.xml" DisProjectType="automationScriptProject" DisLinkId="1" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

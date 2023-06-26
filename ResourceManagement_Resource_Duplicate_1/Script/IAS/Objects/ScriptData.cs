@@ -6,10 +6,14 @@
 	using System.Text;
 	using System.Threading.Tasks;
 
+	using Newtonsoft.Json;
+
 	using Skyline.Automation.DOM;
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
+	using Skyline.DataMiner.Net;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
+	using Skyline.DataMiner.Net.Apps.Sections.Fields;
 	using Skyline.DataMiner.Net.LogHelpers;
 	using Skyline.DataMiner.Net.Messages;
 	using Skyline.DataMiner.Net.Messages.SLDataGateway;
@@ -164,7 +168,10 @@
 				{
 					resourceInternalPropertiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id, new ValueWrapper<Guid>(newResource.ID)));
 
-					newResourceDomInstanceIdsWithResourcePool.Add(Convert.ToString(newResourceDomInstance.ID.Id));
+					if (newResource.PoolGUIDs.Any())
+					{
+						newResourceDomInstanceIdsWithResourcePool.Add(Convert.ToString(newResourceDomInstance.ID.Id));
+					}
 				}
 				else if (resourceExpected)
 				{
@@ -179,6 +186,8 @@
 				{
 					// Do nothing
 				}
+
+				HandleVirtualSignalGroups(newResourceDomInstance);
 
 				resourceManagerHandler.DomHelper.DomInstances.Create(newResourceDomInstance);
 			}
@@ -208,6 +217,69 @@
 			}
 		}
 
+		private void HandleVirtualSignalGroups(DomInstance newResourceDomInstance)
+		{
+			var resourceConnectionManagementSection = newResourceDomInstance.Sections.SingleOrDefault(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceConnectionManagement.Id.Id);
+
+			if (resourceData.VirtualSignalGroupInputIds.Any())
+			{
+				var newInputIds = new List<Guid>();
+				foreach (var inputId in resourceData.VirtualSignalGroupInputIds)
+				{
+					var newInputId = DuplicateVirtualSignalGroup(inputId);
+					if (newInputId == Guid.Empty)
+					{
+						continue;
+					}
+
+					newInputIds.Add(newInputId);
+				}
+
+				resourceConnectionManagementSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceConnectionManagement.InputVsgs, new ListValueWrapper<Guid>(newInputIds)));
+			}
+
+			if (resourceData.VirtualSignalGroupOutputIds.Any())
+			{
+				var newOutputIds = new List<Guid>();
+				foreach (var outputId in resourceData.VirtualSignalGroupOutputIds)
+				{
+					var newOutputId = DuplicateVirtualSignalGroup(outputId);
+					if (newOutputId == Guid.Empty)
+					{
+						continue;
+					}
+
+					newOutputIds.Add(newOutputId);
+				}
+
+				resourceConnectionManagementSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceConnectionManagement.OutputVsgs, new ListValueWrapper<Guid>(newOutputIds)));
+			}
+
+			Guid DuplicateVirtualSignalGroup(Guid id)
+			{
+				var subScript = engine.PrepareSubScript("DuplicateVsg");
+				
+				subScript.SelectScriptParam("Virtual Signal Group ID", Convert.ToString(id));
+
+				subScript.Synchronous = true;
+				subScript.LockElements = false;
+
+				subScript.StartScript();
+
+				var subScriptResponse = subScript.GetScriptResult();
+				if (subScriptResponse.TryGetValue("RESULT", out string duplicatedResultString))
+				{
+					var duplicatedResult = JsonConvert.DeserializeObject<DuplicatedResult>(duplicatedResultString);
+					if (duplicatedResult != null && duplicatedResult.IsSucceeded)
+					{
+						return duplicatedResult.DuplicatedDomInstanceId;
+					}
+				}
+
+				return Guid.Empty;
+			}
+		}
+
 		private bool ValidateResourceState()
 		{
 			var allowedStates = new List<string>
@@ -234,6 +306,15 @@
 			var transitionId = (resourceData.Instance.StatusId == Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Complete) ? Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Complete_To_Error : Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Draft_To_Error;
 
 			resourceManagerHandler.DomHelper.DomInstances.DoStatusTransition(resourceData.Instance.ID, transitionId);
+		}
+		#endregion
+
+		#region Classes
+		public class DuplicatedResult
+		{
+			public bool IsSucceeded { get; set; }
+
+			public Guid DuplicatedDomInstanceId { get; set; }
 		}
 		#endregion
 	}

@@ -52,7 +52,9 @@ DATE		VERSION		AUTHOR			COMMENTS
 namespace Script
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
+	using System.Resources;
 
 	using Skyline.Automation.DOM;
 	using Skyline.Automation.SRM;
@@ -149,14 +151,25 @@ namespace Script
 
 		private bool TryHandleMarkCompleteAction(DomHelper domHelper, DomInstanceId instanceId, out string errorMessage)
 		{
+			var supportedResourceTypes = new List<Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type>
+			{
+				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.UnlinkedResource,
+				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Element,
+			};
+
 			errorMessage = string.Empty;
 
 			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
 			var srmHelpers = new SrmHelpers(engine);
 
 			var resourceData = resourceManagerHandler.Resources.Single(x => x.Instance.ID.Id == instanceId.Id);
-			var isNew = resourceData.ResourceId == Guid.Empty;
+			if (resourceData.ResourceType == null || !supportedResourceTypes.Contains((Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type)resourceData.ResourceType))
+			{
+				errorMessage = $"Resource Type '{resourceData.ResourceType}' is not supported.";
+				return false;
+			}
 
+			var isNew = resourceData.ResourceId == Guid.Empty;
 			var existingResource = srmHelpers.ResourceManagerHelper.GetResourceByName(resourceData.Name);
 			if (existingResource != null && (isNew || existingResource.ID != resourceData.ResourceId))
 			{
@@ -166,6 +179,20 @@ namespace Script
 
 			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceData.ResourceId) ?? new Resource();
 			resource.Name = resourceData.Name;
+
+			if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Element)
+			{
+				if (string.IsNullOrEmpty(resourceData.LinkedElementInfo))
+				{
+					errorMessage = "Element link is required.";
+					return false;
+				}
+
+				var splittedElementInfo = resourceData.LinkedElementInfo.Split('/');
+				resource.DmaID = Convert.ToInt32(splittedElementInfo[0]);
+				resource.ElementID = Convert.ToInt32(splittedElementInfo[1]);
+			}
+
 			resource = srmHelpers.ResourceManagerHelper.AddOrUpdateResources(resource).Single();
 
 			var domInstance = domHelper.DomInstances.Read(DomInstanceExposers.Id.Equal(instanceId.Id)).Single();

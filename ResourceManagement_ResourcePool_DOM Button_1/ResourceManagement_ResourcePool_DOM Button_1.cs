@@ -164,7 +164,7 @@ namespace Script
 				return false;
 			}
 
-			var resourcePool = srmHelpers.ResourceManagerHelper.GetResourcePool(resourcePoolData.PoolId) ?? new ResourcePool();
+			var resourcePool = isNew ? new ResourcePool() : srmHelpers.ResourceManagerHelper.GetResourcePool(resourcePoolData.PoolId) ?? new ResourcePool();
 			resourcePool.Name = resourcePoolData.Name;
 			resourcePool = srmHelpers.ResourceManagerHelper.AddOrUpdateResourcePools(resourcePool).First();
 

@@ -24,6 +24,8 @@
 		private Lazy<Dictionary<Guid, ResourceData>> resourcesByInstanceId;
 
 		private Lazy<Dictionary<Guid, CapacityData>> capacitiesByInstanceId;
+
+		private Lazy<Dictionary<Guid, PropertyData>> propertiesByInstanceId;
 		#endregion
 
 		public ResourceManagerHandler(IEngine engine)
@@ -92,6 +94,14 @@
 				return capacitiesByInstanceId.Value.Values;
 			}
 		}
+
+		public IReadOnlyCollection<PropertyData> Properties
+		{
+			get
+			{
+				return propertiesByInstanceId.Value.Values;
+			}
+		}
 		#endregion
 
 		#region Methods
@@ -104,6 +114,8 @@
 			resourcesByInstanceId = new Lazy<Dictionary<Guid, ResourceData>>(LoadResourceData);
 
 			capacitiesByInstanceId = new Lazy<Dictionary<Guid, CapacityData>>(LoadCapacityData);
+
+			propertiesByInstanceId = new Lazy<Dictionary<Guid, PropertyData>>(LoadPropertyData);
 		}
 
 		private Dictionary<Guid, CapabilityData> LoadCapabilityData()
@@ -209,6 +221,11 @@
 				{
 					if (section.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourcePoolCapabilities.Id.Id)
 					{
+						if (!section.FieldValues.Any())
+						{
+							continue;
+						}
+
 						var capability = new ResourcePoolCapability();
 
 						foreach (var fieldValue in section.FieldValues)
@@ -250,14 +267,84 @@
 			var mapper = new Dictionary<Guid, Action<ResourceData, object>>
 			{
 				[Resourcemanagement.Sections.ResourceInfo.Name.Id] = (data, value) => data.Name = Convert.ToString(value),
+				[Resourcemanagement.Sections.ResourceInfo.Type.Id] = (data, value) => data.ResourceType = (Resourcemanagement.Enums.Type)value,
+				[Resourcemanagement.Sections.ResourceInfo.Element.Id] = (data, value) => data.LinkedElementInfo = Convert.ToString(value),
 				[Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id.Id] = (data, value) => data.ResourceId = (Guid)value,
 				[Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids.Id] = (data, value) => data.PoolIds = Convert.ToString(value),
+				[Resourcemanagement.Sections.ResourceConnectionManagement.InputVsgs.Id] = (Data, value) => Data.VirtualSignalGroupInputIds = (List<Guid>)value,
+				[Resourcemanagement.Sections.ResourceConnectionManagement.OutputVsgs.Id] = (Data, value) => Data.VirtualSignalGroupOutputIds = (List<Guid>)value,
+			};
+
+			var propertyMapper = new Dictionary<Guid, Action<ResourceProperty, object>>
+			{
+				[Resourcemanagement.Sections.ResourceProperties.Property.Id] = (data, value) => data.PropertyId = (Guid)value,
+				[Resourcemanagement.Sections.ResourceProperties.PropertyValue.Id] = (data, value) => data.Value = Convert.ToString(value),
 			};
 
 			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Resource.Id));
 			foreach (var instance in instances)
 			{
 				var data = new ResourceData
+				{
+					Instance = instance,
+				};
+
+				foreach (var section in instance.Sections)
+				{
+					if (section.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourceProperties.Id.Id)
+					{
+						if (!section.FieldValues.Any())
+						{
+							continue;
+						}
+
+						var property = new ResourceProperty();
+
+						foreach (var fieldValue in section.FieldValues)
+						{
+							if (!propertyMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
+							{
+								continue;
+							}
+
+							action.Invoke(property, fieldValue.Value.Value);
+						}
+
+						data.Properties.Add(property);
+					}
+					else
+					{
+						foreach (var fieldValue in section.FieldValues)
+						{
+							if (!mapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
+							{
+								continue;
+							}
+
+							action.Invoke(data, fieldValue.Value.Value);
+						}
+					}
+				}
+
+				dic.Add(data.Instance.ID.Id, data);
+			}
+
+			return dic;
+		}
+
+		private Dictionary<Guid, CapacityData> LoadCapacityData()
+		{
+			var dic = new Dictionary<Guid, CapacityData>();
+
+			var mapper = new Dictionary<Guid, Action<CapacityData, object>>
+			{
+				[Resourcemanagement.Sections.CapacityInfo.CapacityName.Id] = (data, value) => data.Name = Convert.ToString(value),
+			};
+
+			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Capacity.Id));
+			foreach (var instance in instances)
+			{
+				var data = new CapacityData
 				{
 					Instance = instance,
 				};
@@ -278,19 +365,19 @@
 			return dic;
 		}
 
-		private Dictionary<Guid, CapacityData> LoadCapacityData()
+		private Dictionary<Guid, PropertyData> LoadPropertyData()
 		{
-			var dic = new Dictionary<Guid, CapacityData>();
+			var dic = new Dictionary<Guid, PropertyData>();
 
-			var mapper = new Dictionary<Guid, Action<CapacityData, object>>
+			var mapper = new Dictionary<Guid, Action<PropertyData, object>>
 			{
-				[Resourcemanagement.Sections.CapacityInfo.CapacityName.Id] = (data, value) => data.Name = Convert.ToString(value),
+				[Resourcemanagement.Sections.PropertyInfo.PropertyName.Id] = (data, value) => data.Name = Convert.ToString(value),
 			};
 
-			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Resource.Id));
+			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Resourceproperty.Id));
 			foreach (var instance in instances)
 			{
-				var data = new CapacityData
+				var data = new PropertyData
 				{
 					Instance = instance,
 				};

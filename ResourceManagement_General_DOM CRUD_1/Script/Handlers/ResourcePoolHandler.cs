@@ -32,11 +32,11 @@
 		private Lazy<ResourcePoolData> resourcePoolData;
 		#endregion
 
-		public ResourcePoolHandler(IEngine engine, DomHelper domHelper, DomInstance instance)
+		public ResourcePoolHandler(IEngine engine, DomHelper domHelper, DomInstance domInstance)
 		{
 			this.engine = engine ?? throw new ArgumentNullException(nameof(engine));
 			this.domHelper = domHelper ?? throw new ArgumentNullException(nameof(domHelper));
-			this.domInstance = instance ?? throw new ArgumentNullException(nameof(instance));
+			this.domInstance = domInstance ?? throw new ArgumentNullException(nameof(domInstance));
 
 			Init();
 		}

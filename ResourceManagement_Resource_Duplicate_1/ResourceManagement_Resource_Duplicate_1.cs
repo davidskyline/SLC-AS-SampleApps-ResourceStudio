@@ -53,9 +53,8 @@ namespace Script
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using System.Linq;
-	using System.Text;
+
 	using Newtonsoft.Json;
 
 	using Skyline.Automation.IAS;
@@ -96,11 +95,6 @@ namespace Script
 			{
 				engine.ShowErrorDialog(e.ToString());
 			}
-
-			duplicateResourcePresenter.LoadFromModel();
-			duplicateResourcePresenter.BuildView();
-
-			controller.Run(duplicateResourceView);
 		}
 
 		private void RunSafe()
@@ -114,6 +108,11 @@ namespace Script
 
 			InitFields();
 			InitEventHandlers();
+
+			duplicateResourcePresenter.LoadFromModel();
+			duplicateResourcePresenter.BuildView();
+
+			controller.Run(duplicateResourceView);
 		}
 
 		private void InitFields()

@@ -53,14 +53,12 @@ namespace Script
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using System.Linq;
-	using System.Text;
+
 	using Newtonsoft.Json;
 
 	using Skyline.Automation.IAS;
 	using Skyline.DataMiner.Automation;
-	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
 	using Skyline.DataMiner.Utils.InteractiveAutomationScript;
 
 	/// <summary>

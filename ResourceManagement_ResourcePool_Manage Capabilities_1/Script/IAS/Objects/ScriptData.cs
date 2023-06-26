@@ -148,27 +148,47 @@
 		{
 			var hasChangedData = false;
 
-			foreach (var poolCapability in removed)
+			foreach (var configuredCapability in added)
 			{
-				var resourcePoolCapabilitiesSections = resourcePool.Instance.Sections.Where(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Id.Id);
+				var resourcePoolCapabilitiesSection = new Section(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Id);
+				resourcePoolCapabilitiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability, new ValueWrapper<Guid>(configuredCapability.CapabilityData.Instance.ID.Id)));
 
-				var sectionToRemove = resourcePoolCapabilitiesSections.SingleOrDefault(x => (Guid)x.GetFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability)?.Value.Value == poolCapability.CapabilityId);
-
-				//var resourcePoolCapabilitiesSection = resourcePool.Instance.Sections.SingleOrDefault(x => (Guid)x.GetFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability)?.Value.Value == poolCapability.CapabilityId);
-
-				if (sectionToRemove != null)
+				if (configuredCapability is ConfiguredStringCapability configuredStringCapability)
 				{
-					resourcePool.Instance.Sections.Remove(sectionToRemove);
+					if (string.IsNullOrEmpty(configuredStringCapability.Value))
+					{
+						continue;
+					}
+
+					resourcePoolCapabilitiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability_String_Value, new ValueWrapper<string>(configuredStringCapability.Value)));
 
 					hasChangedData = true;
 				}
+				else if (configuredCapability is ConfiguredEnumCapability configuredEnumCapability)
+				{
+					if (!configuredEnumCapability.Discretes.Any())
+					{
+						continue;
+					}
+
+					var capabilityValueIds = capabilityValuesById.Values.Where(x => x.CapabilityId.Equals(configuredEnumCapability.CapabilityData.Instance.ID.Id) && configuredEnumCapability.Discretes.Contains(x.Value)).Select(x => x.Instance.ID.Id).ToList();
+					resourcePoolCapabilitiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability_Enum_Values, new ListValueWrapper<Guid>(capabilityValueIds)));
+
+					hasChangedData = true;
+				}
+				else
+				{
+					continue;
+				}
+
+				resourcePool.Instance.Sections.Add(resourcePoolCapabilitiesSection);
 			}
 
 			foreach (var configuredCapability in updated)
 			{
 				var poolCapability = resourcePool.Capabilities.Single(x => x.CapabilityId == configuredCapability.CapabilityData.Instance.ID.Id);
 
-				var resourcePoolCapabilitiesSections = resourcePool.Instance.Sections.Where(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Id.Id);
+				var resourcePoolCapabilitiesSections = resourcePool.Instance.Sections.Where(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Id.Id && x.FieldValues.Any());
 
 				var resourcePoolCapabilitiesSection = resourcePoolCapabilitiesSections.SingleOrDefault(x => (Guid)x.GetFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability)?.Value.Value == poolCapability.CapabilityId);
 				if (resourcePoolCapabilitiesSection == null)
@@ -206,40 +226,20 @@
 				}
 			}
 
-			foreach (var configuredCapability in added)
+			foreach (var poolCapability in removed)
 			{
-				var resourcePoolCapabilitiesSection = new Section(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Id);
-				resourcePoolCapabilitiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability, new ValueWrapper<Guid>(configuredCapability.CapabilityData.Instance.ID.Id)));
+				var resourcePoolCapabilitiesSections = resourcePool.Instance.Sections.Where(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Id.Id && x.FieldValues.Any());
 
-				if (configuredCapability is ConfiguredStringCapability configuredStringCapability)
+				var sectionToRemove = resourcePoolCapabilitiesSections.SingleOrDefault(x => (Guid)x.GetFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability)?.Value.Value == poolCapability.CapabilityId);
+
+				//var resourcePoolCapabilitiesSection = resourcePool.Instance.Sections.SingleOrDefault(x => (Guid)x.GetFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability)?.Value.Value == poolCapability.CapabilityId);
+
+				if (sectionToRemove != null)
 				{
-					if (string.IsNullOrEmpty(configuredStringCapability.Value))
-					{
-						continue;
-					}
-
-					resourcePoolCapabilitiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability_String_Value, new ValueWrapper<string>(configuredStringCapability.Value)));
+					resourcePool.Instance.Sections.Remove(sectionToRemove);
 
 					hasChangedData = true;
 				}
-				else if (configuredCapability is ConfiguredEnumCapability configuredEnumCapability)
-				{
-					if (!configuredEnumCapability.Discretes.Any())
-					{
-						continue;
-					}
-
-					var capabilityValueIds = capabilityValuesById.Values.Where(x => x.CapabilityId.Equals(configuredEnumCapability.CapabilityData.Instance.ID.Id) && configuredEnumCapability.Discretes.Contains(x.Value)).Select(x => x.Instance.ID.Id).ToList();
-					resourcePoolCapabilitiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolCapabilities.Capability_Enum_Values, new ListValueWrapper<Guid>(capabilityValueIds)));
-
-					hasChangedData = true;
-				}
-				else
-				{
-					continue;
-				}
-
-				resourcePool.Instance.Sections.Add(resourcePoolCapabilitiesSection);
 			}
 
 			if (hasChangedData)

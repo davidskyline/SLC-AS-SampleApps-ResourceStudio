@@ -29,6 +29,11 @@
 			view.CapabilityNameLabel.Text = model.Name;
 			view.CapabilityTypeLabel.Text = model.Type;
 
+			if (model.Type == "Text")
+			{
+				view.UpdateButton.IsEnabled = false;
+			}
+
 			foreach (var discrete in model.Discretes)
 			{
 				var section = new DiscreteSection();

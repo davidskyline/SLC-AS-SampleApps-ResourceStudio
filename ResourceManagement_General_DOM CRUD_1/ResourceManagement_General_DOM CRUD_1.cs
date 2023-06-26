@@ -138,45 +138,13 @@ namespace Script
 				return;
 			}
 
-			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
-			var srmHelpers = new SrmHelpers(engine);
-
-			var resourceData = resourceManagerHandler.Resources.Single(x => x.Instance.ID.Id == instance.ID.Id);
-			var existingResource = srmHelpers.ResourceManagerHelper.GetResourceByName(resourceData.Name);
-			if (existingResource != null)
+			var resourceHandler = new ResourceHandler(engine, domHelper, instance);
+			if (!resourceHandler.ValidateNameChange())
 			{
-				if (existingResource.ID != resourceData.ResourceId)
-				{
-					SetErrorMessage($"Resource '{resourceData.Name}' already exists with ID '{existingResource.ID}'.");
-
-					return;
-				}
-
-				if (existingResource.Name == resourceData.Name)
-				{
-					return;
-				}
-			}
-
-			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceData.ResourceId);
-			if (resource == null)
-			{
-				SetErrorMessage($"Resource '{resourceData.Name}' with ID '{resourceData.ResourceId}' does not exist.");
-
 				return;
 			}
 
-			resource.Name = resourceData.Name;
-			srmHelpers.ResourceManagerHelper.AddOrUpdateResources(resource);
-
-			void SetErrorMessage(string errorMessage)
-			{
-				var resourceInfoSection = instance.Sections.Single(x => x.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourceInfo.Id.Id);
-				resourceInfoSection.AddOrReplaceFieldValue(new FieldValue(Resourcemanagement.Sections.ResourceInfo.ErrorDetails, new ValueWrapper<string>($"[{DateTime.Now}] >>> {errorMessage}")));
-
-				domHelper.DomInstances.Update(instance);
-				domHelper.DomInstances.DoStatusTransition(instance.ID, Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Complete_To_Error);
-			}
+			resourceHandler.ValidateProperties();
 		}
 	}
 }

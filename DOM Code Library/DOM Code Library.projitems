@@ -14,9 +14,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\CapabilityValueData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\CapacityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\DomIds.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\PropertyData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\ResourceData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\ResourcePoolCapability.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\ResourcePoolData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\ResourceProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
