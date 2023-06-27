@@ -151,8 +151,6 @@
 
 		private void UpdateDomInstances(List<string> added, List<CapabilityValueData> removed)
 		{
-			var domHelper = new DomHelper(engine.SendSLNetMessages, Skyline.Automation.DOM.DomIds.Resourcemanagement.ModuleId);
-
 			foreach (var discrete in added)
 			{
 				var capabilityEnumValueDetailsSection = new Section(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.CapabilityEnumValueDetails.Id);
@@ -164,28 +162,26 @@
 					DomDefinitionId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Definitions.Capabilityenumvalue,
 				};
 				capabilityValueInstance.Sections.Add(capabilityEnumValueDetailsSection);
-				domHelper.DomInstances.Create(capabilityValueInstance);
+				resourceManagerHandler.DomHelper.DomInstances.Create(capabilityValueInstance);
 			}
 
 			foreach (var capabilityValue in removed)
 			{
-				domHelper.DomInstances.Delete(capabilityValue.Instance);
+				resourceManagerHandler.DomHelper.DomInstances.Delete(capabilityValue.Instance);
 			}
 		}
 
 		private void DeleteDomInstances()
 		{
-			var domHelper = new DomHelper(engine.SendSLNetMessages, Skyline.Automation.DOM.DomIds.Resourcemanagement.ModuleId);
-
 			if (capabilityValues != null)
 			{
 				foreach (var capabilityValue in capabilityValues)
 				{
-					domHelper.DomInstances.Delete(capabilityValue.Instance);
+					resourceManagerHandler.DomHelper.DomInstances.Delete(capabilityValue.Instance);
 				}
 			}
 
-			domHelper.DomInstances.Delete(capability.Instance);
+			resourceManagerHandler.DomHelper.DomInstances.Delete(capability.Instance);
 		}
 		#endregion
 	}

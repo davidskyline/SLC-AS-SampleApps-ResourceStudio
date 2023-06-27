@@ -25,17 +25,36 @@
 		#region Methods
 		public void LoadFromModel()
 		{
+			view.NameLabel.Text = model.Name;
+			view.UnitsTextBox.Text = model.Units;
+
 			view.RangeMinCheckBox.IsChecked = model.IsRangeMinEnabled;
 			view.RangeMinNumeric.IsEnabled = model.IsRangeMinEnabled;
+			if (model.IsRangeMinEnabled)
+			{
+				view.RangeMinNumeric.Value = model.RangeMin;
+			}
 
 			view.RangeMaxCheckBox.IsChecked = model.IsRangeMaxEnabled;
 			view.RangeMaxNumeric.IsEnabled = model.IsRangeMaxEnabled;
+			if (model.IsRangeMaxEnabled)
+			{
+				view.RangeMaxNumeric.Value = model.RangeMax;
+			}
 
 			view.StepSizeCheckBox.IsChecked = model.IsStepSizeEnabled;
 			view.StepSizeNumeric.IsEnabled = model.IsStepSizeEnabled;
+			if (model.IsStepSizeEnabled)
+			{
+				view.StepSizeNumeric.Value = model.StepSize;
+			}
 
 			view.DecimalsCheckBox.IsChecked = model.IsDecimalsEnabled;
 			view.DecimalsNumeric.IsEnabled = model.IsDecimalsEnabled;
+			if (model.IsDecimalsEnabled)
+			{
+				view.DecimalsNumeric.Value = model.Decimals;
+			}
 		}
 
 		public void BuildView()
@@ -156,7 +175,19 @@
 
 		private void StoreToModel()
 		{
+			model.Units = view.UnitsTextBox.Text;
 
+			model.IsRangeMinEnabled = view.RangeMinCheckBox.IsChecked;
+			model.RangeMin = view.RangeMinNumeric.Value;
+
+			model.IsRangeMaxEnabled = view.RangeMaxCheckBox.IsChecked;
+			model.RangeMax = view.RangeMaxNumeric.Value;
+
+			model.IsStepSizeEnabled = view.StepSizeCheckBox.IsChecked;
+			model.StepSize = view.StepSizeNumeric.Value;
+
+			model.IsDecimalsEnabled = view.DecimalsCheckBox.IsChecked;
+			model.Decimals = Convert.ToInt32(view.DecimalsNumeric.Value);
 		}
 		#endregion
 	}

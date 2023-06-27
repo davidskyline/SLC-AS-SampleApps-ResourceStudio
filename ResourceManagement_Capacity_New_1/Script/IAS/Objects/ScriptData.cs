@@ -1,10 +1,6 @@
 ﻿namespace Script.IAS
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
 
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;

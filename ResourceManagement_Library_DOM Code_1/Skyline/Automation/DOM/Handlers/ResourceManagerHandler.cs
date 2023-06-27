@@ -340,6 +340,11 @@
 			var mapper = new Dictionary<Guid, Action<CapacityData, object>>
 			{
 				[Resourcemanagement.Sections.CapacityInfo.CapacityName.Id] = (data, value) => data.Name = Convert.ToString(value),
+				[Resourcemanagement.Sections.CapacityInfo.Units.Id] = (data, value) => data.Units = Convert.ToString(value),
+				[Resourcemanagement.Sections.CapacityInfo.MinRange.Id] = (data, value) => data.RangeMin = Convert.ToDouble(value),
+				[Resourcemanagement.Sections.CapacityInfo.MaxRange.Id] = (data, value) => data.RangeMax = Convert.ToDouble(value),
+				[Resourcemanagement.Sections.CapacityInfo.StepSize.Id] = (data, value) => data.StepSize = Convert.ToDouble(value),
+				[Resourcemanagement.Sections.CapacityInfo.Decimals.Id] = (data, value) => data.Decimals = Convert.ToInt64(value),
 			};
 
 			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Capacity.Id));
