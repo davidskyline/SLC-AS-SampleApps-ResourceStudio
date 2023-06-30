@@ -55,9 +55,7 @@ namespace Script
 	using System.Collections.Generic;
 	using System.Linq;
 
-	using Skyline.Automation.DOM;
 	using Skyline.Automation.DOM.DomIds;
-	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
 	using Skyline.DataMiner.Net.History;
@@ -123,12 +121,7 @@ namespace Script
 			}
 
 			var resourcePoolHandler = new ResourcePoolHandler(engine, domHelper, instance);
-			if (!resourcePoolHandler.ValidateNameChange())
-			{
-				return;
-			}
-
-			resourcePoolHandler.ValidateResources();
+			resourcePoolHandler.Handle();
 		}
 
 		private void HandleResourceCRUD(CrudType crudType, DomHelper domHelper, DomInstance instance)
@@ -144,7 +137,7 @@ namespace Script
 				return;
 			}
 
-			resourceHandler.ValidateProperties();
+			resourceHandler.ValidateResource();
 		}
 	}
 }

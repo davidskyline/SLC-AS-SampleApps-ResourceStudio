@@ -30,6 +30,8 @@
 		private Lazy<SrmHelpers> srmHelpers;
 
 		private Lazy<ResourcePoolData> resourcePoolData;
+
+		private Dictionary<Guid, List<ConfiguredCapability>> configuredCapabilitiesByPoolDomInstanceId = new Dictionary<Guid, List<ConfiguredCapability>>();
 		#endregion
 
 		public ResourcePoolHandler(IEngine engine, DomHelper domHelper, DomInstance domInstance)
@@ -50,59 +52,31 @@
 		#endregion
 
 		#region Methods
-		public bool ValidateNameChange()
+		public void Handle()
 		{
-			var existingResourcePool = SrmHelpers.ResourceManagerHelper.GetResourcePoolByName(ResourcePoolData.Name);
-			if (existingResourcePool != null)
+			var resourcesResult = HandleDataOnPoolResources();
+			if (!resourcesResult.Success)
 			{
-				if (existingResourcePool.ID != ResourcePoolData.PoolId)
-				{
-					SetErrorMessage($"Resource pool '{ResourcePoolData.Name}' already exists with ID '{existingResourcePool.ID}'.");
+				SetErrorMessage(resourcesResult.ErrorMessage);
 
-					return false;
-				}
-
-				if (existingResourcePool.Name == ResourcePoolData.Name)
-				{
-					return true;
-				}
+				return;
 			}
 
-			var resourcePool = SrmHelpers.ResourceManagerHelper.GetResourcePool(ResourcePoolData.PoolId);
-			if (resourcePool == null)
+			var poolNameResult = HandlePoolName();
+			if (!poolNameResult.Success)
 			{
-				SetErrorMessage($"Resource pool '{ResourcePoolData.Name}' with ID '{ResourcePoolData.PoolId}' does not exist.");
+				SetErrorMessage(poolNameResult.ErrorMessage);
 
-				return false;
+				return;
 			}
 
-			resourcePool.Name = ResourcePoolData.Name;
-			SrmHelpers.ResourceManagerHelper.AddOrUpdateResourcePools(resourcePool);
-
-			return true;
-		}
-
-		public bool ValidateResources()
-		{
-			var resourceDataMappingsByResourceId = GetResourceDataMappings();
-
-			var resourceFilter = new ORFilterElement<Resource>(resourceDataMappingsByResourceId.Keys.Select(id => ResourceExposers.ID.Equal(id)).ToArray());
-			var resources = new List<Resource>();
-
-			foreach (var resource in SrmHelpers.ResourceManagerHelper.GetResources(resourceFilter))
+			var poolResourceResult = HandlePoolResource(poolNameResult.HasChangedName, resourcesResult.ResourcesInPool);
+			if (!poolResourceResult.Success)
 			{
-				if (resource == null || !resourceDataMappingsByResourceId.TryGetValue(resource.ID, out var resourceDataMapping))
-				{
-					continue;
-				}
+				SetErrorMessage(poolResourceResult.ErrorMessage);
 
-				resourceDataMapping.Resource = resource;
+				//return;
 			}
-
-			var resourcesToUpdate = ApplyChanges(resourceDataMappingsByResourceId.Values);
-			SrmHelpers.ResourceManagerHelper.AddOrUpdateResources(resourcesToUpdate.ToArray());
-
-			return true;
 		}
 
 		private void Init()
@@ -120,6 +94,154 @@
 
 			domHelper.DomInstances.Update(domInstance);
 			domHelper.DomInstances.DoStatusTransition(domInstance.ID, Resourcemanagement.Behaviors.Resourcepool_Behavior.Transitions.Complete_To_Error);
+		}
+
+		private PoolNameResult HandlePoolName()
+		{
+			var existingResourcePool = SrmHelpers.ResourceManagerHelper.GetResourcePoolByName(ResourcePoolData.Name);
+			if (existingResourcePool != null)
+			{
+				if (existingResourcePool.ID != ResourcePoolData.PoolId)
+				{
+					return new PoolNameResult
+					{
+						ErrorMessage = $"Resource pool '{ResourcePoolData.Name}' already exists with ID '{existingResourcePool.ID}'.",
+					};
+				}
+
+				if (existingResourcePool.Name == ResourcePoolData.Name)
+				{
+					return new PoolNameResult
+					{
+						HasChangedName = false,
+					};
+				}
+			}
+
+			var resourcePool = SrmHelpers.ResourceManagerHelper.GetResourcePool(ResourcePoolData.PoolId);
+			if (resourcePool == null)
+			{
+				return new PoolNameResult
+				{
+					ErrorMessage = $"Resource pool '{ResourcePoolData.Name}' with ID '{ResourcePoolData.PoolId}' does not exist.",
+				};
+			}
+
+			resourcePool.Name = ResourcePoolData.Name;
+
+			resourcePool = SrmHelpers.ResourceManagerHelper.AddOrUpdateResourcePools(resourcePool).First();
+
+			return new PoolNameResult
+			{
+				HasChangedName = true,
+				ResourcePool = resourcePool,
+			};
+		}
+
+		private ResourcesResult HandleDataOnPoolResources()
+		{
+			var result = new ResourcesResult();
+
+			var resourceDataMappingsByResourceId = GetResourceDataMappings();
+
+			var resourceFilter = new ORFilterElement<Resource>(resourceDataMappingsByResourceId.Keys.Select(id => ResourceExposers.ID.Equal(id)).ToArray());
+			foreach (var resource in SrmHelpers.ResourceManagerHelper.GetResources(resourceFilter))
+			{
+				if (resource == null || !resourceDataMappingsByResourceId.TryGetValue(resource.ID, out var resourceDataMapping))
+				{
+					continue;
+				}
+
+				resourceDataMapping.Resource = resource;
+				result.ResourcesInPool.Add(resource);
+			}
+
+			var resourcesToUpdate = ApplyChanges(resourceDataMappingsByResourceId.Values);
+			result.UpdatedResources = SrmHelpers.ResourceManagerHelper.AddOrUpdateResources(resourcesToUpdate.ToArray()).ToList();
+
+			return result;
+		}
+
+		private PoolResourceResult HandlePoolResource(bool poolNameIsChanged, List<Resource> poolResources)
+		{
+			var result = new PoolResourceResult();
+
+			if (!ResourcePoolData.IsBookable)
+			{
+				if (ResourcePoolData.ResourceId == Guid.Empty)
+				{
+					return result;
+				}
+
+				var poolResource = SrmHelpers.ResourceManagerHelper.GetResource(ResourcePoolData.ResourceId);
+				if (poolResource == null)
+				{
+					return result;
+				}
+
+				SrmHelpers.ResourceManagerHelper.RemoveResources(poolResource);
+
+				var resourcePoolInternalPropertiesSection = ResourcePoolData.Instance.Sections.Single(x => x.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourcePoolInternalProperties.Id.Id);
+				resourcePoolInternalPropertiesSection.RemoveFieldValueById(Resourcemanagement.Sections.ResourcePoolInternalProperties.Pool_Resource_Id);
+
+				ResourceManagerHandler.DomHelper.DomInstances.Update(ResourcePoolData.Instance);
+
+				return result;
+			}
+
+			var resourceName = $"{ResourcePoolData.Name} - Pool Resource";
+			var isNew = ResourcePoolData.ResourceId == Guid.Empty;
+			var existingResource = SrmHelpers.ResourceManagerHelper.GetResourceByName(resourceName);
+			if (existingResource != null && (isNew || existingResource.ID != ResourcePoolData.ResourceId))
+			{
+				return new PoolResourceResult
+				{
+					ErrorMessage = $"Resource '{resourceName}' already exists with ID '{existingResource.ID}'.",
+				};
+			}
+
+			result.Resource = isNew ? new Resource() : SrmHelpers.ResourceManagerHelper.GetResource(ResourcePoolData.ResourceId) ?? new Resource();
+			result.Resource.Name = resourceName;
+
+			result.Resource.PoolGUIDs.Clear();
+			result.Resource.PoolGUIDs.Add(ResourcePoolData.PoolId);
+
+			if (poolResources.Any())
+			{
+				result.Resource.MaxConcurrency = poolResources.Sum(x => x.MaxConcurrency);
+				result.Resource.Mode = ResourceMode.Unavailable;
+			}
+			else
+			{
+				result.Resource.MaxConcurrency = 1;
+				result.Resource.Mode = ResourceMode.Unavailable;
+			}
+
+			var requiredCapabilities = GetRequiredResourceCapabilities(configuredCapabilitiesByPoolDomInstanceId[ResourcePoolData.Instance.ID.Id]);
+			if (isNew)
+			{
+				result.Resource.Capabilities = requiredCapabilities;
+
+				result.Resource = SrmHelpers.ResourceManagerHelper.AddOrUpdateResources(result.Resource).First();
+
+				var resourcePoolInternalPropertiesSection = ResourcePoolData.Instance.Sections.Single(x => x.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourcePoolInternalProperties.Id.Id);
+				resourcePoolInternalPropertiesSection.AddOrReplaceFieldValue(new FieldValue(Resourcemanagement.Sections.ResourcePoolInternalProperties.Pool_Resource_Id, new ValueWrapper<Guid>(result.Resource.ID)));
+
+				ResourceManagerHandler.DomHelper.DomInstances.Update(ResourcePoolData.Instance);
+			}
+			else
+			{
+				var added = requiredCapabilities.Where(x => !result.Resource.Capabilities.Select(y => y.CapabilityProfileID).Contains(x.CapabilityProfileID)).ToList();
+				var updated = requiredCapabilities.Except(added).ToList();
+				var removed = result.Resource.Capabilities.Where(x => !requiredCapabilities.Select(y => y.CapabilityProfileID).Contains(x.CapabilityProfileID)).ToList();
+
+				if (ResourceHasChangedData(result.Resource, added, updated, removed) || poolNameIsChanged)
+				{
+					result.Resource = SrmHelpers.ResourceManagerHelper.AddOrUpdateResources(result.Resource).First();
+				}
+			}
+
+			return result;
 		}
 
 		private Dictionary<Guid, ResourceDataMapping> GetResourceDataMappings()
@@ -148,44 +270,64 @@
 
 				foreach (var poolDomInstanceId in resourceDomInstance.PoolIds.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => Guid.Parse(x)))
 				{
-					if (!poolCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out var capabilities))
+					if (!TryGetConfiguredCapabilities(poolDomInstanceId, out var configuredCapabilities))
 					{
 						continue;
 					}
 
-					foreach (var poolCapability in capabilities)
-					{
-						if (!capabilitiesById.TryGetValue(poolCapability.CapabilityId, out var capabilityData))
-						{
-							continue;
-						}
-
-						ConfiguredCapability configuredCapability;
-						if (capabilityData.CapabilityType == Resourcemanagement.Enums.CapabilityType.String)
-						{
-							configuredCapability = new ConfiguredStringCapability(capabilityData, poolCapability.CapabilityStringValue);
-						}
-						else
-						{
-							var discretes = new List<string>();
-
-							poolCapability.CapabilityEnumValueIds.ForEach(x =>
-							{
-								if (capabilityValuesById.TryGetValue(x, out var capabilityValueData) && capabilityValueData.CapabilityId.Equals(capabilityData.Instance.ID.Id))
-								{
-									discretes.Add(capabilityValueData.Value);
-								}
-							});
-
-							configuredCapability = new ConfiguredEnumCapability(capabilityData, discretes);
-						}
-
-						resourceDataMapping.ConfiguredCapabilities.Add(configuredCapability);
-					}
+					resourceDataMapping.ConfiguredCapabilities.AddRange(configuredCapabilities);
 				}
 			}
 
 			return resourceDataMappingsByResourceId;
+
+			bool TryGetConfiguredCapabilities(Guid poolDomInstanceId, out List<ConfiguredCapability> configuredCapabilities)
+			{
+				if (configuredCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out configuredCapabilities))
+				{
+					return true;
+				}
+				
+				if (!poolCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out var capabilities))
+				{
+					return false;
+				}
+
+				configuredCapabilities = new List<ConfiguredCapability>();
+				foreach (var poolCapability in capabilities)
+				{
+					if (!capabilitiesById.TryGetValue(poolCapability.CapabilityId, out var capabilityData))
+					{
+						continue;
+					}
+
+					ConfiguredCapability configuredCapability;
+					if (capabilityData.CapabilityType == Resourcemanagement.Enums.CapabilityType.String)
+					{
+						configuredCapability = new ConfiguredStringCapability(capabilityData, poolCapability.CapabilityStringValue);
+					}
+					else
+					{
+						var discretes = new List<string>();
+
+						poolCapability.CapabilityEnumValueIds.ForEach(x =>
+						{
+							if (capabilityValuesById.TryGetValue(x, out var capabilityValueData) && capabilityValueData.CapabilityId.Equals(capabilityData.Instance.ID.Id))
+							{
+								discretes.Add(capabilityValueData.Value);
+							}
+						});
+
+						configuredCapability = new ConfiguredEnumCapability(capabilityData, discretes);
+					}
+
+					configuredCapabilities.Add(configuredCapability);
+				}
+
+				configuredCapabilitiesByPoolDomInstanceId.Add(poolDomInstanceId, configuredCapabilities);
+				
+				return true;
+			}
 		}
 
 		private List<Resource> ApplyChanges(IEnumerable<ResourceDataMapping> resourceDataMappings)
@@ -288,6 +430,34 @@
 			}
 
 			return hasChangedData;
+		}
+		#endregion
+
+		#region Classes
+		private abstract class Result
+		{
+			public string ErrorMessage { get; set; }
+
+			public bool Success => string.IsNullOrEmpty(ErrorMessage);
+		}
+
+		private class PoolResourceResult : Result
+		{
+			public Resource Resource { get; set; }
+		}
+
+		private class PoolNameResult : Result
+		{
+			public ResourcePool ResourcePool { get; set; }
+
+			public bool HasChangedName { get; set; }
+		}
+
+		private class ResourcesResult : Result
+		{
+			public List<Resource> ResourcesInPool { get; set; } = new List<Resource>();
+
+			public List<Resource> UpdatedResources { get; set; } = new List<Resource>();
 		}
 		#endregion
 	}
