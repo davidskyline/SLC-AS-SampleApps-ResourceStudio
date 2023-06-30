@@ -21,6 +21,8 @@
 
 		public List<ResourceProperty> Properties { get; set; } = new List<ResourceProperty>();
 
+		public List<ResourceCapacity> Capacities { get; set; } = new List<ResourceCapacity>();
+
 		public List<Guid> VirtualSignalGroupInputIds { get; set; }
 
 		public List<Guid> VirtualSignalGroupOutputIds { get; set; }

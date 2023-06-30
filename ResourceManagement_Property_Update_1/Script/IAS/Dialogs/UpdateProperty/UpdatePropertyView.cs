@@ -1,18 +1,12 @@
 ﻿namespace Script.IAS.Dialogs.UpdateProperty
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-
 	using Skyline.Automation.IAS;
 	using Skyline.DataMiner.Automation;
 	using Skyline.DataMiner.Utils.InteractiveAutomationScript;
 
 	public class UpdatePropertyView : ScriptDialog
 	{
-		public UpdatePropertyView(IEngine engine): base(engine)
+		public UpdatePropertyView(IEngine engine) : base(engine)
 		{
 			InitWidgets();
 		}

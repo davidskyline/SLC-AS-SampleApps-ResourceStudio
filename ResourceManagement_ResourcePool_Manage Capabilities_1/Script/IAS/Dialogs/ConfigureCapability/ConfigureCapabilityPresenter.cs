@@ -3,11 +3,8 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using global::Script.IAS.Dialogs.ManageCapabilities;
 
-	using Skyline.Automation.DOM;
 	using Skyline.Automation.IAS;
-	using Skyline.DataMiner.Net.ReportsAndDashboards;
 
 	public class ConfigureCapabilityPresenter
 	{

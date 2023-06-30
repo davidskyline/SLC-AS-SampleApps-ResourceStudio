@@ -201,6 +201,7 @@
 					var poolId = Convert.ToString(value);
 					data.PoolId = string.IsNullOrEmpty(poolId) ? Guid.Empty : Guid.Parse(poolId);
 				},
+				[Resourcemanagement.Sections.ResourcePoolInternalProperties.Pool_Resource_Id.Id] = (data, value) => data.ResourceId = (Guid)value,
 			};
 
 			var capabilityMapper = new Dictionary<Guid, Action<ResourcePoolCapability, object>>
@@ -282,6 +283,12 @@
 				[Resourcemanagement.Sections.ResourceProperties.PropertyValue.Id] = (data, value) => data.Value = Convert.ToString(value),
 			};
 
+			var capacityMapper = new Dictionary<Guid, Action<ResourceCapacity, object>>
+			{
+				[Resourcemanagement.Sections.ResourceCapacities.Capacity.Id] = (data, value) => data.CapacityId = (Guid)value,
+				[Resourcemanagement.Sections.ResourceCapacities.CapacityValue.Id] = (data, value) => data.Value = (double)value,
+			};
+
 			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Resource.Id));
 			foreach (var instance in instances)
 			{
@@ -312,6 +319,27 @@
 						}
 
 						data.Properties.Add(property);
+					}
+					else if (section.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourceCapacities.Id.Id)
+					{
+						if (!section.FieldValues.Any())
+						{
+							continue;
+						}
+
+						var capacity = new ResourceCapacity();
+
+						foreach (var fieldValue in section.FieldValues)
+						{
+							if (!capacityMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
+							{
+								continue;
+							}
+
+							action.Invoke(capacity, fieldValue.Value.Value);
+						}
+
+						data.Capacities.Add(capacity);
 					}
 					else
 					{

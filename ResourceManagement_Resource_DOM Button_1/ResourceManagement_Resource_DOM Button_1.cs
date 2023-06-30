@@ -54,7 +54,6 @@ namespace Script
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Resources;
 
 	using Skyline.Automation.DOM;
 	using Skyline.Automation.SRM;

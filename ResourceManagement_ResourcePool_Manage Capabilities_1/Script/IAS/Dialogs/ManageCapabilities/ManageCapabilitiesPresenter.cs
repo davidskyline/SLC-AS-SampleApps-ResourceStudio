@@ -92,7 +92,7 @@
 			var section = view.Capabilities.Single(x => x.DeleteButton == sender);
 			view.Capabilities.Remove(section);
 
-			UpdateCapacityOptions();
+			UpdateCapabilityOptions();
 
 			BuildView();
 		}
@@ -109,7 +109,7 @@
 				section.ConfigureValuesButton.IsEnabled = true;
 			}
 
-			UpdateCapacityOptions();
+			UpdateCapabilityOptions();
 		}
 
 		private void OnConfigureValuesbuttonPressed(object sender, EventArgs e)
@@ -155,7 +155,7 @@
 			return options;
 		}
 
-		private void UpdateCapacityOptions()
+		private void UpdateCapabilityOptions()
 		{
 			foreach (var section in view.Capabilities)
 			{

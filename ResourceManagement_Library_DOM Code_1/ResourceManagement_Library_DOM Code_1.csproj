@@ -53,6 +53,7 @@
     <Compile Include="Skyline\Automation\DOM\Objects\CapacityData.cs" />
     <Compile Include="Skyline\Automation\DOM\Objects\DomIds.cs" />
     <Compile Include="Skyline\Automation\DOM\Objects\PropertyData.cs" />
+    <Compile Include="Skyline\Automation\DOM\Objects\ResourceCapacity.cs" />
     <Compile Include="Skyline\Automation\DOM\Objects\ResourceData.cs" />
     <Compile Include="Skyline\Automation\DOM\Objects\ResourcePoolCapability.cs" />
     <Compile Include="Skyline\Automation\DOM\Objects\ResourcePoolData.cs" />
@@ -71,7 +72,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties DisLinkedXmlFile="..\ResourceManagement_Library_DOM Code.xml" DisProjectType="automationScriptProject" DisLinkId="1" />
+      <UserProperties DisLinkId="1" DisProjectType="automationScriptProject" DisLinkedXmlFile="..\ResourceManagement_Library_DOM Code.xml" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

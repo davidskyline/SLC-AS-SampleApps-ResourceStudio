@@ -218,6 +218,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{CA9B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Library_SRM Code_1", "ResourceManagement_Library_SRM Code_1\ResourceManagement_Library_SRM Code_1.csproj", "{7CBA9F59-73C6-458C-A9E5-C30A6C68D14B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_Resource_Manage Capacities", "ResourceManagement_Resource_Manage Capacities", "{63F7DB2A-EA76-4631-8FB1-2C657171F742}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_Resource_Manage Capacities.xml = ResourceManagement_Resource_Manage Capacities.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{700E0D60-23E9-4DC9-BF4E-1FE611C1CDC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Resource_Manage Capacities_1", "ResourceManagement_Resource_Manage Capacities_1\ResourceManagement_Resource_Manage Capacities_1.csproj", "{4AA73666-5D4F-4277-B382-C836CEDAD313}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DOM Code Library", "DOM Code Library\DOM Code Library.shproj", "{5430F6D4-CF65-4152-8DF0-AC6560472F69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -300,6 +311,10 @@ Global
 		{7CBA9F59-73C6-458C-A9E5-C30A6C68D14B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CBA9F59-73C6-458C-A9E5-C30A6C68D14B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CBA9F59-73C6-458C-A9E5-C30A6C68D14B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AA73666-5D4F-4277-B382-C836CEDAD313}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AA73666-5D4F-4277-B382-C836CEDAD313}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AA73666-5D4F-4277-B382-C836CEDAD313}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AA73666-5D4F-4277-B382-C836CEDAD313}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -372,8 +387,17 @@ Global
 		{24A6580B-1E83-46AA-A9A0-DF307607D925} = {48237B28-ED49-4620-9613-3E859F44363B}
 		{CA9B91D0-7D00-4D35-B505-5A6DC5095BFE} = {24A6580B-1E83-46AA-A9A0-DF307607D925}
 		{7CBA9F59-73C6-458C-A9E5-C30A6C68D14B} = {CA9B91D0-7D00-4D35-B505-5A6DC5095BFE}
+		{63F7DB2A-EA76-4631-8FB1-2C657171F742} = {D80EAF3A-09ED-473B-B22B-0F670CB451A9}
+		{700E0D60-23E9-4DC9-BF4E-1FE611C1CDC3} = {63F7DB2A-EA76-4631-8FB1-2C657171F742}
+		{4AA73666-5D4F-4277-B382-C836CEDAD313} = {700E0D60-23E9-4DC9-BF4E-1FE611C1CDC3}
+		{5430F6D4-CF65-4152-8DF0-AC6560472F69} = {48237B28-ED49-4620-9613-3E859F44363B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58316B45-BB25-4B82-8940-C2B34838DE78}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DOM Code Library\DOM Code Library.projitems*{2d9ae24f-eeaa-4c82-a6d4-a431e02270cb}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{489350b1-1f70-4169-afe8-e377fba1f5d1}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{5430f6d4-cf65-4152-8df0-ac6560472f69}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

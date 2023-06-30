@@ -45,7 +45,7 @@ Revision History:
 
 DATE		VERSION		AUTHOR			COMMENTS
 
-23/06/2023	1.0.0.1		JVW, Skyline	Initial version
+28/06/2023	1.0.0.1		JVW, Skyline	Initial version
 ****************************************************************************
 */
 
@@ -70,11 +70,11 @@ namespace Script
 
 		private InteractiveController controller;
 
-		private IAS.Dialogs.UpdateProperty.UpdatePropertyView updatePropertyView;
-		private IAS.Dialogs.UpdateProperty.UpdatePropertyPresenter updatePropertyPresenter;
+		private IAS.Dialogs.ManageCapacities.ManageCapacitiesView manageCapacitiesView;
+		private IAS.Dialogs.ManageCapacities.ManageCapacitiesPresenter manageCapacitiesPresenter;
 
-		private IAS.Dialogs.DeleteNotPossible.DeleteNotPossibleView deleteNotPossibleView;
-		private IAS.Dialogs.DeleteNotPossible.DeleteNotPossiblePresenter deleteNotPossiblePresenter;
+		private IAS.Dialogs.ConfigureCapacity.ConfigureCapacityView configureCapacityView;
+		private IAS.Dialogs.ConfigureCapacity.ConfigureCapacityPresenter configureCapacityPresenter;
 
 		private IAS.ScriptData scriptData;
 
@@ -103,56 +103,57 @@ namespace Script
 		private void RunSafe()
 		{
 			// engine.ShowUI()
-			var domInstanceId = JsonConvert.DeserializeObject<List<Guid>>(engine.GetScriptParam("Input Data").Value).Single();
+			var resourceDomInstanceId = JsonConvert.DeserializeObject<List<Guid>>(engine.GetScriptParam("Resource").Value).Single();
 
 			controller = new InteractiveController(engine);
 
-			scriptData = new IAS.ScriptData(engine, domInstanceId);
+			scriptData = new IAS.ScriptData(engine, resourceDomInstanceId);
 
 			InitFields();
 			InitEventHandlers();
 
-			updatePropertyPresenter.LoadFromModel();
-			updatePropertyPresenter.BuildView();
+			manageCapacitiesPresenter.LoadFromModel();
+			manageCapacitiesPresenter.BuildView();
 
-			controller.Run(updatePropertyView);
+			controller.Run(manageCapacitiesView);
 		}
 
 		private void InitFields()
 		{
-			updatePropertyView = new IAS.Dialogs.UpdateProperty.UpdatePropertyView(engine);
-			updatePropertyPresenter = new IAS.Dialogs.UpdateProperty.UpdatePropertyPresenter(updatePropertyView, scriptData);
+			manageCapacitiesView = new IAS.Dialogs.ManageCapacities.ManageCapacitiesView(engine);
+			manageCapacitiesPresenter = new IAS.Dialogs.ManageCapacities.ManageCapacitiesPresenter(manageCapacitiesView, scriptData);
 
-			deleteNotPossibleView = new IAS.Dialogs.DeleteNotPossible.DeleteNotPossibleView(engine);
-			deleteNotPossiblePresenter = new IAS.Dialogs.DeleteNotPossible.DeleteNotPossiblePresenter(deleteNotPossibleView, scriptData);
+			configureCapacityView = new IAS.Dialogs.ConfigureCapacity.ConfigureCapacityView(engine);
+			configureCapacityPresenter = new IAS.Dialogs.ConfigureCapacity.ConfigureCapacityPresenter(configureCapacityView, scriptData);
 		}
 
 		private void InitEventHandlers()
 		{
-			InitUpdatePropertyEventHandlers();
-			InitDeleteNotPossibleEventHandlers();
+			InitManageCapacitiesEventHandlers();
+			InitConfigureCapacityEventHandlers();
 		}
 
-		private void InitUpdatePropertyEventHandlers()
+		private void InitManageCapacitiesEventHandlers()
 		{
-			updatePropertyPresenter.Close += (sender, args) =>
+			manageCapacitiesPresenter.Close += (sender, args) =>
 			{
 				engine.ExitSuccess(string.Empty);
 			};
-			updatePropertyPresenter.DeleteNotPossible += (sender, args) =>
-			{
-				deleteNotPossiblePresenter.LoadFromModel();
-				deleteNotPossiblePresenter.BuildView();
 
-				controller.ShowDialog(deleteNotPossibleView);
+			manageCapacitiesPresenter.Configure += (sender, args) =>
+			{
+				configureCapacityPresenter.LoadFromModel();
+				configureCapacityPresenter.BuildView();
+
+				controller.ShowDialog(configureCapacityView);
 			};
 		}
 
-		private void InitDeleteNotPossibleEventHandlers()
+		private void InitConfigureCapacityEventHandlers()
 		{
-			deleteNotPossiblePresenter.Close += (sender, args) =>
+			configureCapacityPresenter.Close += (sender, args) =>
 			{
-				engine.ExitSuccess(string.Empty);
+				controller.ShowDialog(manageCapacitiesView);
 			};
 		}
 	}

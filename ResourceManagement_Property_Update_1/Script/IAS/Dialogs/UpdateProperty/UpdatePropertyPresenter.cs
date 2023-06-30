@@ -1,10 +1,7 @@
 ﻿namespace Script.IAS.Dialogs.UpdateProperty
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
 
 	public class UpdatePropertyPresenter
 	{
@@ -24,6 +21,8 @@
 
 		#region Events
 		public event EventHandler<EventArgs> Close;
+
+		public event EventHandler<EventArgs> DeleteNotPossible;
 		#endregion
 
 		#region Methods
@@ -50,9 +49,16 @@
 
 		private void OnDeleteButtonPressed(object sender, EventArgs e)
 		{
-			model.DeleteProperty();
+			if (model.ResourcesImplementingProperty.Any())
+			{
+				DeleteNotPossible?.Invoke(this, EventArgs.Empty);
+			}
+			else
+			{
+				model.DeleteProperty();
 
-			Close?.Invoke(this, EventArgs.Empty);
+				Close?.Invoke(this, EventArgs.Empty);
+			}
 		}
 		#endregion
 	}

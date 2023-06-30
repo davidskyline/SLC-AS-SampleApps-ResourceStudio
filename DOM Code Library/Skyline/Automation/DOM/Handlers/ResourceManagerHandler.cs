@@ -9,6 +9,7 @@
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
 	using Skyline.DataMiner.Net.Messages.SLDataGateway;
 	using Skyline.DataMiner.Net.Sections;
+	using static System.Collections.Specialized.BitVector32;
 
 	public class ResourceManagerHandler
 	{
@@ -281,6 +282,12 @@
 				[Resourcemanagement.Sections.ResourceProperties.PropertyValue.Id] = (data, value) => data.Value = Convert.ToString(value),
 			};
 
+			var capacityMapper = new Dictionary<Guid, Action<ResourceCapacity, object>>
+			{
+				[Resourcemanagement.Sections.ResourceCapacities.Capacity.Id] = (data, value) => data.CapacityId = (Guid)value,
+				[Resourcemanagement.Sections.ResourceCapacities.CapacityValue.Id] = (data, value) => data.Value = (double)value,
+			};
+
 			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Resource.Id));
 			foreach (var instance in instances)
 			{
@@ -312,6 +319,27 @@
 
 						data.Properties.Add(property);
 					}
+					else if (section.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourceCapacities.Id.Id)
+					{
+						if (!section.FieldValues.Any())
+						{
+							continue;
+						}
+
+						var capacity = new ResourceCapacity();
+
+						foreach (var fieldValue in section.FieldValues)
+						{
+							if (!capacityMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
+							{
+								continue;
+							}
+
+							action.Invoke(capacity, fieldValue.Value.Value);
+						}
+
+						data.Capacities.Add(capacity);
+					}
 					else
 					{
 						foreach (var fieldValue in section.FieldValues)
@@ -339,6 +367,11 @@
 			var mapper = new Dictionary<Guid, Action<CapacityData, object>>
 			{
 				[Resourcemanagement.Sections.CapacityInfo.CapacityName.Id] = (data, value) => data.Name = Convert.ToString(value),
+				[Resourcemanagement.Sections.CapacityInfo.Units.Id] = (data, value) => data.Units = Convert.ToString(value),
+				[Resourcemanagement.Sections.CapacityInfo.MinRange.Id] = (data, value) => data.RangeMin = Convert.ToDouble(value),
+				[Resourcemanagement.Sections.CapacityInfo.MaxRange.Id] = (data, value) => data.RangeMax = Convert.ToDouble(value),
+				[Resourcemanagement.Sections.CapacityInfo.StepSize.Id] = (data, value) => data.StepSize = Convert.ToDouble(value),
+				[Resourcemanagement.Sections.CapacityInfo.Decimals.Id] = (data, value) => data.Decimals = Convert.ToInt64(value),
 			};
 
 			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Capacity.Id));
