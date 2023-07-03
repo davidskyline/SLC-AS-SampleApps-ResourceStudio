@@ -53,9 +53,8 @@ namespace Script
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using System.Linq;
-	using System.Text;
+
 	using Newtonsoft.Json;
 
 	using Skyline.Automation.IAS;
@@ -73,6 +72,9 @@ namespace Script
 
 		private IAS.Dialogs.UpdateCapacity.UpdateCapacityView updateCapacityView;
 		private IAS.Dialogs.UpdateCapacity.UpdateCapacityPresenter updateCapacityPresenter;
+
+		private IAS.Dialogs.DeleteNotPossible.DeleteNotPossibleView deleteNotPossibleView;
+		private IAS.Dialogs.DeleteNotPossible.DeleteNotPossiblePresenter deleteNotPossiblePresenter;
 
 		private IAS.ScriptData scriptData;
 
@@ -120,16 +122,35 @@ namespace Script
 		{
 			updateCapacityView = new IAS.Dialogs.UpdateCapacity.UpdateCapacityView(engine);
 			updateCapacityPresenter = new IAS.Dialogs.UpdateCapacity.UpdateCapacityPresenter(updateCapacityView, scriptData);
+
+			deleteNotPossibleView = new IAS.Dialogs.DeleteNotPossible.DeleteNotPossibleView(engine);
+			deleteNotPossiblePresenter = new IAS.Dialogs.DeleteNotPossible.DeleteNotPossiblePresenter(deleteNotPossibleView, scriptData);
 		}
 
 		private void InitEventHandlers()
 		{
 			InitUpdateCapacityEventHandlers();
+			InitDeleteNotPossibleEventHandlers();
 		}
 
 		private void InitUpdateCapacityEventHandlers()
 		{
 			updateCapacityPresenter.Close += (sender, args) =>
+			{
+				engine.ExitSuccess(string.Empty);
+			};
+			updateCapacityPresenter.DeleteNotPossible += (sender, args) =>
+			{
+				deleteNotPossiblePresenter.LoadFromModel();
+				deleteNotPossiblePresenter.BuildView();
+
+				controller.ShowDialog(deleteNotPossibleView);
+			};
+		}
+
+		private void InitDeleteNotPossibleEventHandlers()
+		{
+			deleteNotPossiblePresenter.Close += (sender, args) =>
 			{
 				engine.ExitSuccess(string.Empty);
 			};

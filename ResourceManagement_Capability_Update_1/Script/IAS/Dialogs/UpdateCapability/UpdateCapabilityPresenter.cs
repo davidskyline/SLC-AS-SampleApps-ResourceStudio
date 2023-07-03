@@ -21,6 +21,8 @@
 
 		#region Events
 		public event EventHandler<EventArgs> Close;
+
+		public event EventHandler<EventArgs> DeleteNotPossible;
 		#endregion
 
 		#region Methods
@@ -78,9 +80,16 @@
 
 		private void OnDeleteButtonPressed(object sender, EventArgs e)
 		{
-			model.DeleteCapability();
+			if (model.ResourcePoolsImplementingCapability.Any())
+			{
+				DeleteNotPossible?.Invoke(this, EventArgs.Empty);
+			}
+			else
+			{
+				model.DeleteCapability();
 
-			Close?.Invoke(this, EventArgs.Empty);
+				Close?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		private void OnAddDiscreteButtonPressed(object sender, EventArgs e)

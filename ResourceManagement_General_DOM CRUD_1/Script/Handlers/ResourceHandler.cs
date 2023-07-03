@@ -146,6 +146,21 @@
 				properties.Add(property);
 			}
 
+			if (ResourceData.Cost != null)
+			{
+				properties.Add(new ResourceManagerProperty("Cost", Convert.ToString(ResourceData.Cost)));
+			}
+
+			if (ResourceData.CostUnit != null)
+			{
+				properties.Add(new ResourceManagerProperty("Cost Unit", Convert.ToString(ResourceData.CostUnit)));
+			}
+
+			if (ResourceData.Currency != null)
+			{
+				properties.Add(new ResourceManagerProperty("Currency", Convert.ToString(ResourceData.Currency)));
+			}
+
 			return properties;
 		}
 

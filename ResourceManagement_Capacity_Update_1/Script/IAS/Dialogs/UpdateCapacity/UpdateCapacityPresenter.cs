@@ -1,6 +1,7 @@
 ﻿namespace Script.IAS.Dialogs.UpdateCapacity
 {
 	using System;
+	using System.Linq;
 
 	public class UpdateCapacityPresenter
 	{
@@ -20,6 +21,8 @@
 
 		#region Events
 		public event EventHandler<EventArgs> Close;
+
+		public event EventHandler<EventArgs> DeleteNotPossible;
 		#endregion
 
 		#region Methods
@@ -93,9 +96,16 @@
 
 		private void OnDeleteButtonPressed(object sender, EventArgs e)
 		{
-			model.DeleteCapacity();
+			if (model.ResourcesImplementingCapacity.Any())
+			{
+				DeleteNotPossible?.Invoke(this, EventArgs.Empty);
+			}
+			else
+			{
+				model.DeleteCapacity();
 
-			Close?.Invoke(this, EventArgs.Empty);
+				Close?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		private void OnRangeMinCheckBoxChanged(object sender, EventArgs e)

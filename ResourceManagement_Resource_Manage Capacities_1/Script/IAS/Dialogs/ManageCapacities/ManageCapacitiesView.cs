@@ -40,7 +40,7 @@
 
 			AddWidget(new WhiteSpace { Height = 10 }, ++Layout.RowPosition, 0);
 
-			AddWidget(new Label("Capabilities") { Style = TextStyle.Bold }, ++Layout.RowPosition, 0, 1, 2);
+			AddWidget(new Label("Capacities") { Style = TextStyle.Bold }, ++Layout.RowPosition, 0, 1, 2);
 
 			foreach (var capacity in Capacities)
 			{

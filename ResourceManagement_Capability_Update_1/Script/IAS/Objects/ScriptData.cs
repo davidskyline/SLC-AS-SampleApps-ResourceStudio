@@ -24,6 +24,8 @@
 		private List<CapabilityValueData> capabilityValues;
 
 		private List<string> updatedDiscretes;
+
+		private Lazy<List<ResourcePoolData>> resourcePoolsImplementingCapability;
 		#endregion
 
 		public ScriptData(IEngine engine, Guid domInstanceId)
@@ -61,6 +63,14 @@
 			set
 			{
 				updatedDiscretes = value;
+			}
+		}
+
+		public List<ResourcePoolData> ResourcePoolsImplementingCapability
+		{
+			get
+			{
+				return resourcePoolsImplementingCapability.Value;
 			}
 		}
 		#endregion
@@ -104,6 +114,8 @@
 			{
 				capabilityValues = resourceManagerHandler.CapabilityValues.Where(x => x.CapabilityId == domInstanceId).ToList();
 			}
+
+			resourcePoolsImplementingCapability = new Lazy<List<ResourcePoolData>>(() => FindResourcePoolsImplementingCapability());
 		}
 
 		private void TryUpdateProfileParameter(List<string> added, List<string> removed)
@@ -182,6 +194,11 @@
 			}
 
 			resourceManagerHandler.DomHelper.DomInstances.Delete(capability.Instance);
+		}
+
+		private List<ResourcePoolData> FindResourcePoolsImplementingCapability()
+		{
+			return resourceManagerHandler.ResourcePools.Where(x => x.Capabilities.Any(y => y.CapabilityId == capability.Instance.ID.Id)).ToList();
 		}
 		#endregion
 	}

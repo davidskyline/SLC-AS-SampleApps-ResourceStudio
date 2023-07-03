@@ -48,8 +48,6 @@
 		#endregion
 
 		#region Methods
-
-
 		public void DeleteProperty()
 		{
 			DeleteDomInstances();

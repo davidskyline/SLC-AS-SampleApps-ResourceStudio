@@ -73,6 +73,9 @@ namespace Script
 		private IAS.Dialogs.UpdateCapability.UpdateCapabilityView updateCapabilityView;
 		private IAS.Dialogs.UpdateCapability.UpdateCapabilityPresenter updateCapabilityPresenter;
 
+		private IAS.Dialogs.DeleteNotPossible.DeleteNotPossibleView deleteNotPossibleView;
+		private IAS.Dialogs.DeleteNotPossible.DeleteNotPossiblePresenter deleteNotPossiblePresenter;
+
 		private IAS.ScriptData scriptData;
 
 		/// <summary>
@@ -119,16 +122,35 @@ namespace Script
 		{
 			updateCapabilityView = new IAS.Dialogs.UpdateCapability.UpdateCapabilityView(engine);
 			updateCapabilityPresenter = new IAS.Dialogs.UpdateCapability.UpdateCapabilityPresenter(updateCapabilityView, scriptData);
+
+			deleteNotPossibleView = new IAS.Dialogs.DeleteNotPossible.DeleteNotPossibleView(engine);
+			deleteNotPossiblePresenter = new IAS.Dialogs.DeleteNotPossible.DeleteNotPossiblePresenter(deleteNotPossibleView, scriptData);
 		}
 
 		private void InitEventHandlers()
 		{
 			InitUpdateCapabilityEventHandlers();
+			InitDeleteNotPossibleEventHandlers();
 		}
 
 		private void InitUpdateCapabilityEventHandlers()
 		{
 			updateCapabilityPresenter.Close += (sender, args) =>
+			{
+				engine.ExitSuccess(string.Empty);
+			};
+			updateCapabilityPresenter.DeleteNotPossible += (sender, args) =>
+			{
+				deleteNotPossiblePresenter.LoadFromModel();
+				deleteNotPossiblePresenter.BuildView();
+
+				controller.ShowDialog(deleteNotPossibleView);
+			};
+		}
+
+		private void InitDeleteNotPossibleEventHandlers()
+		{
+			deleteNotPossiblePresenter.Close += (sender, args) =>
 			{
 				engine.ExitSuccess(string.Empty);
 			};

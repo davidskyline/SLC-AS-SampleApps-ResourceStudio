@@ -1,6 +1,7 @@
 ﻿namespace Script.IAS
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 
 	using Skyline.Automation.DOM;
@@ -11,6 +12,13 @@
 	public class ScriptData
 	{
 		#region Fields
+		private static List<string> reservedNames = new List<string>
+		{
+			"cost",
+			"cost unit",
+			"currency",
+		};
+
 		private readonly IEngine engine;
 
 		private ResourceManagerHandler resourceManagerHandler;
@@ -45,7 +53,7 @@
 
 		private bool IsNameInUse()
 		{
-			if (resourceManagerHandler.Properties.Any(x => x.Name == Name))
+			if (reservedNames.Contains(Name.ToLower()) || resourceManagerHandler.Properties.Any(x => x.Name == Name))
 			{
 				return true;
 			}

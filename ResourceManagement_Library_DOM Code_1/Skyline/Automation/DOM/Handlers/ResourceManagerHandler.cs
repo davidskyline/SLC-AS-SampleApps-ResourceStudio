@@ -109,7 +109,7 @@
 		private void Init()
 		{
 			capabilitiesByInstanceId = new Lazy<Dictionary<Guid, CapabilityData>>(LoadCapabilityData);
-			capabilityValuesByInstanceId = new Lazy<Dictionary<Guid, CapabilityValueData>>(LoadCapabityValueData);
+			capabilityValuesByInstanceId = new Lazy<Dictionary<Guid, CapabilityValueData>>(LoadCapabilityValueData);
 
 			resourcePoolsByInstanceId = new Lazy<Dictionary<Guid, ResourcePoolData>>(LoadResourcePoolData);
 			resourcesByInstanceId = new Lazy<Dictionary<Guid, ResourceData>>(LoadResourceData);
@@ -153,7 +153,7 @@
 			return dic;
 		}
 
-		private Dictionary<Guid, CapabilityValueData> LoadCapabityValueData()
+		private Dictionary<Guid, CapabilityValueData> LoadCapabilityValueData()
 		{
 			var dic = new Dictionary<Guid, CapabilityValueData>();
 
@@ -275,6 +275,9 @@
 				[Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids.Id] = (data, value) => data.PoolIds = Convert.ToString(value),
 				[Resourcemanagement.Sections.ResourceConnectionManagement.InputVsgs.Id] = (Data, value) => Data.VirtualSignalGroupInputIds = (List<Guid>)value,
 				[Resourcemanagement.Sections.ResourceConnectionManagement.OutputVsgs.Id] = (Data, value) => Data.VirtualSignalGroupOutputIds = (List<Guid>)value,
+				[Resourcemanagement.Sections.ResourceCost.Cost.Id] = (data, value) => data.Cost = Convert.ToDouble(value),
+				[Resourcemanagement.Sections.ResourceCost.CostUnit.Id] = (data, value) => data.CostUnit = (Resourcemanagement.Enums.CostUnit)value,
+				[Resourcemanagement.Sections.ResourceCost.Currency.Id] = (data, value) => data.Currency = (Resourcemanagement.Enums.Currency)value,
 			};
 
 			var propertyMapper = new Dictionary<Guid, Action<ResourceProperty, object>>

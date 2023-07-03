@@ -1,6 +1,7 @@
 ﻿namespace Script.IAS
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 
 	using Skyline.Automation.DOM;
@@ -19,6 +20,8 @@
 		private ResourceManagerHandler resourceManagerHandler;
 
 		private CapacityData capacity;
+
+		private Lazy<List<ResourceData>> resourcesImplementingCapacity;
 		#endregion
 
 		public ScriptData(IEngine engine, Guid domInstanceId)
@@ -49,6 +52,14 @@
 		public bool IsDecimalsEnabled { get; set; }
 
 		public int Decimals { get; set; }
+
+		public List<ResourceData> ResourcesImplementingCapacity
+		{
+			get
+			{
+				return resourcesImplementingCapacity.Value;
+			}
+		}
 		#endregion
 
 		#region Methods
@@ -76,7 +87,6 @@
 		private void Init()
 		{
 			resourceManagerHandler = new ResourceManagerHandler(engine);
-
 			capacity = resourceManagerHandler.Capacities.Single(x => x.Instance.ID.Id == domInstanceId);
 
 			Name = capacity.Name;
@@ -105,6 +115,8 @@
 				IsDecimalsEnabled = true;
 				Decimals = (int)capacity.Decimals;
 			}
+
+			resourcesImplementingCapacity = new Lazy<List<ResourceData>>(() => FindResourcesImplementingCapacity());
 		}
 
 		private void TryUpdateProfileParameter()
@@ -222,6 +234,11 @@
 			}
 
 			return false;
+		}
+
+		private List<ResourceData> FindResourcesImplementingCapacity()
+		{
+			return resourceManagerHandler.Resources.Where(x => x.Capacities.Any(y => y.CapacityId == capacity.Instance.ID.Id)).ToList();
 		}
 		#endregion
 	}
