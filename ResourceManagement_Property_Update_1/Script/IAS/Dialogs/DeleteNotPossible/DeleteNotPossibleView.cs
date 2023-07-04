@@ -33,11 +33,11 @@
 			foreach (var resourceName in ResourceNames)
 			{
 				AddWidget(new Label(resourceName), ++Layout.RowPosition, 0);
-
-				AddWidget(new WhiteSpace { Height = 25 }, ++Layout.RowPosition, 0);
-
-				AddWidget(CloseButton, ++Layout.RowPosition, 0);
 			}
+
+			AddWidget(new WhiteSpace { Height = 25 }, ++Layout.RowPosition, 0);
+
+			AddWidget(CloseButton, ++Layout.RowPosition, 0);
 		}
 
 		private void InitWidgets()
