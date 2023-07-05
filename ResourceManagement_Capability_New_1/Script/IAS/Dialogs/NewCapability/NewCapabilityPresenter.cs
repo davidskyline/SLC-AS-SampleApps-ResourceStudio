@@ -29,8 +29,8 @@
 		#region Methods
 		public void LoadFromModel()
 		{
-			view.CapabilityTypeDropDown.SetOptions(new List<string> { "Text", "Discrete" });
-			view.CapabilityTypeDropDown.Selected = "Text";
+			view.CapabilityTypeDropDown.SetOptions(new List<string> { "Discrete" });
+			view.CapabilityTypeDropDown.Selected = "Discrete";
 		}
 
 		public void BuildView()

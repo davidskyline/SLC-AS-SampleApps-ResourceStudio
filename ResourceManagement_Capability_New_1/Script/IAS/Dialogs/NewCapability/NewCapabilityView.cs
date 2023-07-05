@@ -41,7 +41,8 @@
 			AddWidget(CapabilityNameTextBox, Layout.RowPosition, 1);
 
 			AddWidget(new Label("Type"), ++Layout.RowPosition, 0);
-			AddWidget(CapabilityTypeDropDown, Layout.RowPosition, 1);
+			//AddWidget(CapabilityTypeDropDown, Layout.RowPosition, 1);
+			AddWidget(new Label("Discrete"), Layout.RowPosition, 1);
 
 			if (CapabilityTypeDropDown.Selected == "Discrete")
 			{
