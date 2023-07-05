@@ -126,6 +126,12 @@ namespace Script
 			{
 				engine.ExitSuccess(string.Empty);
 			};
+			newPropertyPresenter.NameInUse += (sender, args) =>
+			{
+				engine.ShowErrorDialogWithReturn($"Property name '{scriptData.Name}' is already in use.");
+
+				controller.ShowDialog(newPropertyView);
+			};
 		}
 	}
 }

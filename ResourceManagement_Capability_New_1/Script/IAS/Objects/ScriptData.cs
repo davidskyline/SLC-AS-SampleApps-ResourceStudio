@@ -2,7 +2,9 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 
+	using Skyline.Automation.DOM;
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
@@ -16,11 +18,17 @@
 		private bool isDiscreteType;
 
 		private List<string> discretes;
+
+		private Lazy<ResourceManagerHandler> resourceManagerHandler;
+
+		private Lazy<SrmHelpers> srmHelpers;
 		#endregion
 
 		public ScriptData(IEngine engine)
 		{
 			this.engine = engine ?? throw new ArgumentNullException(nameof(engine));
+
+			Init();
 		}
 
 		#region Properties
@@ -29,12 +37,16 @@
 		public string SelectedType { get; set; }
 
 		public List<string> Discretes { get; set; }
+
+		private ResourceManagerHandler ResourceManagerHandler => resourceManagerHandler.Value;
+
+		private SrmHelpers SrmHelpers => srmHelpers.Value;
 		#endregion
 
 		#region Methods
 		public void AddCapability()
 		{
-			if (string.IsNullOrWhiteSpace(Name))
+			if (string.IsNullOrWhiteSpace(Name) || IsNameInUse())
 			{
 				return;
 			}
@@ -53,16 +65,30 @@
 			CreateDomInstances();
 		}
 
-		private bool TryCreateProfileParameter()
+		public bool IsNameInUse()
 		{
-			var srmHelpers = new SrmHelpers(engine);
-
-			var existingParameter = srmHelpers.ProfileHelper.GetProfileParameterByName(Name);
-			if (existingParameter != null)
+			if (ResourceManagerHandler.Capacities.Any(x => x.Name == Name))
 			{
-				return false;
+				return true;
 			}
 
+			var existingParameter = SrmHelpers.ProfileHelper.GetProfileParameterByName(Name);
+			if (existingParameter != null)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		private void Init()
+		{
+			resourceManagerHandler = new Lazy<ResourceManagerHandler>(() => new ResourceManagerHandler(engine));
+			srmHelpers = new Lazy<SrmHelpers>(() => new SrmHelpers(engine));
+		}
+
+		private bool TryCreateProfileParameter()
+		{
 			var profileParameter = new Skyline.DataMiner.Net.Profiles.Parameter
 			{
 				Name = Name,
@@ -89,15 +115,13 @@
 				profileParameter.Type = Skyline.DataMiner.Net.Profiles.Parameter.ParameterType.Text;
 			}
 
-			srmHelpers.ProfileHelper.ProfileParameters.Create(profileParameter);
+			SrmHelpers.ProfileHelper.ProfileParameters.Create(profileParameter);
 
 			return true;
 		}
 
 		private void CreateDomInstances()
 		{
-			var domHelper = new DomHelper(engine.SendSLNetMessages, Skyline.Automation.DOM.DomIds.Resourcemanagement.ModuleId);
-
 			var capabilityInfoSection = new Section(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.CapabilityInfo.Id);
 			capabilityInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.CapabilityInfo.CapabilityName, new ValueWrapper<string>(Name)));
 			capabilityInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.CapabilityInfo.CapabilityType, new ValueWrapper<int>(isDiscreteType ? (int)Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.CapabilityType.Enum : (int)Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.CapabilityType.String)));
@@ -107,7 +131,7 @@
 				DomDefinitionId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Definitions.Capability,
 			};
 			capabilityInstance.Sections.Add(capabilityInfoSection);
-			capabilityInstance = domHelper.DomInstances.Create(capabilityInstance);
+			capabilityInstance = ResourceManagerHandler.DomHelper.DomInstances.Create(capabilityInstance);
 
 			if (!isDiscreteType)
 			{
@@ -125,7 +149,7 @@
 					DomDefinitionId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Definitions.Capabilityenumvalue,
 				};
 				capabilityValueInstance.Sections.Add(capabilityEnumValueDetailsSection);
-				domHelper.DomInstances.Create(capabilityValueInstance);
+				ResourceManagerHandler.DomHelper.DomInstances.Create(capabilityValueInstance);
 			}
 		}
 		#endregion

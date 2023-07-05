@@ -52,9 +52,6 @@ DATE		VERSION		AUTHOR			COMMENTS
 namespace Script
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Globalization;
-	using System.Text;
 
 	using Skyline.Automation.IAS;
 	using Skyline.DataMiner.Automation;
@@ -128,6 +125,12 @@ namespace Script
 			newCapacityPresenter.Close += (sender, args) =>
 			{
 				engine.ExitSuccess(string.Empty);
+			};
+			newCapacityPresenter.NameInUse += (sender, args) =>
+			{
+				engine.ShowErrorDialogWithReturn($"Capacity name '{scriptData.Name}' is already in use.");
+
+				controller.ShowDialog(newCapacityView);
 			};
 		}
 	}

@@ -126,10 +126,15 @@ namespace Script
 			{
 				engine.ExitSuccess(string.Empty);
 			};
-
 			newCapabilityPresenter.Add += (sender, args) =>
 			{
 				engine.ExitSuccess(string.Empty);
+			};
+			newCapabilityPresenter.NameInUse += (sender, args) =>
+			{
+				engine.ShowErrorDialogWithReturn($"Capability name '{scriptData.Name}' is already in use.");
+
+				controller.ShowDialog(newCapabilityView);
 			};
 		}
 	}

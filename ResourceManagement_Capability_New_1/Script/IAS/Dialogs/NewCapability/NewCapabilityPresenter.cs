@@ -24,6 +24,8 @@
 		public event EventHandler<EventArgs> Cancel;
 
 		public event EventHandler<EventArgs> Add;
+
+		public event EventHandler<EventArgs> NameInUse;
 		#endregion
 
 		#region Methods
@@ -60,9 +62,17 @@
 		private void OnAddButtonPressed(object sender, EventArgs e)
 		{
 			StoreToModel();
-			model.AddCapability();
 
-			Add?.Invoke(this, EventArgs.Empty);
+			if (model.IsNameInUse())
+			{
+				NameInUse?.Invoke(this, EventArgs.Empty);
+			}
+			else
+			{
+				model.AddCapability();
+
+				Add?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		private void OnTypeChanged(object sender, EventArgs e)

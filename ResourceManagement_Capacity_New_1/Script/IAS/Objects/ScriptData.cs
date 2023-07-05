@@ -1,7 +1,9 @@
 ﻿namespace Script.IAS
 {
 	using System;
+	using System.Linq;
 
+	using Skyline.Automation.DOM;
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
@@ -11,11 +13,17 @@
 	{
 		#region Fields
 		private readonly IEngine engine;
+
+		private Lazy<ResourceManagerHandler> resourceManagerHandler;
+
+		private Lazy<SrmHelpers> srmHelpers;
 		#endregion
 
 		public ScriptData(IEngine engine)
 		{
 			this.engine = engine ?? throw new ArgumentNullException(nameof(engine));
+
+			Init();
 		}
 
 		#region Properties
@@ -38,12 +46,16 @@
 		public bool IsDecimalsEnabled { get; set; }
 
 		public int Decimals { get; set; }
+
+		private ResourceManagerHandler ResourceManagerHandler => resourceManagerHandler.Value;
+
+		private SrmHelpers SrmHelpers => srmHelpers.Value;
 		#endregion
 
 		#region Methods
 		public void AddCapacity()
 		{
-			if (string.IsNullOrWhiteSpace(Name))
+			if (string.IsNullOrWhiteSpace(Name) || IsNameInUse())
 			{
 				return;
 			}
@@ -56,16 +68,30 @@
 			CreateDomInstance();
 		}
 
-		private bool TryCreateProfileParameter()
+		public bool IsNameInUse()
 		{
-			var srmHelpers = new SrmHelpers(engine);
-
-			var existingParameter = srmHelpers.ProfileHelper.GetProfileParameterByName(Name);
-			if (existingParameter != null)
+			if (ResourceManagerHandler.Capacities.Any(x => x.Name == Name))
 			{
-				return false;
+				return true;
 			}
 
+			var existingParameter = SrmHelpers.ProfileHelper.GetProfileParameterByName(Name);
+			if (existingParameter != null)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		private void Init()
+		{
+			resourceManagerHandler = new Lazy<ResourceManagerHandler>(() => new ResourceManagerHandler(engine));
+			srmHelpers = new Lazy<SrmHelpers>(() => new SrmHelpers(engine));
+		}
+
+		private bool TryCreateProfileParameter()
+		{
 			var profileParameter = new Skyline.DataMiner.Net.Profiles.Parameter
 			{
 				Name = Name,
@@ -94,15 +120,13 @@
 				profileParameter.Decimals = Decimals;
 			}
 
-			srmHelpers.ProfileHelper.ProfileParameters.Create(profileParameter);
+			SrmHelpers.ProfileHelper.ProfileParameters.Create(profileParameter);
 
 			return true;
 		}
 
 		private void CreateDomInstance()
 		{
-			var domHelper = new DomHelper(engine.SendSLNetMessages, Skyline.Automation.DOM.DomIds.Resourcemanagement.ModuleId);
-
 			var capacityInfoSection = new Section(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.CapacityInfo.Id);
 			capacityInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.CapacityInfo.CapacityName, new ValueWrapper<string>(Name)));
 
@@ -136,7 +160,7 @@
 				DomDefinitionId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Definitions.Capacity,
 			};
 			capacityInstance.Sections.Add(capacityInfoSection);
-			domHelper.DomInstances.Create(capacityInstance);
+			ResourceManagerHandler.DomHelper.DomInstances.Create(capacityInstance);
 		}
 		#endregion
 	}

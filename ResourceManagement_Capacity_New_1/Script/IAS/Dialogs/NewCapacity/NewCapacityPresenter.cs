@@ -27,6 +27,8 @@
 
 		#region Events
 		public event EventHandler<EventArgs> Close;
+
+		public event EventHandler<EventArgs> NameInUse;
 		#endregion
 
 		#region Methods
@@ -72,9 +74,17 @@
 		private void OnAddButtonPressed(object sender, EventArgs e)
 		{
 			StoreToModel();
-			model.AddCapacity();
 
-			Close?.Invoke(this, EventArgs.Empty);
+			if (model.IsNameInUse())
+			{
+				NameInUse?.Invoke(this, EventArgs.Empty);
+			}
+			else
+			{
+				model.AddCapacity();
+
+				Close?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		private void OnRangeMinCheckBoxChanged(object sender, EventArgs e)

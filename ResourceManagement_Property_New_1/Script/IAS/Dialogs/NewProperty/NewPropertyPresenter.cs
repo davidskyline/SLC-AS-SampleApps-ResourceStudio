@@ -1,11 +1,6 @@
 ﻿namespace Script.IAS.Dialogs.NewProperty
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-	using Skyline.DataMiner.Net.Messages.SLDataGateway;
 
 	public class NewPropertyPresenter
 	{
@@ -25,6 +20,8 @@
 
 		#region Events
 		public event EventHandler<EventArgs> Close;
+
+		public event EventHandler<EventArgs> NameInUse;
 		#endregion
 
 		#region Methods
@@ -52,9 +49,17 @@
 		private void OnAddButtonPressed(object sender, EventArgs e)
 		{
 			StoreToModel();
-			model.AddProperty();
 
-			Close?.Invoke(this, EventArgs.Empty);
+			if (model.IsNameInUse())
+			{
+				NameInUse?.Invoke(this, EventArgs.Empty);
+			}
+			else
+			{
+				model.AddProperty();
+
+				Close?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		private void StoreToModel()

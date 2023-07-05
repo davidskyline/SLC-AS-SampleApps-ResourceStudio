@@ -22,6 +22,23 @@
 			view.Show();
 		}
 
+		public static void ShowErrorDialogWithReturn(this IEngine engine, string message)
+		{
+			var model = new Dialogs.ErrorDialog.ErrorDialogModel(message);
+			var view = new Dialogs.ErrorDialog.ErrorDialogView(engine);
+			var presenter = new Dialogs.ErrorDialog.ErrorDialogPresenter(view, model);
+
+			presenter.Close += (sender, arg) =>
+			{
+				// Do nothing
+			};
+
+			presenter.LoadFromModel();
+			presenter.BuildView();
+
+			view.Show();
+		}
+
 		public static bool ShowConfirmDialog(this IEngine engine, string message)
 		{
 			var model = new Dialogs.ConfirmDialog.ConfirmDialogModel(message);

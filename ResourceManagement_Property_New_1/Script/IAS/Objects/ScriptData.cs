@@ -46,12 +46,7 @@
 			CreateDomInstances();
 		}
 
-		private void Init()
-		{
-			resourceManagerHandler = new ResourceManagerHandler(engine);
-		}
-
-		private bool IsNameInUse()
+		public bool IsNameInUse()
 		{
 			if (reservedNames.Contains(Name.ToLower()) || resourceManagerHandler.Properties.Any(x => x.Name == Name))
 			{
@@ -59,6 +54,11 @@
 			}
 
 			return false;
+		}
+
+		private void Init()
+		{
+			resourceManagerHandler = new ResourceManagerHandler(engine);
 		}
 
 		private void CreateDomInstances()
