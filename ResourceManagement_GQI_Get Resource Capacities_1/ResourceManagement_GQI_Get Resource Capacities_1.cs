@@ -134,7 +134,7 @@ namespace Script
 
 				rows.Add(new GQIRow(new[]
 				{
-					new GQICell{Value = Convert.ToSByte(capacityData.Instance.ID.Id)},
+					new GQICell{Value = Convert.ToString(capacityData.Instance.ID.Id)},
 					new GQICell{Value = capacityData.Name},
 					new GQICell{Value = resourceCapacity.Value},
 				}));
