@@ -96,6 +96,11 @@ namespace Script
 
 		private void RunSafe(Guid id, CrudType crudType)
 		{
+			if (crudType == CrudType.Delete)
+			{
+				return;
+			}
+
 			var domHelper = new DomHelper(engine.SendSLNetMessages, Resourcemanagement.ModuleId);
 			var domInstance = domHelper.DomInstances.Read(DomInstanceExposers.Id.Equal(id)).Single();
 

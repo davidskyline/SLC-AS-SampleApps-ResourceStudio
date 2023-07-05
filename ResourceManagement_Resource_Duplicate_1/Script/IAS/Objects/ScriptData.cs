@@ -258,7 +258,7 @@
 			Guid DuplicateVirtualSignalGroup(Guid id)
 			{
 				var subScript = engine.PrepareSubScript("DuplicateVsg");
-				
+
 				subScript.SelectScriptParam("Virtual Signal Group ID", Convert.ToString(id));
 
 				subScript.Synchronous = true;

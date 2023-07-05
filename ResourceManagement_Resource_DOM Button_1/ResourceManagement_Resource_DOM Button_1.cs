@@ -54,14 +54,18 @@ namespace Script
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Text;
 
 	using Skyline.Automation.DOM;
+	using Skyline.Automation.IAS;
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel.Actions;
 	using Skyline.DataMiner.Net.Messages;
+	using Skyline.DataMiner.Net.Messages.ResourceManager;
 	using Skyline.DataMiner.Net.Messages.SLDataGateway;
+	using Skyline.DataMiner.Net.ResourceManager.Objects;
 	using Skyline.DataMiner.Net.Sections;
 
 	/// <summary>
@@ -104,8 +108,48 @@ namespace Script
 			domHelper.DomInstances.Update(instance);
 		}
 
+		private static void SetResourceAsUnavailable(SrmHelpers srmHelpers, Resource resource)
+		{
+			resource.Mode = ResourceMode.Unavailable;
+
+			srmHelpers.ResourceManagerHelper.AddOrUpdateResources(resource);
+		}
+
+		private static void UnassignResourceFromPools(ResourceManagerHandler resourceManagerHandler, string resourceDomInstanceId, List<string> resourcePoolDomInstanceIds)
+		{
+			foreach (var resourcePoolDomInstanceId in resourcePoolDomInstanceIds)
+			{
+				var resourcePoolData = resourceManagerHandler.ResourcePools.SingleOrDefault(x => x.Instance.ID.Id == Guid.Parse(resourceDomInstanceId));
+				if (resourcePoolData == null)
+				{
+					continue;
+				}
+
+				var poolResources = resourcePoolData.ResourceIds?.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+				if (!poolResources.Contains(resourceDomInstanceId))
+				{
+					continue;
+				}
+
+				poolResources.Remove(resourceDomInstanceId);
+
+				var resourcePoolInternalPropertiesSection = resourcePoolData.Instance.Sections.Single(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolInternalProperties.Id.Id);
+				if (poolResources.Any())
+				{
+					resourcePoolInternalPropertiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolInternalProperties.Resource_Ids, new ValueWrapper<string>(string.Join(";", poolResources))));
+				}
+				else
+				{
+					resourcePoolInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolInternalProperties.Resource_Ids);
+				}
+
+				resourceManagerHandler.DomHelper.DomInstances.Update(resourcePoolData.Instance);
+			}
+		}
+
 		private void RunSafe(ExecuteScriptDomActionContext context)
 		{
+			// engine.ShowUI()
 			var instanceId = context.ContextId as DomInstanceId;
 			var action = engine.GetScriptParam("Action")?.Value;
 
@@ -130,6 +174,19 @@ namespace Script
 					{
 						// Do nothing
 					}
+
+					break;
+
+				case "Deprecate":
+					if (TryHandleDeprecateAction(domHelper, instanceId))
+					{
+						transitionId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Complete_To_Deprecated;
+					}
+
+					break;
+
+				case "Delete":
+					HandleDeleteAction(domHelper, instanceId);
 
 					break;
 
@@ -202,6 +259,77 @@ namespace Script
 			domHelper.DomInstances.Update(domInstance);
 
 			return true;
+		}
+
+		private bool TryHandleDeprecateAction(DomHelper domHelper, DomInstanceId instanceId)
+		{
+			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
+			var srmHelpers = new SrmHelpers(engine);
+
+			var resourceData = resourceManagerHandler.Resources.Single(x => x.Instance.ID.Id == instanceId.Id);
+
+			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceData.ResourceId);
+			if (resource == null)
+			{
+				return true;
+			}
+
+			var filter = ReservationInstanceExposers.ResourceIDsInReservationInstance.Contains(resource.ID).AND(ReservationInstanceExposers.End.GreaterThan(DateTime.UtcNow));
+			var reservations = srmHelpers.ResourceManagerHelper.GetReservationInstances(filter).ToList();
+			if (!reservations.Any())
+			{
+				SetResourceAsUnavailable(srmHelpers, resource);
+
+				return true;
+			}
+
+			var sb = new StringBuilder();
+			sb.AppendLine($"Deprecating resource '{resource.Name}' will put below bookings into quarantine.");
+
+			foreach (var reservation in reservations )
+			{
+				sb.AppendLine($"- {reservation.Name} | Start: {reservation.Start.ToLocalTime()} | End: {reservation.End.ToLocalTime()}");
+			}
+
+			var confirmed = engine.ShowConfirmDialog(sb.ToString());
+			if (confirmed)
+			{
+				SetResourceAsUnavailable(srmHelpers, resource);
+			}
+
+			return confirmed;
+		}
+
+		private void HandleDeleteAction(DomHelper domHelper, DomInstanceId instanceId)
+		{
+			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
+			var resourceData = resourceManagerHandler.Resources.Single(x => x.Instance.ID.Id == instanceId.Id);
+
+			if (resourceData.ResourceId != Guid.Empty)
+			{
+				DeleteResource(resourceData.ResourceId);
+			}
+
+			var resourcePools = resourceData.PoolIds?.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+			if (resourcePools.Any())
+			{
+				UnassignResourceFromPools(resourceManagerHandler, Convert.ToString(resourceData.Instance.ID.Id), resourcePools);
+			}
+
+			resourceManagerHandler.DomHelper.DomInstances.Delete(resourceData.Instance);
+		}
+
+		private void DeleteResource(Guid resourceId)
+		{
+			var srmHelpers = new SrmHelpers(engine);
+
+			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceId);
+			if (resource == null)
+			{
+				return;
+			}
+
+			srmHelpers.ResourceManagerHelper.RemoveResources(resource);
 		}
 	}
 }

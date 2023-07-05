@@ -1,9 +1,5 @@
 ﻿namespace Skyline.Automation.IAS.Dialogs.ErrorDialog
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Text;
-
 	internal class ErrorDialogModel
 	{
 		private readonly string errorMessage;
