@@ -63,7 +63,6 @@ namespace Script
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel.Actions;
 	using Skyline.DataMiner.Net.Messages;
-	using Skyline.DataMiner.Net.Messages.ResourceManager;
 	using Skyline.DataMiner.Net.Messages.SLDataGateway;
 	using Skyline.DataMiner.Net.ResourceManager.Objects;
 	using Skyline.DataMiner.Net.Sections;
@@ -92,6 +91,10 @@ namespace Script
 			try
 			{
 				RunSafe(context);
+			}
+			catch (ScriptAbortException)
+			{
+				throw;
 			}
 			catch (Exception ex)
 			{
@@ -267,6 +270,10 @@ namespace Script
 			var srmHelpers = new SrmHelpers(engine);
 
 			var resourceData = resourceManagerHandler.Resources.Single(x => x.Instance.ID.Id == instanceId.Id);
+			if (resourceData.ResourceId == Guid.Empty)
+			{
+				return true;
+			}
 
 			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceData.ResourceId);
 			if (resource == null)
@@ -284,9 +291,10 @@ namespace Script
 			}
 
 			var sb = new StringBuilder();
-			sb.AppendLine($"Deprecating resource '{resource.Name}' will put below bookings into quarantine.");
+			sb.AppendLine($"Resource '{resource.Name}' still has ongoing or future bookings on it. Are you sure you want to deprecate it?");
+			sb.AppendLine("Note: deprecating it will not remove it from these bookings.");
 
-			foreach (var reservation in reservations )
+			foreach (var reservation in reservations)
 			{
 				sb.AppendLine($"- {reservation.Name} | Start: {reservation.Start.ToLocalTime()} | End: {reservation.End.ToLocalTime()}");
 			}
@@ -303,10 +311,30 @@ namespace Script
 		private void HandleDeleteAction(DomHelper domHelper, DomInstanceId instanceId)
 		{
 			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
-			var resourceData = resourceManagerHandler.Resources.Single(x => x.Instance.ID.Id == instanceId.Id);
+			var srmHelpers = new SrmHelpers(engine);
 
+			var resourceData = resourceManagerHandler.Resources.Single(x => x.Instance.ID.Id == instanceId.Id);
 			if (resourceData.ResourceId != Guid.Empty)
 			{
+				var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceData.ResourceId);
+				if (resource != null)
+				{
+					var filter = ReservationInstanceExposers.ResourceIDsInReservationInstance.Contains(resource.ID).AND(ReservationInstanceExposers.End.GreaterThan(DateTime.UtcNow));
+					var reservations = srmHelpers.ResourceManagerHelper.GetReservationInstances(filter).ToList();
+					if (reservations.Any())
+					{
+						var sb = new StringBuilder();
+						sb.AppendLine($"Deleting resource '{resource.Name}' is not allowed because it is used in below bookings.");
+
+						foreach (var reservation in reservations)
+						{
+							sb.AppendLine($"- {reservation.Name} | Start: {reservation.Start.ToLocalTime()} | End: {reservation.End.ToLocalTime()}");
+						}
+
+						engine.ShowErrorDialog(sb.ToString());
+					}
+				}
+
 				DeleteResource(resourceData.ResourceId);
 			}
 
@@ -329,7 +357,14 @@ namespace Script
 				return;
 			}
 
-			srmHelpers.ResourceManagerHelper.RemoveResources(resource);
+			var options = new ResourceDeleteOptions
+			{
+				Force = true,
+				IgnoreCanceledReservations = true,
+				IgnorePastReservation = true,
+			};
+
+			srmHelpers.ResourceManagerHelper.RemoveResources(new[] { resource }, options);
 		}
 	}
 }

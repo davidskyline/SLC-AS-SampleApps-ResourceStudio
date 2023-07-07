@@ -62,5 +62,33 @@
 
 			return confirmed;
 		}
+
+		public static YesNoCancelEnum ShowYesNoCancelDialog(this IEngine engine, string message)
+		{
+			var model = new Dialogs.YesNoCancelDialog.YesNoCancelDialogModel(message);
+			var view = new Dialogs.YesNoCancelDialog.YesNoCancelDialogView(engine);
+			var presenter = new Dialogs.YesNoCancelDialog.YesNoCancelDialogPresenter(view, model);
+
+			YesNoCancelEnum result = YesNoCancelEnum.Cancel;
+			presenter.Cancel += (sender, arg) =>
+			{
+				result = YesNoCancelEnum.Cancel;
+			};
+			presenter.Yes += (sender, arg) =>
+			{
+				result = YesNoCancelEnum.Yes;
+			};
+			presenter.No += (sender, arg) =>
+			{
+				result = YesNoCancelEnum.No;
+			};
+
+			presenter.LoadFromModel();
+			presenter.BuildView();
+
+			view.Show();
+
+			return result;
+		}
 	}
 }

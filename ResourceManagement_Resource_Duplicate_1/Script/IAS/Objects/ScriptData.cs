@@ -3,18 +3,14 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
 
 	using Newtonsoft.Json;
 
 	using Skyline.Automation.DOM;
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
-	using Skyline.DataMiner.Net;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
 	using Skyline.DataMiner.Net.Apps.Sections.Fields;
-	using Skyline.DataMiner.Net.LogHelpers;
 	using Skyline.DataMiner.Net.Messages;
 	using Skyline.DataMiner.Net.Messages.SLDataGateway;
 	using Skyline.DataMiner.Net.Sections;

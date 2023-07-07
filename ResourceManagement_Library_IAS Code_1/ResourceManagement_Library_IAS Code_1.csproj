@@ -53,10 +53,15 @@
     <Compile Include="Skyline\Automation\IAS\Dialogs\ErrorDialog\ErrorDialogModel.cs" />
     <Compile Include="Skyline\Automation\IAS\Dialogs\ErrorDialog\ErrorDialogPresenter.cs" />
     <Compile Include="Skyline\Automation\IAS\Dialogs\ErrorDialog\ErrorDialogView.cs" />
+    <Compile Include="Skyline\Automation\IAS\Dialogs\YesNoCancelDialog\YesNoCancelDialogModel.cs" />
+    <Compile Include="Skyline\Automation\IAS\Dialogs\YesNoCancelDialog\YesNoCancelDialogPresenter.cs" />
+    <Compile Include="Skyline\Automation\IAS\Dialogs\YesNoCancelDialog\YesNoCancelDialogView.cs" />
+    <Compile Include="Skyline\Automation\IAS\Enums\YesNoCancelEnum.cs" />
     <Compile Include="Skyline\Automation\IAS\Extensions\EngineExtensions.cs" />
     <Compile Include="Skyline\Automation\IAS\Objects\AutomationData.cs" />
     <Compile Include="Skyline\Automation\IAS\Objects\ScriptDialog.cs" />
     <Compile Include="Skyline\Automation\IAS\Objects\ScriptSection.cs" />
+    <Compile Include="Skyline\Automation\IAS\Objects\WrapText.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Skyline.DataMiner.Dev.Automation">

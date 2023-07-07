@@ -1,12 +1,6 @@
 ﻿namespace Skyline.Automation.IAS.Dialogs.ConfirmDialog
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-
-	using Skyline.DataMiner.Net.SLDataGateway.Types.Custom;
 
 	internal class ConfirmDialogPresenter
 	{
@@ -33,7 +27,7 @@
 		#region Methods
 		public void LoadFromModel()
 		{
-			view.ConfirmationMessage.Text = model.ConfirmationMessage;
+			view.ConfirmationMessage.Text = WrapText.Wrap(model.ConfirmationMessage, 100);
 		}
 
 		public void BuildView()

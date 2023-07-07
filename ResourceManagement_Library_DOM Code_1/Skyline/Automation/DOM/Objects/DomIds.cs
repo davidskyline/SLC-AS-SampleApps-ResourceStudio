@@ -31,18 +31,12 @@
 					USD = 1
 				}
 
-				public enum Status
-				{
-					Available = 0,
-					Maintenance = 1,
-					Unavailable = 2
-				}
-
 				public enum InventoryType
 				{
 					Installed = 0,
-					NotInstalled = 1,
-					DynamicInventory = 2
+					FuturePlanned = 1,
+					DynamicInventory = 2,
+					Virtual = 3
 				}
 
 				public enum Type
@@ -274,12 +268,6 @@
 					}
 
 					= new FieldDescriptorID(new Guid("13833c8f-6874-44e9-9aeb-9a9914e26771"));
-					public static FieldDescriptorID Status
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("422506c5-ec72-42bc-aebc-adba2e7341f1"));
 					public static FieldDescriptorID InventoryType
 					{
 						get;
@@ -445,23 +433,6 @@
 					= new FieldDescriptorID(new Guid("f13f55e4-bc51-49cd-84d9-1808ba2878ac"));
 				}
 
-				public static class PropertyInfo
-				{
-					public static SectionDefinitionID Id
-					{
-						get;
-					}
-
-					= new SectionDefinitionID(new Guid("6477c6b5-34df-4379-86ed-1d098f42d0e7"))
-					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID PropertyName
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("0c1f8559-198c-40ff-9d52-60e2e1a90988"));
-				}
-
 				public static class ResourceOther
 				{
 					public static SectionDefinitionID Id
@@ -483,6 +454,23 @@
 					}
 
 					= new FieldDescriptorID(new Guid("4e1a48b0-fb2c-42da-bffd-34af527c423f"));
+				}
+
+				public static class PropertyInfo
+				{
+					public static SectionDefinitionID Id
+					{
+						get;
+					}
+
+					= new SectionDefinitionID(new Guid("6477c6b5-34df-4379-86ed-1d098f42d0e7"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID PropertyName
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("0c1f8559-198c-40ff-9d52-60e2e1a90988"));
 				}
 			}
 
@@ -577,6 +565,7 @@
 						public const string Draft_To_Error = "draft_to_error";
 						public const string Complete_To_Error = "complete_to_error";
 						public const string Error_To_Complete = "error_to_complete";
+						public const string Error_To_Deprecated = "error_to_deprecated";
 					}
 				}
 
@@ -642,6 +631,7 @@
 						public const string Draft_To_Error = "draft_to_error";
 						public const string Complete_To_Error = "complete_to_error";
 						public const string Error_To_Complete = "error_to_complete";
+						public const string Error_To_Deprecated = "error_to_deprecated";
 					}
 				}
 			}

@@ -25,7 +25,7 @@
 		#region Methods
 		public void LoadFromModel()
 		{
-			view.ErrorMessage.Text = model.ErrorMessage;
+			view.ErrorMessage.Text = WrapText.Wrap(model.ErrorMessage, 100);
 		}
 
 		public void BuildView()
