@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Text;
 
 	using Skyline.Automation.DOM;
 	using Skyline.Automation.DOM.DomIds;
@@ -54,6 +55,26 @@
 		#region Methods
 		public void Handle()
 		{
+			switch (domInstance.StatusId)
+			{
+				case Resourcemanagement.Behaviors.Resourcepool_Behavior.Statuses.Complete:
+					HandleStatusCompleteChanges();
+
+					break;
+
+				case Resourcemanagement.Behaviors.Resourcepool_Behavior.Statuses.Deprecated:
+					HandleStatusDeprecatedChanges();
+
+					break;
+
+				default:
+					// Do nothing
+					break;
+			}
+		}
+
+		private void HandleStatusCompleteChanges()
+		{
 			var resourcesResult = HandleDataOnPoolResources();
 			if (!resourcesResult.Success)
 			{
@@ -77,6 +98,24 @@
 
 				//return;
 			}
+		}
+
+		private void HandleStatusDeprecatedChanges()
+		{
+			if (ResourcePoolData.ResourceId == Guid.Empty)
+			{
+				return;
+			}
+
+			var resource = SrmHelpers.ResourceManagerHelper.GetResource(ResourcePoolData.ResourceId);
+			if (resource == null)
+			{
+				return;
+			}
+
+			resource.Mode = ResourceMode.Unavailable;
+
+			SrmHelpers.ResourceManagerHelper.AddOrUpdateResources(resource);
 		}
 
 		private void Init()
@@ -209,7 +248,7 @@
 			if (poolResources.Any())
 			{
 				result.Resource.MaxConcurrency = poolResources.Sum(x => x.MaxConcurrency);
-				result.Resource.Mode = ResourceMode.Unavailable;
+				result.Resource.Mode = ResourceMode.Available;
 			}
 			else
 			{
@@ -287,7 +326,7 @@
 				{
 					return true;
 				}
-				
+
 				if (!poolCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out var capabilities))
 				{
 					return false;
@@ -325,7 +364,7 @@
 				}
 
 				configuredCapabilitiesByPoolDomInstanceId.Add(poolDomInstanceId, configuredCapabilities);
-				
+
 				return true;
 			}
 		}
@@ -337,11 +376,16 @@
 			var resourcesToUpdate = new List<Resource>();
 			foreach (var resourceDataMapping in resourceDataMappings)
 			{
+				if (resourceDataMapping.Resource == null)
+				{
+					continue;
+				}
+
 				var requiredCapabilities = GetRequiredResourceCapabilities(resourceDataMapping.ConfiguredCapabilities);
 
 				var added = requiredCapabilities.Where(x => !resourceDataMapping.Resource.Capabilities.Select(y => y.CapabilityProfileID).Contains(x.CapabilityProfileID)).ToList();
 				var updated = requiredCapabilities.Except(added).ToList();
-				var removed = resourceDataMapping.Resource.Capabilities.Where(x => !requiredCapabilities.Select(y => y.CapabilityProfileID).Contains(x.CapabilityProfileID) && capabilityNamesManagedByDom.Contains(SrmHelpers.ProfileHelper.GetProfileParameterById(x.CapabilityProfileID).Name)).ToList();
+				var removed = resourceDataMapping.Resource.Capabilities.Where(x => !requiredCapabilities.Select(y => y.CapabilityProfileID).Contains(x.CapabilityProfileID) && capabilityNamesManagedByDom.Contains(SrmHelpers.ProfileHelper.GetProfileParameterById(x.CapabilityProfileID).Name)).ToList() ?? new List<ResourceCapability>();
 
 				if (ResourceHasChangedData(resourceDataMapping.Resource, added, updated, removed))
 				{

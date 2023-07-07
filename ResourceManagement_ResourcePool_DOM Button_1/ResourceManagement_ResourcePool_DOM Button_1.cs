@@ -52,15 +52,20 @@ DATE		VERSION		AUTHOR			COMMENTS
 namespace Script
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
+	using System.Text;
 
 	using Skyline.Automation.DOM;
+	using Skyline.Automation.IAS;
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
+	using Skyline.DataMiner.Net;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel.Actions;
 	using Skyline.DataMiner.Net.Messages;
 	using Skyline.DataMiner.Net.Messages.SLDataGateway;
+	using Skyline.DataMiner.Net.ResourceManager.Objects;
 	using Skyline.DataMiner.Net.Sections;
 
 	/// <summary>
@@ -88,6 +93,10 @@ namespace Script
 			{
 				RunSafe(context);
 			}
+			catch (ScriptAbortException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
 				engine.Log(ex.ToString());
@@ -101,6 +110,97 @@ namespace Script
 			resourcePoolInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourcePoolInfo.ErrorDetails, new ValueWrapper<string>($"[{DateTime.Now}] >>> {errorMessage}")));
 
 			domHelper.DomInstances.Update(instance);
+		}
+
+		private static List<ResourceData> GetResourcesDataToDeprecate(ResourceManagerHandler resourceManagerHandler, ResourcePoolData resourcePoolData)
+		{
+			var poolResourceIds = resourcePoolData.ResourceIds?.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+			if (!poolResourceIds.Any())
+			{
+				return new List<ResourceData>();
+			}
+
+			var resourcesDataToDeprecate = resourceManagerHandler.Resources.Where(x => poolResourceIds.Contains(Convert.ToString(x.Instance.ID.Id)) && x.PoolIds == Convert.ToString(resourcePoolData.Instance.ID.Id) && x.Instance.StatusId != Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Deprecated).ToList();
+
+			return resourcesDataToDeprecate;
+		}
+
+		private static List<ResourceData> GetPoolResourcesData(ResourceManagerHandler resourceManagerHandler, ResourcePoolData resourcePoolData)
+		{
+			var poolResourceIds = resourcePoolData.ResourceIds?.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+			if (!poolResourceIds.Any())
+			{
+				return new List<ResourceData>();
+			}
+
+			var poolResourcesData = resourceManagerHandler.Resources.Where(x => poolResourceIds.Contains(Convert.ToString(x.Instance.ID.Id))).ToList();
+
+			return poolResourcesData;
+		}
+
+		private static List<Resource> GetResourcesToDeprecate(SrmHelpers srmHelpers, List<ResourceData> resourcesDataToDeprecate)
+		{
+			var resourceFilter = new ORFilterElement<Resource>(resourcesDataToDeprecate.Where(x => x.ResourceId != Guid.Empty).Select(x => ResourceExposers.ID.Equal(x.ResourceId)).ToArray());
+
+			var resourcesToDeprecate = new List<Resource>();
+			foreach (var resource in srmHelpers.ResourceManagerHelper.GetResources(resourceFilter))
+			{
+				if (resource == null)
+				{
+					continue;
+				}
+
+				resourcesToDeprecate.Add(resource);
+			}
+
+			return resourcesToDeprecate;
+		}
+
+		private static List<Resource> GetResourcesWithReservations(SrmHelpers srmHelpers, List<Resource> resourcesToDeprecate)
+		{
+			var resourcesWithReservations = new List<Resource>();
+			foreach (var resource in resourcesToDeprecate)
+			{
+				var filter = ReservationInstanceExposers.ResourceIDsInReservationInstance.Contains(resource.ID).AND(ReservationInstanceExposers.End.GreaterThan(DateTime.UtcNow));
+				var reservations = srmHelpers.ResourceManagerHelper.GetReservationInstances(filter).ToList();
+				if (reservations.Any())
+				{
+					resourcesWithReservations.Add(resource);
+				}
+			}
+
+			return resourcesWithReservations;
+		}
+
+		private static void SetResourcesAsUnavailable(SrmHelpers srmHelpers, List<Resource> resources)
+		{
+			resources.ForEach(x => x.Mode = ResourceMode.Unavailable);
+
+			srmHelpers.ResourceManagerHelper.AddOrUpdateResources(resources.ToArray());
+		}
+
+		private static void UnassignPoolFromResources(ResourceManagerHandler resourceManagerHandler, string poolDomInstanceId, List<ResourceData> resourcesData)
+		{
+			foreach (var resourceData in resourcesData)
+			{
+				var resourcePools = resourceData.PoolIds?.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+				if (resourcePools.Contains(poolDomInstanceId))
+				{
+					resourcePools.Remove(poolDomInstanceId);
+				}
+
+				var resourceInternalPropertiesSection = resourceData.Instance.Sections.Single(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Id.Id);
+				if (resourcePools.Any())
+				{
+					resourceInternalPropertiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids, new ValueWrapper<string>(string.Join(";", resourcePools))));
+				}
+				else
+				{
+					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids);
+				}
+
+				resourceManagerHandler.DomHelper.DomInstances.Update(resourceData.Instance);
+			}
 		}
 
 		private void RunSafe(ExecuteScriptDomActionContext context)
@@ -120,7 +220,7 @@ namespace Script
 					if (TryHandleMarkCompleteAction(domHelper, domInstance, out errorMessage))
 					{
 						transitionId = (domInstance.StatusId == Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resourcepool_Behavior.Statuses.Draft) ? Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resourcepool_Behavior.Transitions.Draft_To_Complete : Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resourcepool_Behavior.Transitions.Error_To_Complete;
-                    }
+					}
 					else if (domInstance.StatusId != Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resourcepool_Behavior.Statuses.Error)
 					{
 						transitionId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resourcepool_Behavior.Transitions.Draft_To_Error;
@@ -129,6 +229,19 @@ namespace Script
 					{
 						// Do nothing
 					}
+
+					break;
+
+				case "Deprecate":
+					if (TryHandleDeprecateAction(domHelper, domInstance))
+					{
+						transitionId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resourcepool_Behavior.Transitions.Complete_To_Deprecated;
+					}
+
+					break;
+
+				case "Delete":
+					HandleDeleteAction(domHelper, domInstance);
 
 					break;
 
@@ -174,6 +287,197 @@ namespace Script
 			domHelper.DomInstances.Update(instance);
 
 			return true;
+		}
+
+		private bool TryHandleDeprecateAction(DomHelper domHelper, DomInstance instance)
+		{
+			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
+			var srmHelpers = new SrmHelpers(engine);
+
+			var resourcePoolData = resourceManagerHandler.ResourcePools.Single(x => x.Instance.ID.Id == instance.ID.Id);
+			if (resourcePoolData.PoolId == Guid.Empty)
+			{
+				return true;
+			}
+
+			var resourcePool = srmHelpers.ResourceManagerHelper.GetResourcePool(resourcePoolData.PoolId);
+			if (resourcePool == null)
+			{
+				return true;
+			}
+
+			var resourcesDataToDeprecate = GetResourcesDataToDeprecate(resourceManagerHandler, resourcePoolData);
+			if (resourcesDataToDeprecate.Any())
+			{
+				var sb = new StringBuilder();
+				sb.AppendLine("Do you want to deprecate all resources in the resource pool as well?");
+				sb.AppendLine("Note: this action will not deprecate resources which are part of multiple pools.");
+
+				var result = engine.ShowYesNoCancelDialog(sb.ToString());
+				switch (result)
+				{
+					case YesNoCancelEnum.Yes:
+						if (!TryDeprecatePoolResources(resourceManagerHandler, srmHelpers, resourcesDataToDeprecate))
+						{
+							return false;
+						}
+
+						break;
+
+					case YesNoCancelEnum.No:
+						break;
+
+					case YesNoCancelEnum.Cancel:
+					default:
+						return false;
+				}
+			}
+
+			return true;
+		}
+
+		private bool TryDeprecatePoolResources(ResourceManagerHandler resourceManagerHandler, SrmHelpers srmHelpers, List<ResourceData> resourcesDataToDeprecate)
+		{
+			var resourcesToDeprecate = GetResourcesToDeprecate(srmHelpers, resourcesDataToDeprecate);
+			if (resourcesToDeprecate.Any())
+			{
+				var resourcesWithReservations = GetResourcesWithReservations(srmHelpers, resourcesToDeprecate);
+				if (resourcesWithReservations.Any())
+				{
+					var sb = new StringBuilder();
+					sb.AppendLine("The following resources still have ongoing or future bookings on them. Are you sure you want to deprecate them?");
+					sb.AppendLine("Note: deprecating them will not remove them from these bookings.");
+
+					foreach (var resource in resourcesWithReservations)
+					{
+						sb.AppendLine($"- {resource.Name}");
+					}
+
+					var confirmed = engine.ShowConfirmDialog(sb.ToString());
+					if (!confirmed)
+					{
+						return false;
+					}
+				}
+
+				SetResourcesAsUnavailable(srmHelpers, resourcesToDeprecate);
+			}
+
+			foreach (var resourceData in resourcesDataToDeprecate)
+			{
+				var transitionId = (resourceData.Instance.StatusId == Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Error) ? Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Error_To_Deprecated : Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Complete_To_Deprecated;
+
+				resourceManagerHandler.DomHelper.DomInstances.DoStatusTransition(resourceData.Instance.ID, transitionId);
+			}
+
+			return true;
+		}
+
+		private void HandleDeleteAction(DomHelper domHelper, DomInstance instance)
+		{
+			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
+			var srmHelpers = new SrmHelpers(engine);
+
+			var resourcePoolData = resourceManagerHandler.ResourcePools.Single(x => x.Instance.ID.Id == instance.ID.Id);
+			if (resourcePoolData.PoolId != Guid.Empty)
+			{
+				var resourcePool = srmHelpers.ResourceManagerHelper.GetResourcePool(resourcePoolData.PoolId);
+				if (resourcePool != null)
+				{
+					var poolResourcesData = GetPoolResourcesData(resourceManagerHandler, resourcePoolData);
+					var deprecatedResourcesData = poolResourcesData.Where(x => x.Instance.StatusId == Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Deprecated).ToList();
+
+					var areDeprecatedResourcesDeleted = false;
+					if (deprecatedResourcesData.Any())
+					{
+						var sb = new StringBuilder();
+						sb.AppendLine($"Do you want to delete all deprecated resources ({deprecatedResourcesData.Count}) in the resource pool as well?");
+
+						var result = engine.ShowYesNoCancelDialog(sb.ToString());
+						switch (result)
+						{
+							case YesNoCancelEnum.Yes:
+								DeletePoolResources(resourceManagerHandler, srmHelpers, deprecatedResourcesData);
+								areDeprecatedResourcesDeleted = true;
+								break;
+
+							case YesNoCancelEnum.No:
+								break;
+
+							case YesNoCancelEnum.Cancel:
+							default:
+								return;
+						}
+					}
+
+					var resourcesDataToUnassingPool = areDeprecatedResourcesDeleted ? poolResourcesData.Except(deprecatedResourcesData).ToList() : poolResourcesData;
+					UnassignPoolFromResources(resourceManagerHandler, Convert.ToString(resourcePoolData.Instance.ID.Id), resourcesDataToUnassingPool);
+
+					DeletePoolResource(srmHelpers, resourcePoolData);
+					srmHelpers.ResourceManagerHelper.RemoveResourcePools(resourcePool);
+				}
+			}
+
+			resourceManagerHandler.DomHelper.DomInstances.Delete(resourcePoolData.Instance);
+		}
+
+		private void DeletePoolResources(ResourceManagerHandler resourceManagerHandler, SrmHelpers srmHelpers, List<ResourceData> resourcesData)
+		{
+			var resourceIds = resourcesData.Where(x => x.ResourceId != Guid.Empty).Select(x => x.ResourceId).ToList();
+			if (resourceIds.Any())
+			{
+				var resourceFilter = new ORFilterElement<Resource>(resourceIds.Select(id => ResourceExposers.ID.Equal(id)).ToArray());
+				var resourcesToDelete = new List<Resource>();
+				foreach (var resource in srmHelpers.ResourceManagerHelper.GetResources(resourceFilter))
+				{
+					if (resource == null)
+					{
+						continue;
+					}
+
+					resourcesToDelete.Add(resource);
+				}
+
+				if (resourcesToDelete.Any())
+				{
+					var options = new ResourceDeleteOptions
+					{
+						Force = true,
+						IgnoreCanceledReservations = true,
+						IgnorePastReservation = true,
+					};
+
+					srmHelpers.ResourceManagerHelper.RemoveResources(resourcesToDelete.ToArray(), options);
+				}
+			}
+
+			foreach (var resourceData in resourcesData)
+			{
+				resourceManagerHandler.DomHelper.DomInstances.Delete(resourceData.Instance);
+			}
+		}
+
+		private void DeletePoolResource(SrmHelpers srmHelpers, ResourcePoolData resourcePoolData)
+		{
+			if (resourcePoolData.ResourceId == Guid.Empty)
+			{
+				return;
+			}
+
+			var poolResource = srmHelpers.ResourceManagerHelper.GetResource(resourcePoolData.ResourceId);
+			if (poolResource == null)
+			{
+				return;
+			}
+
+			var options = new ResourceDeleteOptions
+			{
+				Force = true,
+				IgnoreCanceledReservations = true,
+				IgnorePastReservation = true,
+			};
+
+			srmHelpers.ResourceManagerHelper.RemoveResources(new[] { poolResource }, options);
 		}
 	}
 }

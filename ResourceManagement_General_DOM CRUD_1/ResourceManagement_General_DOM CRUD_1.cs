@@ -120,7 +120,7 @@ namespace Script
 
 		private void HandleResourcePoolCRUD(CrudType crudType, DomHelper domHelper, DomInstance instance)
 		{
-			if (crudType != CrudType.Update || instance.StatusId != Resourcemanagement.Behaviors.Resourcepool_Behavior.Statuses.Complete)
+			if (crudType != CrudType.Update)
 			{
 				return;
 			}
