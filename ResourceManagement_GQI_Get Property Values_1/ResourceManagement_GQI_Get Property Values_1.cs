@@ -53,15 +53,12 @@ namespace Script
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using System.Linq;
-	using System.Text;
 
 	using Skyline.Automation.DOM;
 	using Skyline.DataMiner.Analytics.GenericInterface;
-	using Skyline.DataMiner.Automation;
-	using Skyline.DataMiner.Net;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
+	using Skyline.DataMiner.Net.Helper;
 
 	[GQIMetaData(Name = "Resource Management - Get Property Values")]
 	public class ResourceManagementDataSource : IGQIDataSource, IGQIInputArguments, IGQIOnInit
@@ -116,13 +113,22 @@ namespace Script
 
 			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
 
-			var propertyValues = resourceManagerHandler.Resources.SelectMany(x => x.Properties.Where(y => y.PropertyId == propertyId).Select(y => y.Value)).ToHashSet();
+			List<string> propertyValues = new List<string>();
+			resourceManagerHandler.Resources.SelectMany(x => x.Properties.Where(y => y.PropertyId == propertyId).Select(y => y.Value)).ForEach(x =>
+			{
+				if (!propertyValues.Contains(x))
+				{
+					propertyValues.Add(x);
+				}
+			});
+
 			if (!propertyValues.Any())
 			{
 				return rows.ToArray();
 			}
 
-			foreach (var propertyValue in propertyValues.OrderBy(x => x))
+			propertyValues.Sort();
+			foreach (var propertyValue in propertyValues)
 			{
 				rows.Add(new GQIRow(new[]
 				{
