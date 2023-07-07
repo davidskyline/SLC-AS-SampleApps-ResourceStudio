@@ -333,9 +333,13 @@ namespace Script
 
 						engine.ShowErrorDialog(sb.ToString());
 					}
-				}
 
-				DeleteResource(resourceData.ResourceId);
+					DeleteResource(srmHelpers, resource);
+				}
+				else
+				{
+					DeleteResource(srmHelpers, resourceData.ResourceId);
+				}
 			}
 
 			var resourcePools = resourceData.PoolIds?.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
@@ -347,11 +351,14 @@ namespace Script
 			resourceManagerHandler.DomHelper.DomInstances.Delete(resourceData.Instance);
 		}
 
-		private void DeleteResource(Guid resourceId)
+		private void DeleteResource(SrmHelpers srmHelpers, Guid resourceId)
 		{
-			var srmHelpers = new SrmHelpers(engine);
-
 			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceId);
+			DeleteResource(srmHelpers, resource);
+		}
+
+		private void DeleteResource(SrmHelpers srmHelpers, Resource resource)
+		{
 			if (resource == null)
 			{
 				return;
