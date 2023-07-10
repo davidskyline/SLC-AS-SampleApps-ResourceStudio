@@ -252,6 +252,8 @@ namespace Script
 				resource.ElementID = Convert.ToInt32(splittedElementInfo[1]);
 			}
 
+			VerifyResourceType(srmHelpers, resource, (Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type)resourceData.ResourceType);
+
 			resource = srmHelpers.ResourceManagerHelper.AddOrUpdateResources(resource).Single();
 
 			var domInstance = domHelper.DomInstances.Read(DomInstanceExposers.Id.Equal(instanceId.Id)).Single();
@@ -372,6 +374,60 @@ namespace Script
 			};
 
 			srmHelpers.ResourceManagerHelper.RemoveResources(new[] { resource }, options);
+		}
+
+		private void VerifyResourceType(SrmHelpers srmHelpers, Resource resource, Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type resourceType)
+		{
+			var resourceTypeParameter = srmHelpers.ProfileHelper.GetProfileParameterByName("ResourceStudio_ResourceType");
+			if (resourceTypeParameter == null)
+			{
+				var discretes = new List<string>
+				{
+					"Element",
+					"Pool Resource",
+					"Service",
+					"Unlinked Resource",
+					"Virtual Function",
+				};
+
+				resourceTypeParameter = new Skyline.DataMiner.Net.Profiles.Parameter
+				{
+					Name = "ResourceStudio_ResourceType",
+					Categories = Skyline.DataMiner.Net.Profiles.ProfileParameterCategory.Capability,
+					Type = Skyline.DataMiner.Net.Profiles.Parameter.ParameterType.Discrete,
+					InterpreteType = new Skyline.DataMiner.Net.Profiles.InterpreteType
+					{
+						Type = Skyline.DataMiner.Net.Profiles.InterpreteType.TypeEnum.String,
+						RawType = Skyline.DataMiner.Net.Profiles.InterpreteType.RawTypeEnum.Other,
+					},
+					Discretes = discretes,
+					DiscreetDisplayValues = discretes,
+				};
+
+				resourceTypeParameter = srmHelpers.ProfileHelper.ProfileParameters.Create(resourceTypeParameter);
+			}
+
+			if (!resource.Capabilities.Any(x => x.CapabilityProfileID == resourceTypeParameter.ID))
+			{
+				resource.Capabilities.Add(new Skyline.DataMiner.Net.SRM.Capabilities.ResourceCapability(resourceTypeParameter.ID)
+				{
+					Value = new Skyline.DataMiner.Net.Profiles.CapabilityParameterValue(new List<string> { TranslateResourceType() }),
+				});
+			}
+
+			string TranslateResourceType()
+			{
+				switch (resourceType)
+				{
+					case Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Element: return "Element";
+					case Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction: return "Virtual Function";
+					case Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Service: return "Service";
+					case Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.UnlinkedResource: return "Unlinked Resource";
+
+					default:
+						throw new NotSupportedException($"Resource type '{Convert.ToString(resourceType)}' is not supported.");
+				}
+			}
 		}
 	}
 }

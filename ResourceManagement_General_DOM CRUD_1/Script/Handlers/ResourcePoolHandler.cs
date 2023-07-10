@@ -260,6 +260,7 @@
 			if (isNew)
 			{
 				result.Resource.Capabilities = requiredCapabilities;
+				VerifyResourceType(SrmHelpers, result.Resource);
 
 				result.Resource = SrmHelpers.ResourceManagerHelper.AddOrUpdateResources(result.Resource).First();
 
@@ -474,6 +475,47 @@
 			}
 
 			return hasChangedData;
+		}
+
+		private void VerifyResourceType(SrmHelpers srmHelpers, Resource resource)
+		{
+			var resourceTypeParameter = srmHelpers.ProfileHelper.GetProfileParameterByName("ResourceStudio_ResourceType");
+			if (resourceTypeParameter == null)
+			{
+				var discretes = new List<string>
+				{
+					"Element",
+					"Pool Resource",
+					"Service",
+					"Unlinked Resource",
+					"Virtual Function",
+				};
+
+				resourceTypeParameter = new Skyline.DataMiner.Net.Profiles.Parameter
+				{
+					Name = "ResourceStudio_ResourceType",
+					Categories = Skyline.DataMiner.Net.Profiles.ProfileParameterCategory.Capability,
+					Type = Skyline.DataMiner.Net.Profiles.Parameter.ParameterType.Discrete,
+					InterpreteType = new Skyline.DataMiner.Net.Profiles.InterpreteType
+					{
+						Type = Skyline.DataMiner.Net.Profiles.InterpreteType.TypeEnum.String,
+						RawType = Skyline.DataMiner.Net.Profiles.InterpreteType.RawTypeEnum.Other,
+					},
+					Discretes = discretes,
+					DiscreetDisplayValues = discretes,
+				};
+
+				resourceTypeParameter = srmHelpers.ProfileHelper.ProfileParameters.Create(resourceTypeParameter);
+			}
+
+			if (!resource.Capabilities.Any(x => x.CapabilityProfileID == resourceTypeParameter.ID))
+			{
+				resource.Capabilities.Add(new Skyline.DataMiner.Net.SRM.Capabilities.ResourceCapability
+				{
+					CapabilityProfileID = resourceTypeParameter.ID,
+					Value = new Skyline.DataMiner.Net.Profiles.CapabilityParameterValue(new List<string> { "Pool Resource" }),
+				});
+			}
 		}
 		#endregion
 
