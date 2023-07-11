@@ -53,10 +53,8 @@ namespace Script
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Globalization;
 	using System.Linq;
-	using System.Runtime.InteropServices;
-	using System.Text;
+
 	using Newtonsoft.Json;
 
 	using Skyline.Automation.IAS;
@@ -133,6 +131,10 @@ namespace Script
 			managePropertiesPresenter.Close += (sender, args) =>
 			{
 				engine.ExitSuccess(string.Empty);
+			};
+			managePropertiesPresenter.UpdateNotPossible += (sender, args) =>
+			{
+				engine.ShowErrorDialog($"Not allowed to update or delete properties because resource '{scriptData.ResourceName}' has ongoing or future bookings on it.");
 			};
 		}
 	}

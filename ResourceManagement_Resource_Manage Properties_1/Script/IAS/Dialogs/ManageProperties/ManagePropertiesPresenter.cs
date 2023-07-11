@@ -27,6 +27,8 @@
 
 		#region Events
 		public event EventHandler<EventArgs> Close;
+
+		public event EventHandler<EventArgs> UpdateNotPossible;
 		#endregion
 
 		#region Methods
@@ -73,9 +75,16 @@
 		private void OnUpdateButtonPressed(object sender, EventArgs e)
 		{
 			StoreToModel();
-			model.UpdateResourceProperties();
 
-			Close?.Invoke(this, EventArgs.Empty);
+			var result = model.TryUpdateResourceProperties();
+			if (result.Succeeded)
+			{
+				Close?.Invoke(this, EventArgs.Empty);
+			}
+			else
+			{
+				UpdateNotPossible?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		private void OnAddPropertyButtonPressed(object sender, EventArgs e)

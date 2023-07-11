@@ -5,7 +5,10 @@
 	using System.Linq;
 
 	using Skyline.Automation.DOM;
+	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
+	using Skyline.DataMiner.Net.Messages.SLDataGateway;
+	using Skyline.DataMiner.Net.ResourceManager.Objects;
 	using Skyline.DataMiner.Net.Sections;
 
 	public class ScriptData
@@ -22,6 +25,8 @@
 		private Dictionary<Guid, CapacityData> capacitiesById;
 
 		private List<ConfiguredCapacity> configuredCapacities;
+
+		private Lazy<List<ReservationInstance>> ongoingAndFutureReservations;
 		#endregion
 
 		public ScriptData(IEngine engine, Guid domInstanceId)
@@ -52,16 +57,36 @@
 		}
 
 		public ConfiguredCapacity CapacityToConfigure { get; private set; }
+
+		public IReadOnlyCollection<ReservationInstance> OngoingAndFutureReservations
+		{
+			get { return ongoingAndFutureReservations.Value; }
+		}
 		#endregion
 
 		#region Methods
-		public void UpdateResourceCapacities()
+		public UpdateCapacityResult TryUpdateResourceCapacities()
 		{
 			var added = configuredCapacities.Where(x => !resourceData.Capacities.Select(y => y.CapacityId).Contains(x.CapacityData.Instance.ID.Id)).ToList();
-			var updated = configuredCapacities.Except(added).ToList();
+			var updated = GetUpdatedCapacities(configuredCapacities.Except(added).ToList());
 			var removed = resourceData.Capacities.Where(x => !configuredCapacities.Select(y => y.CapacityData.Instance.ID.Id).Contains(x.CapacityId)).ToList();
 
+			if ((updated.Any() || removed.Any()) && OngoingAndFutureReservations.Any())
+			{
+				return new UpdateCapacityResult
+				{
+					Succeeded = false,
+					ErrorReason = ErrorReason.ResourceInUse,
+				};
+			}
+
 			UpdateDomInstances(added, updated, removed);
+
+			return new UpdateCapacityResult
+			{
+				Succeeded = true,
+				ErrorReason = ErrorReason.None,
+			};
 		}
 
 		public void SetCapacityToConfigure(CapacityData capacityData)
@@ -90,6 +115,8 @@
 			capacitiesById = resourceManagerHandler.Capacities.ToDictionary(x => x.Instance.ID.Id, x => x);
 
 			LoadConfiguredCapacities();
+
+			ongoingAndFutureReservations = new Lazy<List<ReservationInstance>>(() => GetOngoingAndFutureReservations());
 		}
 
 		private void LoadConfiguredCapacities()
@@ -125,15 +152,9 @@
 
 			foreach (var configuredCapacity in updated)
 			{
-				var resourceCapacity = resourceData.Capacities.Single(x => x.CapacityId == configuredCapacity.CapacityData.Instance.ID.Id);
-				if (resourceCapacity.Value.Equals(configuredCapacity.Value))
-				{
-					continue;
-				}
-
 				var resourceCapacitiesSections = resourceData.Instance.Sections.Where(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceCapacities.Id.Id && x.FieldValues.Any());
 
-				var resourceCapacitiesSection = resourceCapacitiesSections.SingleOrDefault(x => (Guid)x.GetFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceCapacities.Capacity)?.Value.Value == resourceCapacity.CapacityId);
+				var resourceCapacitiesSection = resourceCapacitiesSections.SingleOrDefault(x => (Guid)x.GetFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceCapacities.Capacity)?.Value.Value == configuredCapacity.CapacityData.Instance.ID.Id);
 				if (resourceCapacitiesSection == null)
 				{
 					continue;
@@ -162,6 +183,43 @@
 			{
 				resourceManagerHandler.DomHelper.DomInstances.Update(resourceData.Instance);
 			}
+		}
+
+		private List<ReservationInstance> GetOngoingAndFutureReservations()
+		{
+			if (resourceData.ResourceId == Guid.Empty)
+			{
+				return new List<ReservationInstance>();
+			}
+
+			var srmHelpers = new SrmHelpers(engine);
+
+			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceData.ResourceId);
+			if (resource == null)
+			{
+				return new List<ReservationInstance>();
+			}
+
+			var filter = ReservationInstanceExposers.ResourceIDsInReservationInstance.Contains(resource.ID).AND(ReservationInstanceExposers.End.GreaterThan(DateTime.UtcNow));
+			return srmHelpers.ResourceManagerHelper.GetReservationInstances(filter).ToList();
+		}
+
+		private List<ConfiguredCapacity> GetUpdatedCapacities(List<ConfiguredCapacity> capacitiesToVerify)
+		{
+			var updatedCapacities = new List<ConfiguredCapacity>();
+
+			foreach (var capacity in capacitiesToVerify)
+			{
+				var resourceCapacity = resourceData.Capacities.Single(x => x.CapacityId == capacity.CapacityData.Instance.ID.Id);
+				if (resourceCapacity.Value.Equals(capacity.Value))
+				{
+					continue;
+				}
+
+				updatedCapacities.Add(capacity);
+			}
+
+			return updatedCapacities;
 		}
 		#endregion
 	}

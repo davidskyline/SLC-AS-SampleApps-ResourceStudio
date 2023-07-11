@@ -147,6 +147,11 @@ namespace Script
 
 				controller.ShowDialog(configureCapacityView);
 			};
+
+			manageCapacitiesPresenter.UpdateNotPossible += (sender, args) =>
+			{
+				engine.ShowErrorDialog($"Not allowed to update or delete capacities because resource '{scriptData.ResourceName}' has ongoing or future bookings on it.");
+			};
 		}
 
 		private void InitConfigureCapacityEventHandlers()

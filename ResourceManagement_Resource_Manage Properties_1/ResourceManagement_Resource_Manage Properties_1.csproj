@@ -50,8 +50,10 @@
     <Compile Include="Script\IAS\Dialogs\ManageProperties\ManagePropertiesPresenter.cs" />
     <Compile Include="Script\IAS\Dialogs\ManageProperties\ManagePropertiesView.cs" />
     <Compile Include="Script\IAS\Dialogs\ManageProperties\PropertySection.cs" />
+    <Compile Include="Script\IAS\Enums\ErrorReason.cs" />
     <Compile Include="Script\IAS\Objects\ConfiguredProperty.cs" />
     <Compile Include="Script\IAS\Objects\ScriptData.cs" />
+    <Compile Include="Script\IAS\Objects\UpdatePropertyResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
@@ -86,7 +88,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties DisLinkedXmlFile="..\ResourceManagement_Resource_Manage Properties.xml" DisProjectType="automationScriptProject" DisLinkId="1" />
+      <UserProperties DisLinkId="1" DisProjectType="automationScriptProject" DisLinkedXmlFile="..\ResourceManagement_Resource_Manage Properties.xml" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

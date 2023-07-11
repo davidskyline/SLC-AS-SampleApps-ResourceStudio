@@ -147,6 +147,11 @@ namespace Script
 
 				controller.ShowDialog(configureCapabilityView);
 			};
+
+			manageCapabilitiesPresenter.UpdateNotPossible += (sender, args) =>
+			{
+				engine.ShowErrorDialog($"Not allowed to update or delete capabilities because resource pool '{scriptData.PoolName}' contains resources which are having ongoing or future bookings on it.");
+			};
 		}
 
 		private void InitConfigureCapabilityEventHandlers()

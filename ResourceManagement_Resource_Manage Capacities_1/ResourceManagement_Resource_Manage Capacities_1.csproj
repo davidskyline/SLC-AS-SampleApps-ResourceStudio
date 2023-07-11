@@ -52,8 +52,10 @@
     <Compile Include="Script\IAS\Dialogs\ManageCapacities\CapacitySection.cs" />
     <Compile Include="Script\IAS\Dialogs\ManageCapacities\ManageCapacitiesPresenter.cs" />
     <Compile Include="Script\IAS\Dialogs\ManageCapacities\ManageCapacitiesView.cs" />
+    <Compile Include="Script\IAS\Enums\ErrorReason.cs" />
     <Compile Include="Script\IAS\Objects\ConfiguredCapacity.cs" />
     <Compile Include="Script\IAS\Objects\ScriptData.cs" />
+    <Compile Include="Script\IAS\Objects\UpdateCapacityResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
@@ -80,12 +82,16 @@
       <Project>{f07c72b8-002e-41d7-a1ec-4f7074de5d66}</Project>
       <Name>ResourceManagement_Library_IAS Code_1</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ResourceManagement_Library_SRM Code_1\ResourceManagement_Library_SRM Code_1.csproj">
+      <Project>{7cba9f59-73c6-458c-a9e5-c30a6c68d14b}</Project>
+      <Name>ResourceManagement_Library_SRM Code_1</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties DisLinkId="1" DisProjectType="automationScriptProject" DisLinkedXmlFile="..\ResourceManagement_Resource_Manage Capacities.xml" />
+      <UserProperties DisLinkedXmlFile="..\ResourceManagement_Resource_Manage Capacities.xml" DisProjectType="automationScriptProject" DisLinkId="1" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -29,6 +29,8 @@
 		public event EventHandler<EventArgs> Close;
 
 		public event EventHandler<EventArgs> Configure;
+
+		public event EventHandler<EventArgs> UpdateNotPossible;
 		#endregion
 
 		#region Methods
@@ -75,9 +77,16 @@
 		private void OnUpdateButtonPressed(object sender, EventArgs e)
 		{
 			StoreToModel();
-			model.UpdateResourceCapacities();
 
-			Close?.Invoke(this, EventArgs.Empty);
+			var result = model.TryUpdateResourceCapacities();
+			if (result.Succeeded)
+			{
+				Close?.Invoke(this, EventArgs.Empty);
+			}
+			else
+			{
+				UpdateNotPossible?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		private void OnAddCapacityButtonPressed(object sender, EventArgs e)

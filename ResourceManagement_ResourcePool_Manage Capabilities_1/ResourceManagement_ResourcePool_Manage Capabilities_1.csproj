@@ -53,10 +53,12 @@
     <Compile Include="Script\IAS\Dialogs\ManageCapabilities\CapabilitySection.cs" />
     <Compile Include="Script\IAS\Dialogs\ManageCapabilities\ManageCapabilitiesPresenter.cs" />
     <Compile Include="Script\IAS\Dialogs\ManageCapabilities\ManageCapabilitiesView.cs" />
+    <Compile Include="Script\IAS\Enums\ErrorReason.cs" />
     <Compile Include="Script\IAS\Objects\ConfiguredCapability.cs" />
     <Compile Include="Script\IAS\Objects\ConfiguredEnumCapability.cs" />
     <Compile Include="Script\IAS\Objects\ConfiguredStringCapability.cs" />
     <Compile Include="Script\IAS\Objects\ScriptData.cs" />
+    <Compile Include="Script\IAS\Objects\UpdateCapabilityResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
@@ -91,7 +93,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties DisLinkedXmlFile="..\ResourceManagement_ResourcePool_Manage Capabilities.xml" DisProjectType="automationScriptProject" DisLinkId="1" />
+      <UserProperties DisLinkId="1" DisProjectType="automationScriptProject" DisLinkedXmlFile="..\ResourceManagement_ResourcePool_Manage Capabilities.xml" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
