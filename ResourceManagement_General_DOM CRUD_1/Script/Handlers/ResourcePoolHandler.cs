@@ -3,16 +3,13 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
 
 	using Skyline.Automation.DOM;
 	using Skyline.Automation.DOM.DomIds;
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
-	using Skyline.DataMiner.Net;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
 	using Skyline.DataMiner.Net.Messages;
-	using Skyline.DataMiner.Net.Messages.ResourceManager;
 	using Skyline.DataMiner.Net.Messages.SLDataGateway;
 	using Skyline.DataMiner.Net.Sections;
 	using Skyline.DataMiner.Net.SRM.Capabilities;
@@ -33,6 +30,12 @@
 		private Lazy<ResourcePoolData> resourcePoolData;
 
 		private Dictionary<Guid, List<ConfiguredCapability>> configuredCapabilitiesByPoolDomInstanceId = new Dictionary<Guid, List<ConfiguredCapability>>();
+
+		private Dictionary<Guid, List<ResourcePoolCapability>> poolCapabilitiesByPoolDomInstanceId;
+
+		private Dictionary<Guid, CapabilityData> capabilitiesById;
+
+		private Dictionary<Guid, CapabilityValueData> capabilityValuesById;
 		#endregion
 
 		public ResourcePoolHandler(IEngine engine, DomHelper domHelper, DomInstance domInstance)
@@ -71,6 +74,40 @@
 					// Do nothing
 					break;
 			}
+		}
+
+		private static bool ResourceHasChangedData(Resource resource, List<ResourceCapability> added, List<ResourceCapability> updated, List<ResourceCapability> removed)
+		{
+			var hasChangedData = false;
+
+			foreach (var resourceCapability in removed)
+			{
+				resource.Capabilities.Remove(resourceCapability);
+
+				hasChangedData = true;
+			}
+
+			foreach (var resourceCapability in updated)
+			{
+				var capability = resource.Capabilities.Single(x => x.CapabilityProfileID == resourceCapability.CapabilityProfileID);
+				if (!capability.Value.Discreets.Except(resourceCapability.Value.Discreets).Any() && !resourceCapability.Value.Discreets.Except(capability.Value.Discreets).Any())
+				{
+					continue;
+				}
+
+				capability.Value.Discreets = resourceCapability.Value.Discreets;
+
+				hasChangedData = true;
+			}
+
+			foreach (var resourceCapability in added)
+			{
+				resource.Capabilities.Add(resourceCapability);
+
+				hasChangedData = true;
+			}
+
+			return hasChangedData;
 		}
 
 		private void HandleStatusCompleteChanges()
@@ -289,9 +326,9 @@
 			var resourceDomInstanceIds = ResourcePoolData.ResourceIds?.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => Guid.Parse(x)).ToList() ?? new List<Guid>();
 			var resourceDomInstances = ResourceManagerHandler.Resources.Where(x => resourceDomInstanceIds.Contains(x.Instance.ID.Id) && x.ResourceId != Guid.Empty).ToList();
 
-			var poolCapabilitiesByPoolDomInstanceId = ResourceManagerHandler.ResourcePools.ToDictionary(x => x.Instance.ID.Id, x => x.Capabilities);
-			var capabilitiesById = ResourceManagerHandler.Capabilities.ToDictionary(x => x.Instance.ID.Id, x => x);
-			var capabilityValuesById = ResourceManagerHandler.CapabilityValues.ToDictionary(x => x.Instance.ID.Id, x => x);
+			poolCapabilitiesByPoolDomInstanceId = ResourceManagerHandler.ResourcePools.ToDictionary(x => x.Instance.ID.Id, x => x.Capabilities);
+			capabilitiesById = ResourceManagerHandler.Capabilities.ToDictionary(x => x.Instance.ID.Id, x => x);
+			capabilityValuesById = ResourceManagerHandler.CapabilityValues.ToDictionary(x => x.Instance.ID.Id, x => x);
 
 			var resourceDataMappingsByResourceId = new Dictionary<Guid, ResourceDataMapping>();
 			foreach (var resourceDomInstance in resourceDomInstances)
@@ -320,54 +357,54 @@
 			}
 
 			return resourceDataMappingsByResourceId;
+		}
 
-			bool TryGetConfiguredCapabilities(Guid poolDomInstanceId, out List<ConfiguredCapability> configuredCapabilities)
+		private bool TryGetConfiguredCapabilities(Guid poolDomInstanceId, out List<ConfiguredCapability> configuredCapabilities)
+		{
+			if (configuredCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out configuredCapabilities))
 			{
-				if (configuredCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out configuredCapabilities))
-				{
-					return true;
-				}
-
-				if (!poolCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out var capabilities))
-				{
-					return false;
-				}
-
-				configuredCapabilities = new List<ConfiguredCapability>();
-				foreach (var poolCapability in capabilities)
-				{
-					if (!capabilitiesById.TryGetValue(poolCapability.CapabilityId, out var capabilityData))
-					{
-						continue;
-					}
-
-					ConfiguredCapability configuredCapability;
-					if (capabilityData.CapabilityType == Resourcemanagement.Enums.CapabilityType.String)
-					{
-						configuredCapability = new ConfiguredStringCapability(capabilityData, poolCapability.CapabilityStringValue);
-					}
-					else
-					{
-						var discretes = new List<string>();
-
-						poolCapability.CapabilityEnumValueIds.ForEach(x =>
-						{
-							if (capabilityValuesById.TryGetValue(x, out var capabilityValueData) && capabilityValueData.CapabilityId.Equals(capabilityData.Instance.ID.Id))
-							{
-								discretes.Add(capabilityValueData.Value);
-							}
-						});
-
-						configuredCapability = new ConfiguredEnumCapability(capabilityData, discretes);
-					}
-
-					configuredCapabilities.Add(configuredCapability);
-				}
-
-				configuredCapabilitiesByPoolDomInstanceId.Add(poolDomInstanceId, configuredCapabilities);
-
 				return true;
 			}
+
+			if (!poolCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out var capabilities))
+			{
+				return false;
+			}
+
+			configuredCapabilities = new List<ConfiguredCapability>();
+			foreach (var poolCapability in capabilities)
+			{
+				if (!capabilitiesById.TryGetValue(poolCapability.CapabilityId, out var capabilityData))
+				{
+					continue;
+				}
+
+				ConfiguredCapability configuredCapability;
+				if (capabilityData.CapabilityType == Resourcemanagement.Enums.CapabilityType.String)
+				{
+					configuredCapability = new ConfiguredStringCapability(capabilityData, poolCapability.CapabilityStringValue);
+				}
+				else
+				{
+					var discretes = new List<string>();
+
+					poolCapability.CapabilityEnumValueIds.ForEach(x =>
+					{
+						if (capabilityValuesById.TryGetValue(x, out var capabilityValueData) && capabilityValueData.CapabilityId.Equals(capabilityData.Instance.ID.Id))
+						{
+							discretes.Add(capabilityValueData.Value);
+						}
+					});
+
+					configuredCapability = new ConfiguredEnumCapability(capabilityData, discretes);
+				}
+
+				configuredCapabilities.Add(configuredCapability);
+			}
+
+			configuredCapabilitiesByPoolDomInstanceId.Add(poolDomInstanceId, configuredCapabilities);
+
+			return true;
 		}
 
 		private List<Resource> ApplyChanges(IEnumerable<ResourceDataMapping> resourceDataMappings)
@@ -441,40 +478,6 @@
 			}
 
 			return resourceCapabilitiesByCapabilityName.Values.ToList();
-		}
-
-		private bool ResourceHasChangedData(Resource resource, List<ResourceCapability> added, List<ResourceCapability> updated, List<ResourceCapability> removed)
-		{
-			var hasChangedData = false;
-
-			foreach (var resourceCapability in removed)
-			{
-				resource.Capabilities.Remove(resourceCapability);
-
-				hasChangedData = true;
-			}
-
-			foreach (var resourceCapability in updated)
-			{
-				var capability = resource.Capabilities.Single(x => x.CapabilityProfileID == resourceCapability.CapabilityProfileID);
-				if (!capability.Value.Discreets.Except(resourceCapability.Value.Discreets).Any() && !resourceCapability.Value.Discreets.Except(capability.Value.Discreets).Any())
-				{
-					continue;
-				}
-
-				capability.Value.Discreets = resourceCapability.Value.Discreets;
-
-				hasChangedData = true;
-			}
-
-			foreach (var resourceCapability in added)
-			{
-				resource.Capabilities.Add(resourceCapability);
-
-				hasChangedData = true;
-			}
-
-			return hasChangedData;
 		}
 
 		private void VerifyResourceType(SrmHelpers srmHelpers, Resource resource)

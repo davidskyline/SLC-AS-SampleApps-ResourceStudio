@@ -216,8 +216,12 @@
 		private void HandleVirtualSignalGroups(DomInstance newResourceDomInstance)
 		{
 			var resourceConnectionManagementSection = newResourceDomInstance.Sections.SingleOrDefault(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceConnectionManagement.Id.Id);
+			if (resourceConnectionManagementSection == null)
+			{
+				return;
+			}
 
-			if (resourceData.VirtualSignalGroupInputIds.Any())
+			if (resourceData.VirtualSignalGroupInputIds != null && resourceData.VirtualSignalGroupInputIds.Any())
 			{
 				var newInputIds = new List<Guid>();
 				foreach (var inputId in resourceData.VirtualSignalGroupInputIds)
@@ -234,7 +238,7 @@
 				resourceConnectionManagementSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceConnectionManagement.InputVsgs, new ListValueWrapper<Guid>(newInputIds)));
 			}
 
-			if (resourceData.VirtualSignalGroupOutputIds.Any())
+			if (resourceData.VirtualSignalGroupOutputIds != null && resourceData.VirtualSignalGroupOutputIds.Any())
 			{
 				var newOutputIds = new List<Guid>();
 				foreach (var outputId in resourceData.VirtualSignalGroupOutputIds)
@@ -250,30 +254,30 @@
 
 				resourceConnectionManagementSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceConnectionManagement.OutputVsgs, new ListValueWrapper<Guid>(newOutputIds)));
 			}
+		}
 
-			Guid DuplicateVirtualSignalGroup(Guid id)
+		private Guid DuplicateVirtualSignalGroup(Guid id)
+		{
+			var subScript = engine.PrepareSubScript("DuplicateVsg");
+
+			subScript.SelectScriptParam("Virtual Signal Group ID", Convert.ToString(id));
+
+			subScript.Synchronous = true;
+			subScript.LockElements = false;
+
+			subScript.StartScript();
+
+			var subScriptResponse = subScript.GetScriptResult();
+			if (subScriptResponse.TryGetValue("RESULT", out string duplicatedResultString))
 			{
-				var subScript = engine.PrepareSubScript("DuplicateVsg");
-
-				subScript.SelectScriptParam("Virtual Signal Group ID", Convert.ToString(id));
-
-				subScript.Synchronous = true;
-				subScript.LockElements = false;
-
-				subScript.StartScript();
-
-				var subScriptResponse = subScript.GetScriptResult();
-				if (subScriptResponse.TryGetValue("RESULT", out string duplicatedResultString))
+				var duplicatedResult = JsonConvert.DeserializeObject<DuplicatedResult>(duplicatedResultString);
+				if (duplicatedResult != null && duplicatedResult.IsSucceeded)
 				{
-					var duplicatedResult = JsonConvert.DeserializeObject<DuplicatedResult>(duplicatedResultString);
-					if (duplicatedResult != null && duplicatedResult.IsSucceeded)
-					{
-						return duplicatedResult.DuplicatedDomInstanceId;
-					}
+					return duplicatedResult.DuplicatedDomInstanceId;
 				}
-
-				return Guid.Empty;
 			}
+
+			return Guid.Empty;
 		}
 
 		private bool ValidateResourceState()

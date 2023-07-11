@@ -3,11 +3,9 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Reflection.Emit;
 
 	using Skyline.Automation.DOM;
 	using Skyline.DataMiner.Automation;
-	using Skyline.DataMiner.Net.Messages;
 	using Skyline.DataMiner.Net.Sections;
 
 	public class ScriptData
