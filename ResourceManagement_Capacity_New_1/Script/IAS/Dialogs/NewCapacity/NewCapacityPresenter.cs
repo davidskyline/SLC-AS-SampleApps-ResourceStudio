@@ -1,13 +1,6 @@
 ﻿namespace Script.IAS.Dialogs.NewCapacity
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
-
-	using Skyline.DataMiner.Net.Messages;
-	using Skyline.DataMiner.Net.Messages.SLDataGateway;
 
 	public class NewCapacityPresenter
 	{
@@ -34,7 +27,7 @@
 		#region Methods
 		public void LoadFromModel()
 		{
-
+			// No data to load from model
 		}
 
 		public void BuildView()

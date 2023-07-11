@@ -70,6 +70,12 @@ namespace Script
 
 		private Guid resourceId;
 
+		private Dictionary<Guid, List<ResourcePoolCapability>> poolCapabilitiesByPoolDomInstanceId;
+
+		private Dictionary<Guid, CapabilityData> capabilitiesById;
+
+		private Dictionary<Guid, CapabilityValueData> capabilityValuesById;
+
 		public GQIColumn[] GetColumns()
 		{
 			return new[]
@@ -108,106 +114,13 @@ namespace Script
 			return default;
 		}
 
-		private GQIRow[] GetResourceCapabilities()
-		{
-			var rows = new List<GQIRow>();
-
-			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
-
-			var resource = resourceManagerHandler.Resources.SingleOrDefault(x => x.Instance.ID.Id.Equals(resourceId));
-			if (resource == null || string.IsNullOrEmpty(resource.PoolIds))
-			{
-				return rows.ToArray();
-			}
-
-			var poolCapabilitiesByPoolDomInstanceId = resourceManagerHandler.ResourcePools.ToDictionary(x => x.Instance.ID.Id, x => x.Capabilities);
-			var capabilitiesById = resourceManagerHandler.Capabilities.ToDictionary(x => x.Instance.ID.Id, x => x);
-			var capabilityValuesById = resourceManagerHandler.CapabilityValues.ToDictionary(x => x.Instance.ID.Id, x => x);
-
-			var configuredResourceCapabilities = new List<ConfiguredCapability>();
-			foreach (var poolDomInstanceId in resource.PoolIds.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => Guid.Parse(x)))
-			{
-				if (!TryGetConfiguredCapabilities(poolDomInstanceId, out var configuredPoolCapabilities))
-				{
-					continue;
-				}
-
-				configuredResourceCapabilities.AddRange(configuredPoolCapabilities);
-			}
-
-			var mergedCapabilities = MergeCapabilities(configuredResourceCapabilities);
-
-			foreach (var mergedCapability in mergedCapabilities)
-			{
-				if (!(mergedCapability is ConfiguredEnumCapability mergedEnumCapability))
-				{
-					continue;
-				}
-
-				mergedEnumCapability.Discretes.ForEach(x =>
-				{
-					rows.Add(new GQIRow(new[]
-					{
-						new GQICell{Value = Convert.ToString(mergedEnumCapability.CapabilityData.Instance.ID.Id)},
-						new GQICell{Value = mergedEnumCapability.CapabilityData.Name},
-						new GQICell{Value = x},
-					}));
-				});
-			}
-
-			return rows.ToArray();
-
-			bool TryGetConfiguredCapabilities(Guid poolDomInstanceId, out List<ConfiguredCapability> configuredCapabilities)
-			{
-				configuredCapabilities = new List<ConfiguredCapability>();
-
-				if (!poolCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out var capabilities))
-				{
-					return false;
-				}
-
-				configuredCapabilities = new List<ConfiguredCapability>();
-				foreach (var poolCapability in capabilities)
-				{
-					if (!capabilitiesById.TryGetValue(poolCapability.CapabilityId, out var capabilityData))
-					{
-						continue;
-					}
-
-					ConfiguredCapability configuredCapability;
-					if (capabilityData.CapabilityType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.CapabilityType.String)
-					{
-						configuredCapability = new ConfiguredStringCapability(capabilityData, poolCapability.CapabilityStringValue);
-					}
-					else
-					{
-						var discretes = new List<string>();
-
-						poolCapability.CapabilityEnumValueIds.ForEach(x =>
-						{
-							if (capabilityValuesById.TryGetValue(x, out var capabilityValueData) && capabilityValueData.CapabilityId.Equals(capabilityData.Instance.ID.Id))
-							{
-								discretes.Add(capabilityValueData.Value);
-							}
-						});
-
-						configuredCapability = new ConfiguredEnumCapability(capabilityData, discretes);
-					}
-
-					configuredCapabilities.Add(configuredCapability);
-				}
-
-				return true;
-			}
-		}
-
-		private List<ConfiguredCapability> MergeCapabilities(List<ConfiguredCapability> configuredCapabilities)
+		private static List<ConfiguredCapability> MergeCapabilities(List<ConfiguredCapability> configuredCapabilities)
 		{
 			var mergedCapabilitiesById = new Dictionary<Guid, ConfiguredCapability>();
 
 			foreach (var configuredCapability in configuredCapabilities)
 			{
-				if (configuredCapability is ConfiguredStringCapability configuredStringCapability)
+				if (configuredCapability is ConfiguredStringCapability)
 				{
 					continue;
 				}
@@ -237,6 +150,105 @@ namespace Script
 			}
 
 			return mergedCapabilitiesById.Values.ToList();
+		}
+
+		private GQIRow[] GetResourceCapabilities()
+		{
+			var rows = new List<GQIRow>();
+
+			var resourceManagerHandler = new ResourceManagerHandler(domHelper);
+
+			var resource = resourceManagerHandler.Resources.SingleOrDefault(x => x.Instance.ID.Id.Equals(resourceId));
+			if (resource == null || string.IsNullOrEmpty(resource.PoolIds))
+			{
+				return rows.ToArray();
+			}
+
+			poolCapabilitiesByPoolDomInstanceId = resourceManagerHandler.ResourcePools.ToDictionary(x => x.Instance.ID.Id, x => x.Capabilities);
+			capabilitiesById = resourceManagerHandler.Capabilities.ToDictionary(x => x.Instance.ID.Id, x => x);
+			capabilityValuesById = resourceManagerHandler.CapabilityValues.ToDictionary(x => x.Instance.ID.Id, x => x);
+
+			var configuredResourceCapabilities = GetConfiguredResourceCapabilities(resource);
+			var mergedCapabilities = MergeCapabilities(configuredResourceCapabilities);
+
+			foreach (var mergedCapability in mergedCapabilities)
+			{
+				if (!(mergedCapability is ConfiguredEnumCapability mergedEnumCapability))
+				{
+					continue;
+				}
+
+				mergedEnumCapability.Discretes.ForEach(x =>
+				{
+					rows.Add(new GQIRow(new[]
+					{
+						new GQICell{Value = Convert.ToString(mergedEnumCapability.CapabilityData.Instance.ID.Id)},
+						new GQICell{Value = mergedEnumCapability.CapabilityData.Name},
+						new GQICell{Value = x},
+					}));
+				});
+			}
+
+			return rows.ToArray();
+		}
+
+		private bool TryGetConfiguredCapabilities(Guid poolDomInstanceId, out List<ConfiguredCapability> configuredCapabilities)
+		{
+			configuredCapabilities = new List<ConfiguredCapability>();
+
+			if (!poolCapabilitiesByPoolDomInstanceId.TryGetValue(poolDomInstanceId, out var capabilities))
+			{
+				return false;
+			}
+
+			configuredCapabilities = new List<ConfiguredCapability>();
+			foreach (var poolCapability in capabilities)
+			{
+				if (!capabilitiesById.TryGetValue(poolCapability.CapabilityId, out var capabilityData))
+				{
+					continue;
+				}
+
+				ConfiguredCapability configuredCapability;
+				if (capabilityData.CapabilityType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.CapabilityType.String)
+				{
+					configuredCapability = new ConfiguredStringCapability(capabilityData, poolCapability.CapabilityStringValue);
+				}
+				else
+				{
+					var discretes = new List<string>();
+
+					poolCapability.CapabilityEnumValueIds.ForEach(x =>
+					{
+						if (capabilityValuesById.TryGetValue(x, out var capabilityValueData) && capabilityValueData.CapabilityId.Equals(capabilityData.Instance.ID.Id))
+						{
+							discretes.Add(capabilityValueData.Value);
+						}
+					});
+
+					configuredCapability = new ConfiguredEnumCapability(capabilityData, discretes);
+				}
+
+				configuredCapabilities.Add(configuredCapability);
+			}
+
+			return true;
+		}
+
+		private List<ConfiguredCapability> GetConfiguredResourceCapabilities(ResourceData resource)
+		{
+			var configuredResourceCapabilities = new List<ConfiguredCapability>();
+			foreach (var poolDomInstanceId in resource.PoolIds.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => Guid.Parse(x)))
+			{
+				if (!TryGetConfiguredCapabilities(poolDomInstanceId, out var configuredPoolCapabilities))
+				{
+					continue;
+				}
+
+				configuredResourceCapabilities.AddRange(configuredPoolCapabilities);
+			}
+
+			return configuredResourceCapabilities;
 		}
 	}
 }

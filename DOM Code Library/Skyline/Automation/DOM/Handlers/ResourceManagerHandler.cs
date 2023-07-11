@@ -109,7 +109,7 @@
 		private void Init()
 		{
 			capabilitiesByInstanceId = new Lazy<Dictionary<Guid, CapabilityData>>(LoadCapabilityData);
-			capabilityValuesByInstanceId = new Lazy<Dictionary<Guid, CapabilityValueData>>(LoadCapabityValueData);
+			capabilityValuesByInstanceId = new Lazy<Dictionary<Guid, CapabilityValueData>>(LoadCapabilityValueData);
 
 			resourcePoolsByInstanceId = new Lazy<Dictionary<Guid, ResourcePoolData>>(LoadResourcePoolData);
 			resourcesByInstanceId = new Lazy<Dictionary<Guid, ResourceData>>(LoadResourceData);
@@ -153,7 +153,7 @@
 			return dic;
 		}
 
-		private Dictionary<Guid, CapabilityValueData> LoadCapabityValueData()
+		private Dictionary<Guid, CapabilityValueData> LoadCapabilityValueData()
 		{
 			var dic = new Dictionary<Guid, CapabilityValueData>();
 
@@ -189,175 +189,16 @@
 
 		private Dictionary<Guid, ResourcePoolData> LoadResourcePoolData()
 		{
-			var dic = new Dictionary<Guid, ResourcePoolData>();
+			var dataLoader = new ResourcePoolDataLoader(domHelper);
 
-			var mapper = new Dictionary<Guid, Action<ResourcePoolData, object>>
-			{
-				[Resourcemanagement.Sections.ResourcePoolInfo.Name.Id] = (data, value) => data.Name = Convert.ToString(value),
-				[Resourcemanagement.Sections.ResourcePoolInfo.Bookable.Id] = (data, value) => data.IsBookable = Convert.ToBoolean(value),
-				[Resourcemanagement.Sections.ResourcePoolInternalProperties.Resource_Ids.Id] = (data, value) => data.ResourceIds = Convert.ToString(value),
-				[Resourcemanagement.Sections.ResourcePoolInternalProperties.Resource_Pool_Id.Id] = (data, value) =>
-				{
-					var poolId = Convert.ToString(value);
-					data.PoolId = string.IsNullOrEmpty(poolId) ? Guid.Empty : Guid.Parse(poolId);
-				},
-			};
-
-			var capabilityMapper = new Dictionary<Guid, Action<ResourcePoolCapability, object>>
-			{
-				[Resourcemanagement.Sections.ResourcePoolCapabilities.Capability.Id] = (data, value) => data.CapabilityId = (Guid)value,
-				[Resourcemanagement.Sections.ResourcePoolCapabilities.Capability_Enum_Values.Id] = (data, value) => data.CapabilityEnumValueIds = (List<Guid>)value,
-				[Resourcemanagement.Sections.ResourcePoolCapabilities.Capability_String_Value.Id] = (data, value) => data.CapabilityStringValue = Convert.ToString(value),
-			};
-
-			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Resourcepool.Id));
-			foreach (var instance in instances)
-			{
-				var data = new ResourcePoolData
-				{
-					Instance = instance,
-				};
-
-				foreach (var section in instance.Sections)
-				{
-					if (section.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourcePoolCapabilities.Id.Id)
-					{
-						if (!section.FieldValues.Any())
-						{
-							continue;
-						}
-
-						var capability = new ResourcePoolCapability();
-
-						foreach (var fieldValue in section.FieldValues)
-						{
-							if (!capabilityMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
-							{
-								continue;
-							}
-
-							action.Invoke(capability, fieldValue.Value.Value);
-						}
-
-						data.Capabilities.Add(capability);
-					}
-					else
-					{
-						foreach (var fieldValue in section.FieldValues)
-						{
-							if (!mapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
-							{
-								continue;
-							}
-
-							action.Invoke(data, fieldValue.Value.Value);
-						}
-					}
-				}
-
-				dic.Add(data.Instance.ID.Id, data);
-			}
-
-			return dic;
+			return dataLoader.Load();
 		}
 
 		private Dictionary<Guid, ResourceData> LoadResourceData()
 		{
-			var dic = new Dictionary<Guid, ResourceData>();
+			var dataLoader = new ResourceDataLoader(domHelper);
 
-			var mapper = new Dictionary<Guid, Action<ResourceData, object>>
-			{
-				[Resourcemanagement.Sections.ResourceInfo.Name.Id] = (data, value) => data.Name = Convert.ToString(value),
-				[Resourcemanagement.Sections.ResourceInfo.Type.Id] = (data, value) => data.ResourceType = (Resourcemanagement.Enums.Type)value,
-				[Resourcemanagement.Sections.ResourceInfo.Element.Id] = (data, value) => data.LinkedElementInfo = Convert.ToString(value),
-				[Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id.Id] = (data, value) => data.ResourceId = (Guid)value,
-				[Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids.Id] = (data, value) => data.PoolIds = Convert.ToString(value),
-				[Resourcemanagement.Sections.ResourceConnectionManagement.InputVsgs.Id] = (Data, value) => Data.VirtualSignalGroupInputIds = (List<Guid>)value,
-				[Resourcemanagement.Sections.ResourceConnectionManagement.OutputVsgs.Id] = (Data, value) => Data.VirtualSignalGroupOutputIds = (List<Guid>)value,
-			};
-
-			var propertyMapper = new Dictionary<Guid, Action<ResourceProperty, object>>
-			{
-				[Resourcemanagement.Sections.ResourceProperties.Property.Id] = (data, value) => data.PropertyId = (Guid)value,
-				[Resourcemanagement.Sections.ResourceProperties.PropertyValue.Id] = (data, value) => data.Value = Convert.ToString(value),
-			};
-
-			var capacityMapper = new Dictionary<Guid, Action<ResourceCapacity, object>>
-			{
-				[Resourcemanagement.Sections.ResourceCapacities.Capacity.Id] = (data, value) => data.CapacityId = (Guid)value,
-				[Resourcemanagement.Sections.ResourceCapacities.CapacityValue.Id] = (data, value) => data.Value = (double)value,
-			};
-
-			var instances = domHelper.DomInstances.Read(DomInstanceExposers.DomDefinitionId.Equal(Resourcemanagement.Definitions.Resource.Id));
-			foreach (var instance in instances)
-			{
-				var data = new ResourceData
-				{
-					Instance = instance,
-				};
-
-				foreach (var section in instance.Sections)
-				{
-					if (section.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourceProperties.Id.Id)
-					{
-						if (!section.FieldValues.Any())
-						{
-							continue;
-						}
-
-						var property = new ResourceProperty();
-
-						foreach (var fieldValue in section.FieldValues)
-						{
-							if (!propertyMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
-							{
-								continue;
-							}
-
-							action.Invoke(property, fieldValue.Value.Value);
-						}
-
-						data.Properties.Add(property);
-					}
-					else if (section.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourceCapacities.Id.Id)
-					{
-						if (!section.FieldValues.Any())
-						{
-							continue;
-						}
-
-						var capacity = new ResourceCapacity();
-
-						foreach (var fieldValue in section.FieldValues)
-						{
-							if (!capacityMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
-							{
-								continue;
-							}
-
-							action.Invoke(capacity, fieldValue.Value.Value);
-						}
-
-						data.Capacities.Add(capacity);
-					}
-					else
-					{
-						foreach (var fieldValue in section.FieldValues)
-						{
-							if (!mapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
-							{
-								continue;
-							}
-
-							action.Invoke(data, fieldValue.Value.Value);
-						}
-					}
-				}
-
-				dic.Add(data.Instance.ID.Id, data);
-			}
-
-			return dic;
+			return dataLoader.Load();
 		}
 
 		private Dictionary<Guid, CapacityData> LoadCapacityData()

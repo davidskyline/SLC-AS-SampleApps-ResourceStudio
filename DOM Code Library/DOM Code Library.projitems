@@ -9,6 +9,8 @@
     <Import_RootNamespace>DOM_Code_Library</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Data Loaders\ResourceDataLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Data Loaders\ResourcePoolDataLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Handlers\ResourceManagerHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\CapabilityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Skyline\Automation\DOM\Objects\CapabilityValueData.cs" />

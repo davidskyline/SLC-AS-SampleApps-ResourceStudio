@@ -8,6 +8,7 @@
 	using Skyline.Automation.SRM;
 	using Skyline.DataMiner.Automation;
 	using Skyline.DataMiner.Net.Apps.DataMinerObjectModel;
+	using Skyline.DataMiner.Net.Helper;
 	using Skyline.DataMiner.Net.Sections;
 
 	public class ScriptData
@@ -53,19 +54,6 @@
 			}
 		}
 
-		public List<string> Discretes
-		{
-			get
-			{
-				return capabilityValues?.Select(x => x.Value).ToList() ?? new List<string>();
-			}
-
-			set
-			{
-				updatedDiscretes = value;
-			}
-		}
-
 		public List<ResourcePoolData> ResourcePoolsImplementingCapability
 		{
 			get
@@ -83,7 +71,7 @@
 				return;
 			}
 
-			var added = updatedDiscretes.Except(Discretes).ToList();
+			var added = updatedDiscretes.Except(GetDiscretes()).ToList();
 			var removed = capabilityValues.Where(x => !updatedDiscretes.Contains(x.Value)).ToList();
 
 			if (!added.Any() && !removed.Any())
@@ -103,6 +91,16 @@
 			}
 
 			DeleteDomInstances();
+		}
+
+		public List<string> GetDiscretes()
+		{
+			return capabilityValues?.Select(x => x.Value).ToList() ?? new List<string>();
+		}
+
+		public void SetDiscretes(List<string> discretes)
+		{
+			updatedDiscretes = discretes;
 		}
 
 		private void Init()

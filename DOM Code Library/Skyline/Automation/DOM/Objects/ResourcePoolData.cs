@@ -17,6 +17,8 @@
 
 		public Guid PoolId { get; set; }
 
+		public Guid ResourceId { get; set; }
+
 		public List<ResourcePoolCapability> Capabilities { get; set; } = new List<ResourcePoolCapability>();
 	}
 }

@@ -36,7 +36,7 @@
 				view.UpdateButton.IsEnabled = false;
 			}
 
-			foreach (var discrete in model.Discretes)
+			foreach (var discrete in model.GetDiscretes())
 			{
 				var section = new DiscreteSection();
 				section.DiscreteTextBox.Text = discrete;
@@ -115,7 +115,8 @@
 		{
 			if (view.CapabilityTypeLabel.Text == "Discrete")
 			{
-				model.Discretes = view.Discretes.Where(x => !string.IsNullOrWhiteSpace(x.DiscreteTextBox.Text)).Select(x => x.DiscreteTextBox.Text).Distinct().ToList();
+				var discretes = view.Discretes.Where(x => !string.IsNullOrWhiteSpace(x.DiscreteTextBox.Text)).Select(x => x.DiscreteTextBox.Text).Distinct().ToList();
+				model.SetDiscretes(discretes);
 			}
 		}
 		#endregion

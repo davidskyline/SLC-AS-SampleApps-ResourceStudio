@@ -26,5 +26,11 @@
 		public List<Guid> VirtualSignalGroupInputIds { get; set; }
 
 		public List<Guid> VirtualSignalGroupOutputIds { get; set; }
+
+		public double? Cost { get; set; }
+
+		public DomIds.Resourcemanagement.Enums.CostUnit? CostUnit { get; set; }
+
+		public DomIds.Resourcemanagement.Enums.Currency? Currency { get; set; }
 	}
 }

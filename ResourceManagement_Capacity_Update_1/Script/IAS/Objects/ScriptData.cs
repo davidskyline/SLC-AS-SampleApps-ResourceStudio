@@ -204,33 +204,119 @@
 
 		private bool HasChangedData()
 		{
+			if (HasChangedData_Units())
+			{
+				return true;
+			}
+
+			if (HasChangedData_RangeMin())
+			{
+				return true;
+			}
+
+			if (HasChangedData_RangeMax())
+			{
+				return true;
+			}
+
+			if (HasChangedData_StepSize())
+			{
+				return true;
+			}
+
+			if (HasChangedData_Decimals())
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		private bool HasChangedData_Units()
+		{
 			if (!Units.Equals(capacity.Units))
 			{
 				return true;
 			}
 
-			if ((capacity.RangeMin != null && (!IsRangeMinEnabled || !capacity.RangeMin.Equals(RangeMin))) ||
-				(capacity.RangeMin == null && IsRangeMinEnabled))
+			return false;
+		}
+
+		private bool HasChangedData_RangeMin()
+		{
+			if (capacity.RangeMin == null)
 			{
-				return true;
+				if (IsRangeMinEnabled)
+				{
+					return true;
+				}
+			}
+			else
+			{
+				if (!IsRangeMinEnabled || !capacity.RangeMin.Equals(RangeMin))
+				{
+					return true;
+				}
 			}
 
-			if ((capacity.RangeMax != null && (!IsRangeMaxEnabled || !capacity.RangeMax.Equals(RangeMax))) ||
-				(capacity.RangeMax == null && IsRangeMaxEnabled))
+			return false;
+		}
+
+		private bool HasChangedData_RangeMax()
+		{
+			if (capacity.RangeMax == null)
 			{
-				return true;
+				if (IsRangeMaxEnabled)
+				{
+					return true;
+				}
+			}
+			else
+			{
+				if (!IsRangeMaxEnabled || !capacity.RangeMax.Equals(RangeMax))
+				{
+					return true;
+				}
 			}
 
-			if ((capacity.StepSize != null && (!IsStepSizeEnabled || !capacity.StepSize.Equals(StepSize))) ||
-				(capacity.StepSize == null && IsStepSizeEnabled))
+			return false;
+		}
+
+		private bool HasChangedData_StepSize()
+		{
+			if (capacity.StepSize == null)
 			{
-				return true;
+				if (IsStepSizeEnabled)
+				{
+					return true;
+				}
+			}
+			else
+			{
+				if (!IsStepSizeEnabled || !capacity.StepSize.Equals(StepSize))
+				{
+					return true;
+				}
 			}
 
-			if ((capacity.Decimals != null && (!IsDecimalsEnabled || !capacity.Decimals.Equals(Decimals))) ||
-				(capacity.Decimals == null && IsDecimalsEnabled))
+			return false;
+		}
+
+		private bool HasChangedData_Decimals()
+		{
+			if (capacity.Decimals == null)
 			{
-				return true;
+				if (IsDecimalsEnabled)
+				{
+					return true;
+				}
+			}
+			else
+			{
+				if (!IsDecimalsEnabled || !capacity.Decimals.Equals(Decimals))
+				{
+					return true;
+				}
 			}
 
 			return false;
