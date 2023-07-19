@@ -45,19 +45,16 @@ Revision History:
 
 DATE		VERSION		AUTHOR			COMMENTS
 
-02/06/2023	1.0.0.1		JVW, Skyline	Initial version
+13/07/2023	1.0.0.1		JVW, Skyline	Initial version
 ****************************************************************************
 */
 
 namespace Script
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 
 	using Newtonsoft.Json;
 
-	using Skyline.Automation.IAS;
 	using Skyline.DataMiner.Automation;
 	using Skyline.DataMiner.Utils.InteractiveAutomationScript;
 
@@ -68,10 +65,12 @@ namespace Script
 	{
 		private IEngine engine;
 
+		private InputData inputData;
+
 		private InteractiveController controller;
 
-		private IAS.Dialogs.DuplicateResource.DuplicateResourceView duplicateResourceView;
-		private IAS.Dialogs.DuplicateResource.DuplicateResourcePresenter duplicateResourcePresenter;
+		private IAS.Dialogs.CreateFunctionResource.CreateFunctionResourceView createFunctionResourceView;
+		private IAS.Dialogs.CreateFunctionResource.CreateFunctionResourcePresenter createFunctionResourcePresenter;
 
 		private IAS.ScriptData scriptData;
 
@@ -93,45 +92,107 @@ namespace Script
 			}
 			catch (Exception e)
 			{
-				engine.ShowErrorDialog(e.ToString());
+				if (IsOutputDataRequired())
+				{
+					SetOutputData(false, e.Message);
+				}
+				else
+				{
+					engine.ExitFail(e.Message);
+				}
+
+				engine.Log(e.ToString());
 			}
 		}
 
 		private void RunSafe()
 		{
 			// engine.ShowUI()
-			var domInstanceId = JsonConvert.DeserializeObject<List<Guid>>(engine.GetScriptParam("Resource").Value).Single();
-
+			inputData = JsonConvert.DeserializeObject<InputData>(engine.GetScriptParam("Input Data").Value);
 			controller = new InteractiveController(engine);
 
-			scriptData = new IAS.ScriptData(engine, domInstanceId);
-
+			scriptData = new IAS.ScriptData(engine, inputData.ResourceName);
+			
 			InitFields();
 			InitEventHandlers();
 
-			duplicateResourcePresenter.LoadFromModel();
-			duplicateResourcePresenter.BuildView();
+			createFunctionResourcePresenter.LoadFromModel();
+			createFunctionResourcePresenter.BuildView();
 
-			controller.Run(duplicateResourceView);
+			controller.Run(createFunctionResourceView);
 		}
 
 		private void InitFields()
 		{
-			duplicateResourceView = new IAS.Dialogs.DuplicateResource.DuplicateResourceView(engine);
-			duplicateResourcePresenter = new IAS.Dialogs.DuplicateResource.DuplicateResourcePresenter(duplicateResourceView, scriptData);
+			createFunctionResourceView = new IAS.Dialogs.CreateFunctionResource.CreateFunctionResourceView(engine);
+			createFunctionResourcePresenter = new IAS.Dialogs.CreateFunctionResource.CreateFunctionResourcePresenter(createFunctionResourceView, scriptData);
 		}
 
 		private void InitEventHandlers()
 		{
-			InitDuplicateResourceEventHandlers();
+			InitCreateFunctionResourceEventHandlers();
 		}
 
-		private void InitDuplicateResourceEventHandlers()
+		private void InitCreateFunctionResourceEventHandlers()
 		{
-			duplicateResourcePresenter.Close += (sender, args) =>
+			createFunctionResourcePresenter.Close += (sender, args) =>
 			{
+				if (IsOutputDataRequired())
+				{
+					SetOutputData(false);
+				}
+
 				engine.ExitSuccess(string.Empty);
 			};
+
+			createFunctionResourcePresenter.Create += (sender, args) =>
+			{
+				if (IsOutputDataRequired())
+				{
+					SetOutputData(true);
+				}
+
+				engine.ExitSuccess(string.Empty);
+			};
+		}
+
+		private bool IsOutputDataRequired()
+		{
+			if (inputData.OutputConfiguration == null || !inputData.OutputConfiguration.ReturnData || string.IsNullOrEmpty(inputData.OutputConfiguration.VariableName))
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		private void SetOutputData(bool isSuccess, string errorReason = "")
+		{
+			var outputData = new OutputData
+			{
+				IsSuccess = isSuccess,
+			};
+
+			if (isSuccess)
+			{
+				switch (inputData.OutputConfiguration.OutputData)
+				{
+					case OutputDataEnum.ResourceId:
+						outputData.ResourceId = scriptData.CreatedResourceId;
+						break;
+
+					case OutputDataEnum.None:
+					default:
+						// Do nothing
+						break;
+				}
+			}
+			else
+			{
+				outputData.ErrorReason = errorReason;
+			}
+
+			engine.AddOrUpdateScriptOutput(inputData.OutputConfiguration.VariableName, JsonConvert.SerializeObject(outputData));
 		}
 	}
 }

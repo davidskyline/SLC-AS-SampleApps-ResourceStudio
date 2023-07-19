@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DMSScript options="272" xmlns="http://www.skyline.be/automation">
+	<Name>ResourceManagement_Generic_Create Function Resource</Name>
+	<Description></Description>
+	<Type>Automation</Type>
+	<Author>SKYLINE2\Jens</Author>
+	<CheckSets>FALSE</CheckSets>
+	<Folder>DataMiner Sample Apps/Resource Management</Folder>
+
+	<Protocols>
+	</Protocols>
+
+	<Memory>
+	</Memory>
+
+	<Parameters>
+		<ScriptParameter id="2" type="string" values="">
+			<Description>Input Data</Description>
+		</ScriptParameter>
+	</Parameters>
+
+	<Script>
+		<Exe id="1" type="csharp">
+			<Value><![CDATA[[Project:ResourceManagement_Generic_Create Function Resource_1]]]></Value>
+			<!--<Param type="debug">true</Param>-->
+			<Message></Message>
+		</Exe>
+	</Script>
+</DMSScript>

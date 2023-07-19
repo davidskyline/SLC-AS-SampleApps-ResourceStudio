@@ -256,6 +256,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{A972
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_GQI_Get Resource Capabilities_1", "ResourceManagement_GQI_Get Resource Capabilities_1\ResourceManagement_GQI_Get Resource Capabilities_1.csproj", "{6A35A96E-B098-403F-BD1F-49540C5AD9F0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Generic", "Generic", "{B0EFCE4C-D085-4E72-8B11-3DBA31F18758}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_Generic_Create Function Resource", "ResourceManagement_Generic_Create Function Resource", "{BE99C1CA-AACC-4A4C-B319-D604168D0AEA}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_Generic_Create Function Resource.xml = ResourceManagement_Generic_Create Function Resource.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{4EEDB822-5682-4B00-A057-5AC9AAAA695C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_Generic_Create Function Resource_1", "ResourceManagement_Generic_Create Function Resource_1\ResourceManagement_Generic_Create Function Resource_1.csproj", "{3868847F-8522-41FC-855C-16106C1C3069}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -354,6 +365,10 @@ Global
 		{6A35A96E-B098-403F-BD1F-49540C5AD9F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A35A96E-B098-403F-BD1F-49540C5AD9F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A35A96E-B098-403F-BD1F-49540C5AD9F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3868847F-8522-41FC-855C-16106C1C3069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3868847F-8522-41FC-855C-16106C1C3069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3868847F-8522-41FC-855C-16106C1C3069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3868847F-8522-41FC-855C-16106C1C3069}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -439,6 +454,10 @@ Global
 		{92A7E1EF-055B-4057-B28B-39ED0DAE15FE} = {9F06CC50-DD0E-4CF0-8F64-F80B301B4D90}
 		{A9728D62-2406-4BE4-8736-443BDC772495} = {92A7E1EF-055B-4057-B28B-39ED0DAE15FE}
 		{6A35A96E-B098-403F-BD1F-49540C5AD9F0} = {A9728D62-2406-4BE4-8736-443BDC772495}
+		{B0EFCE4C-D085-4E72-8B11-3DBA31F18758} = {87606168-4608-4881-8DCA-C402D1536967}
+		{BE99C1CA-AACC-4A4C-B319-D604168D0AEA} = {B0EFCE4C-D085-4E72-8B11-3DBA31F18758}
+		{4EEDB822-5682-4B00-A057-5AC9AAAA695C} = {BE99C1CA-AACC-4A4C-B319-D604168D0AEA}
+		{3868847F-8522-41FC-855C-16106C1C3069} = {4EEDB822-5682-4B00-A057-5AC9AAAA695C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58316B45-BB25-4B82-8940-C2B34838DE78}

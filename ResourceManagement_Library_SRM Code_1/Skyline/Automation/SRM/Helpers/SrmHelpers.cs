@@ -33,7 +33,7 @@
 
 			ProtocolFunctionHelper = new ProtocolFunctionHelper();
 			ProtocolFunctionHelper.RequestResponseEvent += (sender, e) => e.responseMessage = engine.SendSLNetSingleResponseMessage(e.requestMessage);
-
+			
 			ProfileHelper = new ProfileHelper(engine.SendSLNetMessages);
 		}
 	}

@@ -59,7 +59,8 @@
 			var newResourcesByName = new Dictionary<string, Resource>();
 
 			var resourceExpected = resourceData.Instance.StatusId == Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Complete;
-			if (resourceExpected)
+			var shouldCreateResources = resourceData.ResourceType != Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction;
+			if (resourceExpected && shouldCreateResources)
 			{
 				var srmHelpers = new SrmHelpers(engine);
 
@@ -74,7 +75,7 @@
 				newResourcesByName = CreateResources(srmHelpers, resource, newResourceNames);
 			}
 
-			CreateDomInstances(newResourceNames, newResourcesByName, resourceExpected);
+			CreateDomInstances(newResourceNames, newResourcesByName, resourceExpected, shouldCreateResources);
 		}
 
 		private static Dictionary<string, Resource> CreateResources(SrmHelpers srmHelpers, Resource baseResource, List<string> namesToUse)
@@ -148,7 +149,7 @@
 			return namesToUse;
 		}
 
-		private void CreateDomInstances(List<string> newResourceNames, Dictionary<string, Resource> newResourcesByName, bool resourceExpected)
+		private void CreateDomInstances(List<string> newResourceNames, Dictionary<string, Resource> newResourcesByName, bool resourceExpected, bool shouldCreateResources)
 		{
 			var newResourceDomInstanceIdsWithResourcePool = new List<string>();
 			foreach (var newResourceName in newResourceNames)
@@ -158,6 +159,11 @@
 
 				var resourceInfoSection = newResourceDomInstance.Sections.Single(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Id.Id);
 				resourceInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Name, new ValueWrapper<string>(newResourceName)));
+
+				if (resourceInfoSection.FieldValues.Any(x => x.FieldDescriptorID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Favourite.Id))
+				{
+					resourceInfoSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Favourite);
+				}
 
 				var resourceInternalPropertiesSection = newResourceDomInstance.Sections.Single(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Id.Id);
 				if (newResourcesByName.TryGetValue(newResourceName, out var newResource))
@@ -169,7 +175,7 @@
 						newResourceDomInstanceIdsWithResourcePool.Add(Convert.ToString(newResourceDomInstance.ID.Id));
 					}
 				}
-				else if (resourceExpected)
+				else if (resourceExpected && shouldCreateResources)
 				{
 					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id);
 					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids);
@@ -177,6 +183,13 @@
 					newResourceDomInstance.StatusId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Error;
 
 					resourceInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.ErrorDetails, new ValueWrapper<string>($"[{DateTime.Now}] >>> Resource '{newResourceName}' already exists.")));
+				}
+				else if (resourceExpected && !shouldCreateResources)
+				{
+					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id);
+					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids);
+
+					newResourceDomInstance.StatusId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Draft;
 				}
 				else
 				{

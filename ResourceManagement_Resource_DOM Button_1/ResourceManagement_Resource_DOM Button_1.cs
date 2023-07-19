@@ -56,6 +56,8 @@ namespace Script
 	using System.Linq;
 	using System.Text;
 
+	using Newtonsoft.Json;
+
 	using Skyline.Automation.DOM;
 	using Skyline.Automation.IAS;
 	using Skyline.Automation.SRM;
@@ -214,6 +216,7 @@ namespace Script
 			{
 				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.UnlinkedResource,
 				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Element,
+				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction,
 			};
 
 			errorMessage = string.Empty;
@@ -250,6 +253,28 @@ namespace Script
 				var splittedElementInfo = resourceData.LinkedElementInfo.Split('/');
 				resource.DmaID = Convert.ToInt32(splittedElementInfo[0]);
 				resource.ElementID = Convert.ToInt32(splittedElementInfo[1]);
+			}
+			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction && isNew)
+			{
+				var result = TryCreateVirtualFunctionResource(resourceData.Name);
+				if (result == null)
+				{
+					errorMessage = "Failed to execute script to create Virtual Function resource.";
+					return false;
+				}
+				else if (!result.IsSuccess)
+				{
+					errorMessage = result.ErrorReason;
+					return false;
+				}
+				else
+				{
+					resource = srmHelpers.ResourceManagerHelper.GetResource(result.ResourceId);
+				}
+			}
+			else
+			{
+				// Do nothing
 			}
 
 			VerifyResourceType(srmHelpers, resource, (Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type)resourceData.ResourceType);
@@ -407,7 +432,7 @@ namespace Script
 				resourceTypeParameter = srmHelpers.ProfileHelper.ProfileParameters.Create(resourceTypeParameter);
 			}
 
-			if (!resource.Capabilities.Any(x => x.CapabilityProfileID == resourceTypeParameter.ID))
+			if (!resource.Capabilities.Exists(x => x.CapabilityProfileID == resourceTypeParameter.ID))
 			{
 				resource.Capabilities.Add(new Skyline.DataMiner.Net.SRM.Capabilities.ResourceCapability(resourceTypeParameter.ID)
 				{
@@ -428,6 +453,38 @@ namespace Script
 						throw new NotSupportedException($"Resource type '{Convert.ToString(resourceType)}' is not supported.");
 				}
 			}
+		}
+
+		private Skyline.Automation.IOData.ResourceManagement.Scripts.CreateFunctionResource.OutputData TryCreateVirtualFunctionResource(string resourceName)
+		{
+			var inputData = new Skyline.Automation.IOData.ResourceManagement.Scripts.CreateFunctionResource.InputData
+			{
+				ResourceName = resourceName,
+				OutputConfiguration = new Skyline.Automation.IOData.ResourceManagement.Scripts.CreateFunctionResource.OutputDataConfig
+				{
+					ReturnData = true,
+					VariableName = "Result",
+					OutputData = Skyline.Automation.IOData.ResourceManagement.Scripts.CreateFunctionResource.OutputDataEnum.ResourceId,
+				},
+			};
+
+			var subScript = engine.PrepareSubScript("ResourceManagement_Generic_Create Function Resource");
+			subScript.SelectScriptParam("Input Data", JsonConvert.SerializeObject(inputData));
+			subScript.Synchronous = true;
+			subScript.StartScript();
+
+			if (!subScript.GetScriptResult().TryGetValue("Result", out var resultValue))
+			{
+				return null;
+			}
+
+			var outputData = JsonConvert.DeserializeObject<Skyline.Automation.IOData.ResourceManagement.Scripts.CreateFunctionResource.OutputData>(resultValue);
+			if (outputData == null)
+			{
+				return null;
+			}
+
+			return outputData;
 		}
 	}
 }
