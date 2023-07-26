@@ -17,7 +17,7 @@
 		private readonly Dictionary<Guid, Action<ResourcePoolData, object>> genericMapper = new Dictionary<Guid, Action<ResourcePoolData, object>>
 		{
 			[Resourcemanagement.Sections.ResourcePoolInfo.Name.Id] = (data, value) => data.Name = Convert.ToString(value),
-			[Resourcemanagement.Sections.ResourcePoolInfo.Bookable.Id] = (data, value) => data.IsBookable = Convert.ToBoolean(value),
+			[Resourcemanagement.Sections.ResourcePoolInfo.AllowBookingsOnPoolLevel.Id] = (data, value) => data.IsBookable = Convert.ToBoolean(value),
 			[Resourcemanagement.Sections.ResourcePoolInternalProperties.Resource_Ids.Id] = (data, value) => data.ResourceIds = Convert.ToString(value),
 			[Resourcemanagement.Sections.ResourcePoolInternalProperties.Resource_Pool_Id.Id] = (data, value) =>
 			{
