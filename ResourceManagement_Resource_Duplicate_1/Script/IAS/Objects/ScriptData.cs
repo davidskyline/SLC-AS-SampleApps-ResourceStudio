@@ -154,51 +154,7 @@
 			var newResourceDomInstanceIdsWithResourcePool = new List<string>();
 			foreach (var newResourceName in newResourceNames)
 			{
-				var newResourceDomInstance = resourceData.Instance.Clone() as DomInstance;
-				newResourceDomInstance.ID = new DomInstanceId(Guid.NewGuid());
-
-				var resourceInfoSection = newResourceDomInstance.Sections.Single(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Id.Id);
-				resourceInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Name, new ValueWrapper<string>(newResourceName)));
-
-				if (resourceInfoSection.FieldValues.Any(x => x.FieldDescriptorID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Favourite.Id))
-				{
-					resourceInfoSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Favourite);
-				}
-
-				var resourceInternalPropertiesSection = newResourceDomInstance.Sections.Single(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Id.Id);
-				if (newResourcesByName.TryGetValue(newResourceName, out var newResource))
-				{
-					resourceInternalPropertiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id, new ValueWrapper<Guid>(newResource.ID)));
-
-					if (newResource.PoolGUIDs.Any())
-					{
-						newResourceDomInstanceIdsWithResourcePool.Add(Convert.ToString(newResourceDomInstance.ID.Id));
-					}
-				}
-				else if (resourceExpected && shouldCreateResources)
-				{
-					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id);
-					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids);
-
-					newResourceDomInstance.StatusId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Error;
-
-					resourceInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.ErrorDetails, new ValueWrapper<string>($"[{DateTime.Now}] >>> Resource '{newResourceName}' already exists.")));
-				}
-				else if (resourceExpected)
-				{
-					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id);
-					resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids);
-
-					newResourceDomInstance.StatusId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Draft;
-				}
-				else
-				{
-					// Do nothing
-				}
-
-				HandleVirtualSignalGroups(newResourceDomInstance);
-
-				resourceManagerHandler.DomHelper.DomInstances.Create(newResourceDomInstance);
+				CreateResourceDomInstance(newResourceName, newResourcesByName, resourceExpected, shouldCreateResources, newResourceDomInstanceIdsWithResourcePool);
 			}
 
 			if (newResourceDomInstanceIdsWithResourcePool.Any())
@@ -224,6 +180,55 @@
 					resourceManagerHandler.DomHelper.DomInstances.Update(resourcePoolData.Instance);
 				}
 			}
+		}
+
+		private void CreateResourceDomInstance(string newResourceName, Dictionary<string, Resource> newResourcesByName, bool resourceExpected, bool shouldCreateResources, List<string> newResourceDomInstanceIdsWithResourcePool)
+		{
+			var newResourceDomInstance = resourceData.Instance.Clone() as DomInstance;
+			newResourceDomInstance.ID = new DomInstanceId(Guid.NewGuid());
+
+			var resourceInfoSection = newResourceDomInstance.Sections.Single(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Id.Id);
+			resourceInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Name, new ValueWrapper<string>(newResourceName)));
+
+			if (resourceInfoSection.FieldValues.Any(x => x.FieldDescriptorID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Favourite.Id))
+			{
+				resourceInfoSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.Favourite);
+			}
+
+			var resourceInternalPropertiesSection = newResourceDomInstance.Sections.Single(x => x.SectionDefinitionID.Id == Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Id.Id);
+			if (newResourcesByName.TryGetValue(newResourceName, out var newResource))
+			{
+				resourceInternalPropertiesSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id, new ValueWrapper<Guid>(newResource.ID)));
+
+				if (newResource.PoolGUIDs.Any())
+				{
+					newResourceDomInstanceIdsWithResourcePool.Add(Convert.ToString(newResourceDomInstance.ID.Id));
+				}
+			}
+			else if (resourceExpected && shouldCreateResources)
+			{
+				resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id);
+				resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids);
+
+				newResourceDomInstance.StatusId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Error;
+
+				resourceInfoSection.AddOrReplaceFieldValue(new FieldValue(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInfo.ErrorDetails, new ValueWrapper<string>($"[{DateTime.Now}] >>> Resource '{newResourceName}' already exists.")));
+			}
+			else if (resourceExpected)
+			{
+				resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id);
+				resourceInternalPropertiesSection.RemoveFieldValueById(Skyline.Automation.DOM.DomIds.Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids);
+
+				newResourceDomInstance.StatusId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Draft;
+			}
+			else
+			{
+				// Do nothing
+			}
+
+			HandleVirtualSignalGroups(newResourceDomInstance);
+
+			resourceManagerHandler.DomHelper.DomInstances.Create(newResourceDomInstance);
 		}
 
 		private void HandleVirtualSignalGroups(DomInstance newResourceDomInstance)

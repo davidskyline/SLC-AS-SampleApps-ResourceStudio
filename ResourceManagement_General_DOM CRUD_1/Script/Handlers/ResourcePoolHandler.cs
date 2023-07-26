@@ -246,23 +246,7 @@
 
 			if (!ResourcePoolData.IsBookable)
 			{
-				if (ResourcePoolData.ResourceId == Guid.Empty)
-				{
-					return result;
-				}
-
-				var poolResource = SrmHelpers.ResourceManagerHelper.GetResource(ResourcePoolData.ResourceId);
-				if (poolResource == null)
-				{
-					return result;
-				}
-
-				SrmHelpers.ResourceManagerHelper.RemoveResources(poolResource);
-
-				var resourcePoolInternalPropertiesSection = ResourcePoolData.Instance.Sections.Single(x => x.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourcePoolInternalProperties.Id.Id);
-				resourcePoolInternalPropertiesSection.RemoveFieldValueById(Resourcemanagement.Sections.ResourcePoolInternalProperties.Pool_Resource_Id);
-
-				ResourceManagerHandler.DomHelper.DomInstances.Update(ResourcePoolData.Instance);
+				RemovePoolResource();
 
 				return result;
 			}
@@ -449,37 +433,42 @@
 
 				if (configuredCapability is ConfiguredEnumCapability configuredEnumCapability)
 				{
-					if (!resourceCapabilitiesByCapabilityName.TryGetValue(configuredEnumCapability.CapabilityData.Name, out var resourceCapability))
-					{
-						var profileParameter = SrmHelpers.ProfileHelper.GetProfileParameterByName(configuredEnumCapability.CapabilityData.Name);
-						if (profileParameter == null)
-						{
-							continue;
-						}
-
-						resourceCapability = new ResourceCapability(profileParameter.ID);
-
-						resourceCapabilitiesByCapabilityName.Add(configuredEnumCapability.CapabilityData.Name, resourceCapability);
-					}
-
-					if (resourceCapability.Value == null)
-					{
-						resourceCapability.Value = new Skyline.DataMiner.Net.Profiles.CapabilityParameterValue(configuredEnumCapability.Discretes);
-					}
-					else
-					{
-						configuredEnumCapability.Discretes.ForEach(x =>
-						{
-							if (!resourceCapability.Value.Discreets.Contains(x))
-							{
-								resourceCapability.Value.Discreets.Add(x);
-							}
-						});
-					}
+					ComposeResourceCapabilityFromConfiguredEnumCapability(resourceCapabilitiesByCapabilityName, configuredEnumCapability);
 				}
 			}
 
 			return resourceCapabilitiesByCapabilityName.Values.ToList();
+		}
+
+		private void ComposeResourceCapabilityFromConfiguredEnumCapability(Dictionary<string, ResourceCapability> resourceCapabilitiesByCapabilityName, ConfiguredEnumCapability configuredEnumCapability)
+		{
+			if (!resourceCapabilitiesByCapabilityName.TryGetValue(configuredEnumCapability.CapabilityData.Name, out var resourceCapability))
+			{
+				var profileParameter = SrmHelpers.ProfileHelper.GetProfileParameterByName(configuredEnumCapability.CapabilityData.Name);
+				if (profileParameter == null)
+				{
+					return;
+				}
+
+				resourceCapability = new ResourceCapability(profileParameter.ID);
+
+				resourceCapabilitiesByCapabilityName.Add(configuredEnumCapability.CapabilityData.Name, resourceCapability);
+			}
+
+			if (resourceCapability.Value == null)
+			{
+				resourceCapability.Value = new Skyline.DataMiner.Net.Profiles.CapabilityParameterValue(configuredEnumCapability.Discretes);
+			}
+			else
+			{
+				configuredEnumCapability.Discretes.ForEach(x =>
+				{
+					if (!resourceCapability.Value.Discreets.Contains(x))
+					{
+						resourceCapability.Value.Discreets.Add(x);
+					}
+				});
+			}
 		}
 
 		private void VerifyResourceType(SrmHelpers srmHelpers, Resource resource)
@@ -521,6 +510,27 @@
 					Value = new Skyline.DataMiner.Net.Profiles.CapabilityParameterValue(new List<string> { "Pool Resource" }),
 				});
 			}
+		}
+
+		private void RemovePoolResource()
+		{
+			if (ResourcePoolData.ResourceId == Guid.Empty)
+			{
+				return;
+			}
+
+			var poolResource = SrmHelpers.ResourceManagerHelper.GetResource(ResourcePoolData.ResourceId);
+			if (poolResource == null)
+			{
+				return;
+			}
+
+			SrmHelpers.ResourceManagerHelper.RemoveResources(poolResource);
+
+			var resourcePoolInternalPropertiesSection = ResourcePoolData.Instance.Sections.Single(x => x.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourcePoolInternalProperties.Id.Id);
+			resourcePoolInternalPropertiesSection.RemoveFieldValueById(Resourcemanagement.Sections.ResourcePoolInternalProperties.Pool_Resource_Id);
+
+			ResourceManagerHandler.DomHelper.DomInstances.Update(ResourcePoolData.Instance);
 		}
 		#endregion
 
