@@ -262,6 +262,26 @@ namespace Script
 					errorMessage = "Service link is required.";
 					return false;
 				}
+
+				if (!TryGetService(resourceData.LinkedServiceInfo, out var service))
+				{
+					errorMessage = "Service not linked to existing service.";
+					return false;
+				}
+
+				var serviceProperty = resource.Properties.SingleOrDefault(x => x.Name == "Service Link");
+				if (serviceProperty != null)
+				{
+					serviceProperty.Value = $"{service.DmaId}/{service.ServiceId}";
+				}
+				else
+				{
+					resource.Properties.Add(new ResourceManagerProperty
+					{
+						Name = "Service Link",
+						Value = $"{service.DmaId}/{service.ServiceId}",
+					});
+				}
 			}
 			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction && isNew)
 			{
