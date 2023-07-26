@@ -6,6 +6,6 @@
 
 		public string VariableName { get; set; }
 
-		public OutputDataEnum OutputData { get; set; }
+		public OutputDataType OutputData { get; set; }
 	}
 }

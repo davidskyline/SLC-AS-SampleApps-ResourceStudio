@@ -1,6 +1,6 @@
 ﻿namespace Script
 {
-	public enum OutputDataEnum
+	public enum OutputDataType
 	{
 		None,
 

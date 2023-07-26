@@ -177,11 +177,11 @@ namespace Script
 			{
 				switch (inputData.OutputConfiguration.OutputData)
 				{
-					case OutputDataEnum.ResourceId:
+					case OutputDataType.ResourceId:
 						outputData.ResourceId = scriptData.CreatedResourceId;
 						break;
 
-					case OutputDataEnum.None:
+					case OutputDataType.None:
 					default:
 						// Do nothing
 						break;

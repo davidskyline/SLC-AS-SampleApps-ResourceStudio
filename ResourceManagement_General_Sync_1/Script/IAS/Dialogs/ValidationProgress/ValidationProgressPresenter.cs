@@ -23,7 +23,7 @@
 		}
 
 		#region Events
-		public EventHandler<EventArgs> Continue;
+		public event EventHandler<EventArgs> Continue;
 		#endregion
 
 		#region Methods

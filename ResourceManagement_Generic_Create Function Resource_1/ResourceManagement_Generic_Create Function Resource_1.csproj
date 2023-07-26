@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceManagement_Generic_Create Function Resource_1.cs" />
-    <Compile Include="Script\Enums\OutputDataEnum.cs" />
+    <Compile Include="Script\Enums\OutputDataType.cs" />
     <Compile Include="Script\IAS\Dialogs\CreateFunctionResource\CreateFunctionResourcePresenter.cs" />
     <Compile Include="Script\IAS\Dialogs\CreateFunctionResource\CreateFunctionResourceView.cs" />
     <Compile Include="Script\IAS\Objects\ScriptData.cs" />
@@ -91,7 +91,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties DisLinkedXmlFile="..\ResourceManagement_Generic_Create Function Resource.xml" DisProjectType="automationScriptProject" DisLinkId="1" />
+      <UserProperties DisLinkId="1" DisProjectType="automationScriptProject" DisLinkedXmlFile="..\ResourceManagement_Generic_Create Function Resource.xml" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

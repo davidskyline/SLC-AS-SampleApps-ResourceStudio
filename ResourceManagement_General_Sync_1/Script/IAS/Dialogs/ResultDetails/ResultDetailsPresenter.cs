@@ -20,7 +20,7 @@
 		}
 
 		#region Events
-		public EventHandler<EventArgs> Previous;
+		public event EventHandler<EventArgs> Previous;
 		#endregion
 
 		#region Methods

@@ -62,9 +62,7 @@ namespace Script
 	[GQIMetaData(Name = "Resource Management - Get Resource Pool Capabilities")]
 	public class ResourceManagementDataSource : IGQIDataSource, IGQIInputArguments, IGQIOnInit
 	{
-		private GQIDMS dms;
-
-		private GQIStringArgument resourcePoolIdArg = new GQIStringArgument("Resource Pool ID") { IsRequired = true };
+		private readonly GQIStringArgument resourcePoolIdArg = new GQIStringArgument("Resource Pool ID") { IsRequired = true };
 
 		private DomHelper domHelper;
 
@@ -102,8 +100,7 @@ namespace Script
 
 		public OnInitOutputArgs OnInit(OnInitInputArgs args)
 		{
-			dms = args.DMS;
-			domHelper = new DomHelper(dms.SendMessages, Skyline.Automation.DOM.DomIds.Resourcemanagement.ModuleId);
+			domHelper = new DomHelper(args.DMS.SendMessages, Skyline.Automation.DOM.DomIds.Resourcemanagement.ModuleId);
 
 			return default;
 		}

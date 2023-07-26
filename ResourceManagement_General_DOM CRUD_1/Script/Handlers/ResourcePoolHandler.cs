@@ -440,7 +440,7 @@
 
 			foreach (var configuredCapability in configuredCapabilities)
 			{
-				if (configuredCapability is ConfiguredStringCapability configuredStringCapability)
+				if (configuredCapability is ConfiguredStringCapability)
 				{
 					continue;
 				}
@@ -530,19 +530,19 @@
 			public bool Success => string.IsNullOrEmpty(ErrorMessage);
 		}
 
-		private class PoolResourceResult : Result
+		private sealed class PoolResourceResult : Result
 		{
 			public Resource Resource { get; set; }
 		}
 
-		private class PoolNameResult : Result
+		private sealed class PoolNameResult : Result
 		{
 			public ResourcePool ResourcePool { get; set; }
 
 			public bool HasChangedName { get; set; }
 		}
 
-		private class ResourcesResult : Result
+		private sealed class ResourcesResult : Result
 		{
 			public List<Resource> ResourcesInPool { get; set; } = new List<Resource>();
 

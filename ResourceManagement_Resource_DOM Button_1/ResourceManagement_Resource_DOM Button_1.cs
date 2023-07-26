@@ -243,10 +243,12 @@ namespace Script
 			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceData.ResourceId) ?? new Resource();
 			resource.Name = resourceData.Name;
 
-			if (!TryAdaptResourceBasedOnType(srmHelpers, resource, resourceData, isNew, out errorMessage))
+			if (!TryAdaptResourceBasedOnType(srmHelpers, resource, resourceData, isNew, out var adaptedResource, out errorMessage))
 			{
 				return false;
 			}
+
+			resource = adaptedResource;
 
 			VerifyResourceType(srmHelpers, resource, (Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type)resourceData.ResourceType);
 
@@ -372,30 +374,33 @@ namespace Script
 			srmHelpers.ResourceManagerHelper.RemoveResources(new[] { resource }, options);
 		}
 
-		private bool TryAdaptResourceBasedOnType(SrmHelpers srmHelpers, Resource resource, ResourceData resourceData, bool isNew, out string errorMessage)
+		private bool TryAdaptResourceBasedOnType(SrmHelpers srmHelpers, Resource resource, ResourceData resourceData, bool isNew, out Resource adaptedResource, out string errorMessage)
 		{
+			adaptedResource = resource;
 			errorMessage = string.Empty;
 
 			if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Element)
 			{
-				if (!TryAdaptResourceBasedOnType_Element(resource, resourceData, out errorMessage))
+				if (!TryAdaptResourceBasedOnType_Element(adaptedResource, resourceData, out errorMessage))
 				{
 					return false;
 				}
 			}
 			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Service)
 			{
-				if (!TryAdaptResourceBasedOnType_Service(resource, resourceData, out errorMessage))
+				if (!TryAdaptResourceBasedOnType_Service(adaptedResource, resourceData, out errorMessage))
 				{
 					return false;
 				}
 			}
 			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction && isNew)
 			{
-				if (!TryAdaptResourceBasedOnType_VirtualFunction(srmHelpers, resource, resourceData, out errorMessage))
+				if (!TryAdaptResourceBasedOnType_VirtualFunction(srmHelpers, resourceData, out var functionResource, out errorMessage))
 				{
 					return false;
 				}
+
+				adaptedResource = functionResource;
 			}
 			else
 			{
@@ -455,8 +460,9 @@ namespace Script
 			return true;
 		}
 
-		private bool TryAdaptResourceBasedOnType_VirtualFunction(SrmHelpers srmHelpers, Resource resource, ResourceData resourceData, out string errorMessage)
+		private bool TryAdaptResourceBasedOnType_VirtualFunction(SrmHelpers srmHelpers, ResourceData resourceData, out Resource resource, out string errorMessage)
 		{
+			resource = null;
 			errorMessage = string.Empty;
 
 			var result = TryCreateVirtualFunctionResource(resourceData.Name);

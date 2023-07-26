@@ -16,9 +16,9 @@
 		}
 
 		#region Events
-		public EventHandler<EventArgs> Close;
+		public event EventHandler<EventArgs> Close;
 
-		public EventHandler<EventArgs> Validate;
+		public event EventHandler<EventArgs> Validate;
 		#endregion
 
 		#region Methods

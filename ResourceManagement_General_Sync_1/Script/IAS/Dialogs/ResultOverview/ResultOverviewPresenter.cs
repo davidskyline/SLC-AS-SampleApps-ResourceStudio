@@ -20,9 +20,9 @@
 		}
 
 		#region Events
-		public EventHandler<EventArgs> Close;
+		public event EventHandler<EventArgs> Close;
 
-		public EventHandler<EventArgs> Details;
+		public event EventHandler<EventArgs> Details;
 		#endregion
 
 		#region Methods
