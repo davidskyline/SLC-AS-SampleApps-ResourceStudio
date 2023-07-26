@@ -238,7 +238,7 @@
 				}
 				else
 				{
-					continue;
+					// Do nothing
 				}
 			}
 

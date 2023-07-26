@@ -32,9 +32,9 @@
 
 		private Dictionary<string, List<IDmsElement>> elementsByProtocolName;
 
-		private Dictionary<Guid, EntryPointDataMapper> entryPointDataMapperByFunctionId = new Dictionary<Guid, EntryPointDataMapper>();
+		private Dictionary<Guid, EntryPointDataMapper> entryPointDataMapperByFunctionId;
 
-		private Dictionary<Guid, List<IDmsElement>> filteredElementsByFunctionId = new Dictionary<Guid, List<IDmsElement>>();
+		private Dictionary<Guid, List<IDmsElement>> filteredElementsByFunctionId;
 
 		private string selectedFunction;
 
@@ -183,6 +183,9 @@
 		{
 			dms = engine.GetDms();
 			srmHelpers = new SrmHelpers(engine);
+
+			entryPointDataMapperByFunctionId = new Dictionary<Guid, EntryPointDataMapper>();
+			filteredElementsByFunctionId = new Dictionary<Guid, List<IDmsElement>>();
 
 			LoadFunctions();
 			LoadElements();
@@ -349,11 +352,11 @@
 
 		private sealed class EntryPointDataMapper
 		{
-			private Dictionary<string, List<EntryPointData>> entryPointDataByElementInfo = new Dictionary<string, List<EntryPointData>>();
+			private readonly Dictionary<string, List<EntryPointData>> entryPointDataByElementInfo;
 
 			internal EntryPointDataMapper()
 			{
-				
+				entryPointDataByElementInfo = new Dictionary<string, List<EntryPointData>>();
 			}
 
 			public void AddEntryPointData(IDmsElement element, List<EntryPointData> entryPointData)

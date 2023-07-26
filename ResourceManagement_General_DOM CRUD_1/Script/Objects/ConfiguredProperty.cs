@@ -7,7 +7,7 @@
 	public class ConfiguredProperty
 	{
 		#region Fields
-		private PropertyData propertyData;
+		private readonly PropertyData propertyData;
 		#endregion
 
 		public ConfiguredProperty(PropertyData propertyData)

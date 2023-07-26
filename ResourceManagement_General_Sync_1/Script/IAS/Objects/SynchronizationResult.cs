@@ -8,7 +8,7 @@
 	{
 		private readonly string reference;
 
-		private Dictionary<string, SynchronizationItem> deSyncItemsByName;
+		private readonly Dictionary<string, SynchronizationItem> deSyncItemsByName;
 
 		public SynchronizationResult(string reference)
 		{

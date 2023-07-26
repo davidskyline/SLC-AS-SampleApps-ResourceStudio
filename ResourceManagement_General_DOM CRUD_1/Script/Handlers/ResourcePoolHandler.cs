@@ -29,7 +29,7 @@
 
 		private Lazy<ResourcePoolData> resourcePoolData;
 
-		private Dictionary<Guid, List<ConfiguredCapability>> configuredCapabilitiesByPoolDomInstanceId = new Dictionary<Guid, List<ConfiguredCapability>>();
+		private Dictionary<Guid, List<ConfiguredCapability>> configuredCapabilitiesByPoolDomInstanceId;
 
 		private Dictionary<Guid, List<ResourcePoolCapability>> poolCapabilitiesByPoolDomInstanceId;
 
@@ -157,6 +157,8 @@
 
 		private void Init()
 		{
+			configuredCapabilitiesByPoolDomInstanceId = new Dictionary<Guid, List<ConfiguredCapability>>();
+
 			resourceManagerHandler = new Lazy<ResourceManagerHandler>(() => new ResourceManagerHandler(domHelper));
 			srmHelpers = new Lazy<SrmHelpers>(() => new SrmHelpers(engine));
 

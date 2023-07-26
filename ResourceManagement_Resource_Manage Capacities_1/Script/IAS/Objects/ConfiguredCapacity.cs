@@ -11,7 +11,7 @@
 	public class ConfiguredCapacity
 	{
 		#region Fields
-		private CapacityData capacityData;
+		private readonly CapacityData capacityData;
 		#endregion
 
 		public ConfiguredCapacity(CapacityData capacityData)

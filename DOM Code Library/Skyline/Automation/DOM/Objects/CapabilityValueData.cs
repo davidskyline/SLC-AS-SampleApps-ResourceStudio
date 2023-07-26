@@ -5,7 +5,7 @@
 
 	public class CapabilityValueData
 	{
-		public DomInstance Instance;
+		public DomInstance Instance { get; set; }
 
 		public Guid CapabilityId { get; set; }
 
