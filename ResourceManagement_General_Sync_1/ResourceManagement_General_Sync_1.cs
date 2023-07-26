@@ -120,7 +120,7 @@ namespace Script
 		private void InitFields()
 		{
 			homeView = new IAS.Dialogs.Home.HomeView(engine);
-			homePresenter = new IAS.Dialogs.Home.HomePresenter(homeView, scriptData);
+			homePresenter = new IAS.Dialogs.Home.HomePresenter(homeView);
 
 			validationProgressView = new IAS.Dialogs.ValidationProgress.ValidationProgressView(engine);
 			validationProgressPresenter = new IAS.Dialogs.ValidationProgress.ValidationProgressPresenter(validationProgressView, scriptData);

@@ -17,8 +17,6 @@
 
 		private Dictionary<string, CapacityData> capacityDataByName;
 
-		private Dictionary<string, Skyline.DataMiner.Net.Profiles.Parameter> parametersByName;
-
 		private List<CapacityData> missing;
 
 		private List<DataMapper> misconfigured;
@@ -44,7 +42,6 @@
 			capacityDataByName = resourceManagerHandler.Capacities.ToDictionary(x => x.Name, x => x);
 
 			var profileParameters = GetProfileParameters();
-			parametersByName = profileParameters.ToDictionary(x => x.Name, x => x);
 
 			VerifyMissingParameters(profileParameters, result);
 

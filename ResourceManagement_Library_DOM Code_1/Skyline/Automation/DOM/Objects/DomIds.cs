@@ -36,7 +36,7 @@
 					Installed = 0,
 					FuturePlanned = 1,
 					DynamicInventory = 2,
-					Virtual = 3
+					Unmanaged = 3
 				}
 
 				public enum Type
@@ -123,12 +123,6 @@
 					}
 
 					= new FieldDescriptorID(new Guid("43124d0d-e9a6-4f3c-a6de-9c1533bf2d1c"));
-					public static FieldDescriptorID FLECost
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("379bc449-48aa-4033-a057-e10c1652cd25"));
 				}
 
 				public static class ResourcePoolInternalProperties
@@ -298,41 +292,18 @@
 					}
 
 					= new FieldDescriptorID(new Guid("00886e7d-79d0-466c-b704-24aca6d361c8"));
+					public static FieldDescriptorID Service
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("15d9ba80-c85c-4fe3-9878-6c95decf6fb5"));
 					public static FieldDescriptorID Concurrency
 					{
 						get;
 					}
 
 					= new FieldDescriptorID(new Guid("5846db60-e57f-491a-8958-848695e57921"));
-				}
-
-				public static class ResourcePoolInfo
-				{
-					public static SectionDefinitionID Id
-					{
-						get;
-					}
-
-					= new SectionDefinitionID(new Guid("2377a750-f9e6-4a91-9d5c-4b9a4bee25ac"))
-					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID Name
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("2cebe78f-be32-455d-8daf-86f815aa3b82"));
-					public static FieldDescriptorID Bookable
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("f7348534-eb3d-4475-abfa-9bef82c52f9e"));
-					public static FieldDescriptorID ErrorDetails
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("bd09b565-8c33-4f70-b7a1-42b909e9c907"));
 				}
 
 				public static class ResourcePoolCapabilities
@@ -471,6 +442,52 @@
 					}
 
 					= new FieldDescriptorID(new Guid("0c1f8559-198c-40ff-9d52-60e2e1a90988"));
+				}
+
+				public static class ResourceFlowEngineering
+				{
+					public static SectionDefinitionID Id
+					{
+						get;
+					}
+
+					= new SectionDefinitionID(new Guid("1c851e01-4b64-40cc-aa65-025443f506bf"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID PathCalculationCost
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("6f9b64cf-9761-4c7e-b29c-be5684dfbfa1"));
+				}
+
+				public static class ResourcePoolInfo
+				{
+					public static SectionDefinitionID Id
+					{
+						get;
+					}
+
+					= new SectionDefinitionID(new Guid("2377a750-f9e6-4a91-9d5c-4b9a4bee25ac"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID Name
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("2cebe78f-be32-455d-8daf-86f815aa3b82"));
+					public static FieldDescriptorID AllowBookingsOnPoolLevel
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("f7348534-eb3d-4475-abfa-9bef82c52f9e"));
+					public static FieldDescriptorID ErrorDetails
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("bd09b565-8c33-4f70-b7a1-42b909e9c907"));
 				}
 			}
 

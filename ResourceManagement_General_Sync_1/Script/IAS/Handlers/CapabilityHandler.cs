@@ -19,8 +19,6 @@
 
 		private Dictionary<Guid, List<CapabilityValueData>> capabilityValueDataByCapabilityId;
 
-		private Dictionary<string, Skyline.DataMiner.Net.Profiles.Parameter> parametersByName;
-
 		private List<CapabilityData> missing;
 
 		private List<DataMapper> misconfigured;
@@ -47,7 +45,6 @@
 			capabilityValueDataByCapabilityId = resourceManagerHandler.CapabilityValues.GroupBy(x => x.CapabilityId).ToDictionary(x => x.Key, x => x.ToList());
 
 			var profileParameters = GetProfileParameters();
-			parametersByName = profileParameters.ToDictionary(x => x.Name, x => x);
 
 			VerifyMissingParameters(profileParameters, result);
 

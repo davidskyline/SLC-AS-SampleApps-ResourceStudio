@@ -217,6 +217,7 @@ namespace Script
 				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.UnlinkedResource,
 				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Element,
 				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction,
+				Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Service,
 			};
 
 			errorMessage = string.Empty;
@@ -253,6 +254,14 @@ namespace Script
 				var splittedElementInfo = resourceData.LinkedElementInfo.Split('/');
 				resource.DmaID = Convert.ToInt32(splittedElementInfo[0]);
 				resource.ElementID = Convert.ToInt32(splittedElementInfo[1]);
+			}
+			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Service)
+			{
+				if (string.IsNullOrEmpty(resourceData.LinkedServiceInfo))
+				{
+					errorMessage = "Service link is required.";
+					return false;
+				}
 			}
 			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction && isNew)
 			{
@@ -485,6 +494,20 @@ namespace Script
 			}
 
 			return outputData;
+		}
+
+		private bool TryGetService(string serviceInfo, out Service service)
+		{
+			if (serviceInfo.Contains('/'))
+			{
+				service = engine.FindServiceByKey(serviceInfo);
+			}
+			else
+			{
+				service = engine.FindService(serviceInfo);
+			}
+
+			return service != null;
 		}
 	}
 }

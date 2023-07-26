@@ -19,6 +19,7 @@
 			[Resourcemanagement.Sections.ResourceInfo.Name.Id] = (data, value) => data.Name = Convert.ToString(value),
 			[Resourcemanagement.Sections.ResourceInfo.Type.Id] = (data, value) => data.ResourceType = (Resourcemanagement.Enums.Type)value,
 			[Resourcemanagement.Sections.ResourceInfo.Element.Id] = (data, value) => data.LinkedElementInfo = Convert.ToString(value),
+			[Resourcemanagement.Sections.ResourceInfo.Service.Id] = (data, value) => data.LinkedServiceInfo = Convert.ToString(value),
 			[Resourcemanagement.Sections.ResourceInternalProperties.Resource_Id.Id] = (data, value) => data.ResourceId = (Guid)value,
 			[Resourcemanagement.Sections.ResourceInternalProperties.Pool_Ids.Id] = (data, value) => data.PoolIds = Convert.ToString(value),
 			[Resourcemanagement.Sections.ResourceConnectionManagement.InputVsgs.Id] = (data, value) => data.VirtualSignalGroupInputIds = (List<Guid>)value,

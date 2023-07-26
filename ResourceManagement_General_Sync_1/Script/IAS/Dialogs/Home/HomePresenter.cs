@@ -6,14 +6,11 @@
 	{
 		#region Fields
 		private readonly HomeView view;
-
-		private readonly ScriptData model;
 		#endregion
 
-		public HomePresenter(HomeView view, ScriptData model)
+		public HomePresenter(HomeView view)
 		{
 			this.view = view ?? throw new ArgumentNullException(nameof(view));
-			this.model = model ?? throw new ArgumentNullException(nameof(model));
 
 			Init();
 		}

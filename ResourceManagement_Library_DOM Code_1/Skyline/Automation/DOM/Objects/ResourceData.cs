@@ -15,6 +15,8 @@
 
 		public string LinkedElementInfo { get; set; }
 
+		public string LinkedServiceInfo { get; set; }
+
 		public Guid ResourceId { get; set; }
 
 		public string PoolIds { get; set; }
