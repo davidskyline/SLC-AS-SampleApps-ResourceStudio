@@ -243,67 +243,9 @@ namespace Script
 			var resource = srmHelpers.ResourceManagerHelper.GetResource(resourceData.ResourceId) ?? new Resource();
 			resource.Name = resourceData.Name;
 
-			if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Element)
+			if (!TryAdaptResourceBasedOnType(srmHelpers, resource, resourceData, isNew, out errorMessage))
 			{
-				if (string.IsNullOrEmpty(resourceData.LinkedElementInfo))
-				{
-					errorMessage = "Element link is required.";
-					return false;
-				}
-
-				var splittedElementInfo = resourceData.LinkedElementInfo.Split('/');
-				resource.DmaID = Convert.ToInt32(splittedElementInfo[0]);
-				resource.ElementID = Convert.ToInt32(splittedElementInfo[1]);
-			}
-			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Service)
-			{
-				if (string.IsNullOrEmpty(resourceData.LinkedServiceInfo))
-				{
-					errorMessage = "Service link is required.";
-					return false;
-				}
-
-				if (!TryGetService(resourceData.LinkedServiceInfo, out var service))
-				{
-					errorMessage = "Service not linked to existing service.";
-					return false;
-				}
-
-				var serviceProperty = resource.Properties.SingleOrDefault(x => x.Name == "Service Link");
-				if (serviceProperty != null)
-				{
-					serviceProperty.Value = $"{service.DmaId}/{service.ServiceId}";
-				}
-				else
-				{
-					resource.Properties.Add(new ResourceManagerProperty
-					{
-						Name = "Service Link",
-						Value = $"{service.DmaId}/{service.ServiceId}",
-					});
-				}
-			}
-			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction && isNew)
-			{
-				var result = TryCreateVirtualFunctionResource(resourceData.Name);
-				if (result == null)
-				{
-					errorMessage = "Failed to execute script to create Virtual Function resource.";
-					return false;
-				}
-				else if (!result.IsSuccess)
-				{
-					errorMessage = result.ErrorReason;
-					return false;
-				}
-				else
-				{
-					resource = srmHelpers.ResourceManagerHelper.GetResource(result.ResourceId);
-				}
-			}
-			else
-			{
-				// Do nothing
+				return false;
 			}
 
 			VerifyResourceType(srmHelpers, resource, (Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type)resourceData.ResourceType);
@@ -428,6 +370,112 @@ namespace Script
 			};
 
 			srmHelpers.ResourceManagerHelper.RemoveResources(new[] { resource }, options);
+		}
+
+		private bool TryAdaptResourceBasedOnType(SrmHelpers srmHelpers, Resource resource, ResourceData resourceData, bool isNew, out string errorMessage)
+		{
+			errorMessage = string.Empty;
+
+			if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Element)
+			{
+				if (!TryAdaptResourceBasedOnType_Element(resource, resourceData, out errorMessage))
+				{
+					return false;
+				}
+			}
+			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.Service)
+			{
+				if (!TryAdaptResourceBasedOnType_Service(resource, resourceData, out errorMessage))
+				{
+					return false;
+				}
+			}
+			else if (resourceData.ResourceType == Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type.VirtualFunction && isNew)
+			{
+				if (!TryAdaptResourceBasedOnType_VirtualFunction(srmHelpers, resource, resourceData, out errorMessage))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				// Do nothing
+			}
+
+			return true;
+		}
+
+		private bool TryAdaptResourceBasedOnType_Element(Resource resource, ResourceData resourceData, out string errorMessage)
+		{
+			errorMessage = string.Empty;
+
+			if (string.IsNullOrEmpty(resourceData.LinkedElementInfo))
+			{
+				errorMessage = "Element link is required.";
+				return false;
+			}
+
+			var splittedElementInfo = resourceData.LinkedElementInfo.Split('/');
+			resource.DmaID = Convert.ToInt32(splittedElementInfo[0]);
+			resource.ElementID = Convert.ToInt32(splittedElementInfo[1]);
+
+			return true;
+		}
+
+		private bool TryAdaptResourceBasedOnType_Service(Resource resource, ResourceData resourceData, out string errorMessage)
+		{
+			errorMessage = string.Empty;
+
+			if (string.IsNullOrEmpty(resourceData.LinkedServiceInfo))
+			{
+				errorMessage = "Service link is required.";
+				return false;
+			}
+
+			if (!TryGetService(resourceData.LinkedServiceInfo, out var service))
+			{
+				errorMessage = "Service not linked to existing service.";
+				return false;
+			}
+
+			var serviceProperty = resource.Properties.SingleOrDefault(x => x.Name == "Service Link");
+			if (serviceProperty != null)
+			{
+				serviceProperty.Value = $"{service.DmaId}/{service.ServiceId}";
+			}
+			else
+			{
+				resource.Properties.Add(new ResourceManagerProperty
+				{
+					Name = "Service Link",
+					Value = $"{service.DmaId}/{service.ServiceId}",
+				});
+			}
+
+			return true;
+		}
+
+		private bool TryAdaptResourceBasedOnType_VirtualFunction(SrmHelpers srmHelpers, Resource resource, ResourceData resourceData, out string errorMessage)
+		{
+			errorMessage = string.Empty;
+
+			var result = TryCreateVirtualFunctionResource(resourceData.Name);
+			if (result == null)
+			{
+				errorMessage = "Failed to execute script to create Virtual Function resource.";
+				return false;
+			}
+			else if (!result.IsSuccess)
+			{
+				errorMessage = result.ErrorReason;
+				return false;
+			}
+			else
+			{
+				resource = srmHelpers.ResourceManagerHelper.GetResource(result.ResourceId);
+			}
+
+			return true;
 		}
 
 		private void VerifyResourceType(SrmHelpers srmHelpers, Resource resource, Skyline.Automation.DOM.DomIds.Resourcemanagement.Enums.Type resourceType)

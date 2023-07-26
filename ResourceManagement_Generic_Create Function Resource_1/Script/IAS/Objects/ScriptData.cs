@@ -311,7 +311,7 @@
 				return filteredElements;
 			}
 
-			var entryPointDataMapper = new EntryPointDataMapper(functionDefinition);
+			var entryPointDataMapper = new EntryPointDataMapper();
 
 			filteredElements = new List<IDmsElement>();
 			foreach (var element in elements)
@@ -349,13 +349,11 @@
 
 		private sealed class EntryPointDataMapper
 		{
-			private FunctionDefinition functionDefinition;
-
 			private Dictionary<string, List<EntryPointData>> entryPointDataByElementInfo = new Dictionary<string, List<EntryPointData>>();
 
-			internal EntryPointDataMapper(FunctionDefinition functionDefinition)
+			internal EntryPointDataMapper()
 			{
-				this.functionDefinition = functionDefinition;
+				
 			}
 
 			public void AddEntryPointData(IDmsElement element, List<EntryPointData> entryPointData)
