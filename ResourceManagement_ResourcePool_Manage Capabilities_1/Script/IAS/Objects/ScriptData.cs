@@ -176,28 +176,19 @@
 		{
 			var hasChangedData = false;
 
-			foreach (var configuredCapability in added)
+			foreach (var unused in added.Where(TryAddDomInstanceCapability))
 			{
-				if (TryAddDomInstanceCapability(configuredCapability))
-				{
-					hasChangedData = true;
-				}
+				hasChangedData = true;
 			}
 
-			foreach (var configuredCapability in updated)
+			foreach (var unused in updated.Where(TryUpdateDomInstanceCapability))
 			{
-				if (TryUpdateDomInstanceCapability(configuredCapability))
-				{
-					hasChangedData = true;
-				}
+				hasChangedData = true;
 			}
 
-			foreach (var poolCapability in removed)
+			foreach (var unused in removed.Where(TryRemoveDomInstanceCapability))
 			{
-				if (TryRemoveDomInstanceCapability(poolCapability))
-				{
-					hasChangedData = true;
-				}
+				hasChangedData = true;
 			}
 
 			if (hasChangedData)
