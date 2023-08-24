@@ -9,12 +9,10 @@
 	using Skyline.DataMiner.Net.Messages.SLDataGateway;
 	using Skyline.DataMiner.Net.Sections;
 
-	internal class ResourceDataLoader
+	public class ResourceDataLoader
 	{
 		#region Fields
-		private readonly DomHelper domHelper;
-
-		private readonly Dictionary<Guid, Action<ResourceData, object>> genericMapper = new Dictionary<Guid, Action<ResourceData, object>>
+		private static readonly Dictionary<Guid, Action<ResourceData, object>> GenericMapper = new Dictionary<Guid, Action<ResourceData, object>>
 		{
 			[Resourcemanagement.Sections.ResourceInfo.Name.Id] = (data, value) => data.Name = Convert.ToString(value),
 			[Resourcemanagement.Sections.ResourceInfo.Type.Id] = (data, value) => data.ResourceType = (Resourcemanagement.Enums.Type)value,
@@ -29,17 +27,19 @@
 			[Resourcemanagement.Sections.ResourceCost.Currency.Id] = (data, value) => data.Currency = (Resourcemanagement.Enums.Currency)value,
 		};
 
-		private readonly Dictionary<Guid, Action<ResourceProperty, object>> propertyMapper = new Dictionary<Guid, Action<ResourceProperty, object>>
+		private static readonly Dictionary<Guid, Action<ResourceProperty, object>> PropertyMapper = new Dictionary<Guid, Action<ResourceProperty, object>>
 		{
 			[Resourcemanagement.Sections.ResourceProperties.Property.Id] = (data, value) => data.PropertyId = (Guid)value,
 			[Resourcemanagement.Sections.ResourceProperties.PropertyValue.Id] = (data, value) => data.Value = Convert.ToString(value),
 		};
 
-		private readonly Dictionary<Guid, Action<ResourceCapacity, object>> capacityMapper = new Dictionary<Guid, Action<ResourceCapacity, object>>
+		private static readonly Dictionary<Guid, Action<ResourceCapacity, object>> CapacityMapper = new Dictionary<Guid, Action<ResourceCapacity, object>>
 		{
 			[Resourcemanagement.Sections.ResourceCapacities.Capacity.Id] = (data, value) => data.CapacityId = (Guid)value,
 			[Resourcemanagement.Sections.ResourceCapacities.CapacityValue.Id] = (data, value) => data.Value = (double)value,
 		};
+
+		private readonly DomHelper domHelper;
 		#endregion
 
 		internal ResourceDataLoader(DomHelper domHelper)
@@ -48,6 +48,21 @@
 		}
 
 		#region Methods
+		public static ResourceData ParseInstance(DomInstance instance)
+		{
+			var data = new ResourceData
+			{
+				Instance = instance,
+			};
+
+			foreach (var section in instance.Sections)
+			{
+				ParseSection(section, data);
+			}
+
+			return data;
+		}
+
 		internal Dictionary<Guid, ResourceData> Load()
 		{
 			var dic = new Dictionary<Guid, ResourceData>();
@@ -63,22 +78,7 @@
 			return dic;
 		}
 
-		private ResourceData ParseInstance(DomInstance instance)
-		{
-			var data = new ResourceData
-			{
-				Instance = instance,
-			};
-
-			foreach (var section in instance.Sections)
-			{
-				ParseSection(section, data);
-			}
-
-			return data;
-		}
-
-		private void ParseSection(Section section, ResourceData data)
+		private static void ParseSection(Section section, ResourceData data)
 		{
 			if (section.SectionDefinitionID.Id == Resourcemanagement.Sections.ResourceProperties.Id.Id)
 			{
@@ -94,11 +94,11 @@
 			}
 		}
 
-		private void ParseGenericSection(Section section, ResourceData data)
+		private static void ParseGenericSection(Section section, ResourceData data)
 		{
 			foreach (var fieldValue in section.FieldValues)
 			{
-				if (!genericMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
+				if (!GenericMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
 				{
 					continue;
 				}
@@ -107,7 +107,7 @@
 			}
 		}
 
-		private void ParsePropertiesSection(Section section, ResourceData data)
+		private static void ParsePropertiesSection(Section section, ResourceData data)
 		{
 			if (!section.FieldValues.Any())
 			{
@@ -118,7 +118,7 @@
 
 			foreach (var fieldValue in section.FieldValues)
 			{
-				if (!propertyMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
+				if (!PropertyMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
 				{
 					continue;
 				}
@@ -129,7 +129,7 @@
 			data.Properties.Add(property);
 		}
 
-		private void ParseCapacitiesSection(Section section, ResourceData data)
+		private static void ParseCapacitiesSection(Section section, ResourceData data)
 		{
 			if (!section.FieldValues.Any())
 			{
@@ -140,7 +140,7 @@
 
 			foreach (var fieldValue in section.FieldValues)
 			{
-				if (!capacityMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
+				if (!CapacityMapper.TryGetValue(fieldValue.FieldDescriptorID.Id, out var action))
 				{
 					continue;
 				}
