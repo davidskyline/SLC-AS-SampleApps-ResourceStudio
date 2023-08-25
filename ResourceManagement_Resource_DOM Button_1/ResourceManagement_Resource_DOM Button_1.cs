@@ -185,7 +185,8 @@ namespace Script
 				case "Deprecate":
 					if (TryHandleDeprecateAction(domHelper, instanceId))
 					{
-						transitionId = Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Complete_To_Deprecated;
+						transitionId = (domInstance.StatusId == Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Statuses.Complete) ? Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Complete_To_Deprecated :
+							Skyline.Automation.DOM.DomIds.Resourcemanagement.Behaviors.Resource_Behavior.Transitions.Error_To_Deprecated;
 					}
 
 					break;

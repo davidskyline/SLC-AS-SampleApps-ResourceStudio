@@ -18,17 +18,10 @@ namespace Skyline.Automation.DOM
 			public const string ModuleId = "resourcemanagement";
 			public static class Enums
 			{
-				public enum CostUnit
+				public enum CapabilityType
 				{
-					PerMinute = 0,
-					PerHour = 1,
-					PerDay = 2
-				}
-
-				public enum Currency
-				{
-					EUR = 0,
-					USD = 1
+					String = 0,
+					Enum = 1
 				}
 
 				public enum InventoryType
@@ -47,36 +40,49 @@ namespace Skyline.Automation.DOM
 					UnlinkedResource = 3
 				}
 
-				public enum CapabilityType
+				public enum ResourceSelectionType
 				{
-					String = 0,
-					Enum = 1
+					Automatic = 0,
+					Manual = 1
+				}
+
+				public enum CostUnit
+				{
+					PerMinute = 0,
+					PerHour = 1,
+					PerDay = 2
+				}
+
+				public enum Currency
+				{
+					EUR = 0,
+					USD = 1
 				}
 			}
 
 			public static class Sections
 			{
-				public static class ResourceInternalProperties
+				public static class CapabilityEnumValueDetails
 				{
 					public static SectionDefinitionID Id
 					{
 						get;
 					}
 
-					= new SectionDefinitionID(new Guid("5a5c6591-a833-48d5-8fd4-10733cb1eddb"))
+					= new SectionDefinitionID(new Guid("549e9df5-b399-40b7-aa3f-33b5fb679e68"))
 					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID Pool_Ids
+					public static FieldDescriptorID Capability
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("0733a8d7-6a8d-4dee-8762-5ebf77c1eeb2"));
-					public static FieldDescriptorID Resource_Id
+					= new FieldDescriptorID(new Guid("5dbf2043-a11b-49bf-a96d-a0fd745a700d"));
+					public static FieldDescriptorID Value
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("235b137d-3aea-4ce0-af4b-5fe9b027f894"));
+					= new FieldDescriptorID(new Guid("4198ecbf-3316-485d-a7d5-356266ff6444"));
 				}
 
 				public static class ResourceControl
@@ -96,62 +102,90 @@ namespace Skyline.Automation.DOM
 					= new FieldDescriptorID(new Guid("b83e17c2-ba3b-4952-9e1d-8fc5dcd92751"));
 				}
 
-				public static class ResourceCost
+				public static class CapabilityInfo
 				{
 					public static SectionDefinitionID Id
 					{
 						get;
 					}
 
-					= new SectionDefinitionID(new Guid("5e15622c-bc1e-4e84-a996-f7086c1e9b92"))
+					= new SectionDefinitionID(new Guid("9856996f-faeb-4d62-8a2a-31f0f0acddbb"))
 					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID Cost
+					public static FieldDescriptorID CapabilityName
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("c4a72db5-3b37-4a2d-a6fc-2faa4d89fdda"));
-					public static FieldDescriptorID CostUnit
+					= new FieldDescriptorID(new Guid("6990044c-986b-4083-a878-9a7f07a55cd1"));
+					public static FieldDescriptorID CapabilityType
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("ec809ebd-f73b-4dcb-923d-4af1a57ab12c"));
-					public static FieldDescriptorID Currency
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("43124d0d-e9a6-4f3c-a6de-9c1533bf2d1c"));
+					= new FieldDescriptorID(new Guid("f13f55e4-bc51-49cd-84d9-1808ba2878ac"));
 				}
 
-				public static class ResourcePoolInternalProperties
+				public static class ResourceFlowEngineering
 				{
 					public static SectionDefinitionID Id
 					{
 						get;
 					}
 
-					= new SectionDefinitionID(new Guid("962d3326-b0d5-4d03-9f53-bba208996af7"))
+					= new SectionDefinitionID(new Guid("1c851e01-4b64-40cc-aa65-025443f506bf"))
 					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID Resource_Ids
+					public static FieldDescriptorID PathCalculationCost
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("8acca71d-3c64-4272-84b0-e7371f373d8e"));
-					public static FieldDescriptorID Pool_Resource_Id
+					= new FieldDescriptorID(new Guid("6f9b64cf-9761-4c7e-b29c-be5684dfbfa1"));
+				}
+
+				public static class PropertyInfo
+				{
+					public static SectionDefinitionID Id
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("a1dd9b79-f502-4a39-b1ce-5c213aa86987"));
-					public static FieldDescriptorID Resource_Pool_Id
+					= new SectionDefinitionID(new Guid("6477c6b5-34df-4379-86ed-1d098f42d0e7"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID PropertyName
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("3239b3f5-0370-40a6-af5c-e6630e9745ed"));
+					= new FieldDescriptorID(new Guid("0c1f8559-198c-40ff-9d52-60e2e1a90988"));
+				}
+
+				public static class ResourcePoolCapabilities
+				{
+					public static SectionDefinitionID Id
+					{
+						get;
+					}
+
+					= new SectionDefinitionID(new Guid("702ec27e-46b7-4edf-a3ea-42aa26a8aa24"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID Capability
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("8371a9dd-2289-424a-8ff9-e060110d62f1"));
+					public static FieldDescriptorID Capability_Enum_Values
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("2af65872-4184-4c45-966b-ca336064a92f"));
+					public static FieldDescriptorID Capability_String_Value
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("b18906a6-b99a-46c3-b677-eaa9d40ccdcc"));
 				}
 
 				public static class CapacityInfo
@@ -201,29 +235,6 @@ namespace Skyline.Automation.DOM
 					= new FieldDescriptorID(new Guid("3b12c5d9-f0b6-4253-bc14-93804d7f56f6"));
 				}
 
-				public static class ResourceCapacities
-				{
-					public static SectionDefinitionID Id
-					{
-						get;
-					}
-
-					= new SectionDefinitionID(new Guid("2e079f3e-6f71-46bf-8fc8-d4203ad448a6"))
-					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID Capacity
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("e9f44bb7-0adf-4ac4-bd60-e9af0ae8f8d9"));
-					public static FieldDescriptorID CapacityValue
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("8c47f671-be72-4caa-a394-68eeac5bfef8"));
-				}
-
 				public static class ResourceProperties
 				{
 					public static SectionDefinitionID Id
@@ -245,6 +256,35 @@ namespace Skyline.Automation.DOM
 					}
 
 					= new FieldDescriptorID(new Guid("6ab17d00-f8be-4eb9-a67c-073c60d0be21"));
+				}
+
+				public static class ResourceCapabilities
+				{
+					public static SectionDefinitionID Id
+					{
+						get;
+					}
+
+					= new SectionDefinitionID(new Guid("a78570b8-317b-419b-8969-ce1271f29908"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID Capability
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("5ab86362-cf1f-440b-b408-f26508dcebc7"));
+					public static FieldDescriptorID Capability_Enum_Values
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("61ef0bfd-c28f-460a-a03e-008f341ee3e0"));
+					public static FieldDescriptorID Capability_String_Value
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("88ccc980-2f44-4403-9336-67ce7774a5ad"));
 				}
 
 				public static class ResourceInfo
@@ -304,104 +344,35 @@ namespace Skyline.Automation.DOM
 					}
 
 					= new FieldDescriptorID(new Guid("5846db60-e57f-491a-8958-848695e57921"));
+					public static FieldDescriptorID LinkDetails
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("d5013594-c149-449c-8d46-c9e5257eb2c8"));
 				}
 
-				public static class ResourcePoolCapabilities
+				public static class ResourcePoolLinks
 				{
 					public static SectionDefinitionID Id
 					{
 						get;
 					}
 
-					= new SectionDefinitionID(new Guid("702ec27e-46b7-4edf-a3ea-42aa26a8aa24"))
+					= new SectionDefinitionID(new Guid("5837f8d5-96a9-4570-8bf2-89f39dd9d404"))
 					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID Capability
+					public static FieldDescriptorID LinkedResourcePool
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("8371a9dd-2289-424a-8ff9-e060110d62f1"));
-					public static FieldDescriptorID Capability_Enum_Values
+					= new FieldDescriptorID(new Guid("22c740d8-3e22-4e76-bc5b-e288e4b6f7bc"));
+					public static FieldDescriptorID ResourceSelectionType
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("2af65872-4184-4c45-966b-ca336064a92f"));
-					public static FieldDescriptorID Capability_String_Value
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("b18906a6-b99a-46c3-b677-eaa9d40ccdcc"));
-				}
-
-				public static class ResourceConnectionManagement
-				{
-					public static SectionDefinitionID Id
-					{
-						get;
-					}
-
-					= new SectionDefinitionID(new Guid("8d6d47d1-493d-4dec-9add-6203a908d7e6"))
-					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID InputVsgs
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("fb0a663e-d43f-406c-b339-67737ce79678"));
-					public static FieldDescriptorID OutputVsgs
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("129e4c6d-3b33-4e57-96bb-9dd9c206c6ab"));
-				}
-
-				public static class CapabilityEnumValueDetails
-				{
-					public static SectionDefinitionID Id
-					{
-						get;
-					}
-
-					= new SectionDefinitionID(new Guid("549e9df5-b399-40b7-aa3f-33b5fb679e68"))
-					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID Capability
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("5dbf2043-a11b-49bf-a96d-a0fd745a700d"));
-					public static FieldDescriptorID Value
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("4198ecbf-3316-485d-a7d5-356266ff6444"));
-				}
-
-				public static class CapabilityInfo
-				{
-					public static SectionDefinitionID Id
-					{
-						get;
-					}
-
-					= new SectionDefinitionID(new Guid("9856996f-faeb-4d62-8a2a-31f0f0acddbb"))
-					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID CapabilityName
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("6990044c-986b-4083-a878-9a7f07a55cd1"));
-					public static FieldDescriptorID CapabilityType
-					{
-						get;
-					}
-
-					= new FieldDescriptorID(new Guid("f13f55e4-bc51-49cd-84d9-1808ba2878ac"));
+					= new FieldDescriptorID(new Guid("8d84f8fc-18fd-4a6c-9cdb-738ab0c9e08a"));
 				}
 
 				public static class ResourceOther
@@ -427,38 +398,79 @@ namespace Skyline.Automation.DOM
 					= new FieldDescriptorID(new Guid("4e1a48b0-fb2c-42da-bffd-34af527c423f"));
 				}
 
-				public static class PropertyInfo
+				public static class ResourceCost
 				{
 					public static SectionDefinitionID Id
 					{
 						get;
 					}
 
-					= new SectionDefinitionID(new Guid("6477c6b5-34df-4379-86ed-1d098f42d0e7"))
+					= new SectionDefinitionID(new Guid("5e15622c-bc1e-4e84-a996-f7086c1e9b92"))
 					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID PropertyName
+					public static FieldDescriptorID Cost
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("0c1f8559-198c-40ff-9d52-60e2e1a90988"));
+					= new FieldDescriptorID(new Guid("c4a72db5-3b37-4a2d-a6fc-2faa4d89fdda"));
+					public static FieldDescriptorID CostUnit
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("ec809ebd-f73b-4dcb-923d-4af1a57ab12c"));
+					public static FieldDescriptorID Currency
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("43124d0d-e9a6-4f3c-a6de-9c1533bf2d1c"));
 				}
 
-				public static class ResourceFlowEngineering
+				public static class ResourceConnectionManagement
 				{
 					public static SectionDefinitionID Id
 					{
 						get;
 					}
 
-					= new SectionDefinitionID(new Guid("1c851e01-4b64-40cc-aa65-025443f506bf"))
+					= new SectionDefinitionID(new Guid("8d6d47d1-493d-4dec-9add-6203a908d7e6"))
 					{ ModuleId = "resourcemanagement" };
-					public static FieldDescriptorID PathCalculationCost
+					public static FieldDescriptorID InputVsgs
 					{
 						get;
 					}
 
-					= new FieldDescriptorID(new Guid("6f9b64cf-9761-4c7e-b29c-be5684dfbfa1"));
+					= new FieldDescriptorID(new Guid("fb0a663e-d43f-406c-b339-67737ce79678"));
+					public static FieldDescriptorID OutputVsgs
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("129e4c6d-3b33-4e57-96bb-9dd9c206c6ab"));
+				}
+
+				public static class ResourceCapacities
+				{
+					public static SectionDefinitionID Id
+					{
+						get;
+					}
+
+					= new SectionDefinitionID(new Guid("2e079f3e-6f71-46bf-8fc8-d4203ad448a6"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID Capacity
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("e9f44bb7-0adf-4ac4-bd60-e9af0ae8f8d9"));
+					public static FieldDescriptorID CapacityValue
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("8c47f671-be72-4caa-a394-68eeac5bfef8"));
 				}
 
 				public static class ResourcePoolInfo
@@ -482,6 +494,12 @@ namespace Skyline.Automation.DOM
 					}
 
 					= new FieldDescriptorID(new Guid("f7348534-eb3d-4475-abfa-9bef82c52f9e"));
+					public static FieldDescriptorID Domain
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("7d851fc5-7804-48e8-b6fd-286b3f33602f"));
 					public static FieldDescriptorID ErrorDetails
 					{
 						get;
@@ -489,16 +507,86 @@ namespace Skyline.Automation.DOM
 
 					= new FieldDescriptorID(new Guid("bd09b565-8c33-4f70-b7a1-42b909e9c907"));
 				}
+
+				public static class ResourceInternalProperties
+				{
+					public static SectionDefinitionID Id
+					{
+						get;
+					}
+
+					= new SectionDefinitionID(new Guid("5a5c6591-a833-48d5-8fd4-10733cb1eddb"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID Pool_Ids
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("0733a8d7-6a8d-4dee-8762-5ebf77c1eeb2"));
+					public static FieldDescriptorID Resource_Id
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("235b137d-3aea-4ce0-af4b-5fe9b027f894"));
+					public static FieldDescriptorID FunctionName
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("bd9fa526-459c-48df-bff0-f9299a9bee99"));
+					public static FieldDescriptorID FunctionTableIndex
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("a1461efb-2ced-49a3-b03f-217d21e8c700"));
+					public static FieldDescriptorID ProtocolName
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("c663e5c5-f17b-4fb1-8e66-740222d1c322"));
+				}
+
+				public static class ResourcePoolInternalProperties
+				{
+					public static SectionDefinitionID Id
+					{
+						get;
+					}
+
+					= new SectionDefinitionID(new Guid("962d3326-b0d5-4d03-9f53-bba208996af7"))
+					{ ModuleId = "resourcemanagement" };
+					public static FieldDescriptorID Resource_Ids
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("8acca71d-3c64-4272-84b0-e7371f373d8e"));
+					public static FieldDescriptorID Pool_Resource_Id
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("a1dd9b79-f502-4a39-b1ce-5c213aa86987"));
+					public static FieldDescriptorID Resource_Pool_Id
+					{
+						get;
+					}
+
+					= new FieldDescriptorID(new Guid("3239b3f5-0370-40a6-af5c-e6630e9745ed"));
+				}
 			}
 
 			public static class Definitions
 			{
-				public static DomDefinitionId Resourcepool
+				public static DomDefinitionId Capability
 				{
 					get;
 				}
 
-				= new DomDefinitionId(new Guid("a8262bd8-6f6c-47d4-964e-87de26d1e32e"))
+				= new DomDefinitionId(new Guid("6c22db22-98d1-429f-9769-b651aa94d8ca"))
 				{ ModuleId = "resourcemanagement" };
 				public static DomDefinitionId Capabilityenumvalue
 				{
@@ -507,6 +595,13 @@ namespace Skyline.Automation.DOM
 
 				= new DomDefinitionId(new Guid("d27f4cd5-a933-4d88-b13e-a26eea0967c2"))
 				{ ModuleId = "resourcemanagement" };
+				public static DomDefinitionId Resourceproperty
+				{
+					get;
+				}
+
+				= new DomDefinitionId(new Guid("60450534-b5bd-43c2-b088-37e171725fa0"))
+				{ ModuleId = "resourcemanagement" };
 				public static DomDefinitionId Capacity
 				{
 					get;
@@ -514,19 +609,12 @@ namespace Skyline.Automation.DOM
 
 				= new DomDefinitionId(new Guid("568d0446-0652-43e0-ab4d-47cf19139ba2"))
 				{ ModuleId = "resourcemanagement" };
-				public static DomDefinitionId Capability
+				public static DomDefinitionId Resourcepool
 				{
 					get;
 				}
 
-				= new DomDefinitionId(new Guid("6c22db22-98d1-429f-9769-b651aa94d8ca"))
-				{ ModuleId = "resourcemanagement" };
-				public static DomDefinitionId Resourceproperty
-				{
-					get;
-				}
-
-				= new DomDefinitionId(new Guid("60450534-b5bd-43c2-b088-37e171725fa0"))
+				= new DomDefinitionId(new Guid("a8262bd8-6f6c-47d4-964e-87de26d1e32e"))
 				{ ModuleId = "resourcemanagement" };
 				public static DomDefinitionId Resource
 				{
@@ -547,6 +635,53 @@ namespace Skyline.Automation.DOM
 					}
 
 					= new DomBehaviorDefinitionId(new Guid("d3538695-c431-4289-9038-79b68f7bdb16"))
+					{ ModuleId = "resourcemanagement" };
+					public static class Statuses
+					{
+						public const string Draft = "draft";
+					}
+
+					public static class Transitions
+					{
+					}
+				}
+
+				public static class Resourcepool_Behavior
+				{
+					public static DomBehaviorDefinitionId Id
+					{
+						get;
+					}
+
+					= new DomBehaviorDefinitionId(new Guid("cc539721-a544-415b-a45c-8ce7ed102975"))
+					{ ModuleId = "resourcemanagement" };
+					public static class Statuses
+					{
+						public const string Draft = "draft";
+						public const string Complete = "complete";
+						public const string Deprecated = "deprecated";
+						public const string Error = "9b95fc0e-71d1-42a2-8438-d285a4396105";
+					}
+
+					public static class Transitions
+					{
+						public const string Draft_To_Complete = "draft_to_complete";
+						public const string Complete_To_Deprecated = "complete_to_deprecated";
+						public const string Draft_To_Error = "draft_to_error";
+						public const string Complete_To_Error = "complete_to_error";
+						public const string Error_To_Complete = "error_to_complete";
+						public const string Error_To_Deprecated = "error_to_deprecated";
+					}
+				}
+
+				public static class Capabilityenumvalue_Behavior
+				{
+					public static DomBehaviorDefinitionId Id
+					{
+						get;
+					}
+
+					= new DomBehaviorDefinitionId(new Guid("2850a8f6-36ad-4a60-8ced-1fe7d31c2115"))
 					{ ModuleId = "resourcemanagement" };
 					public static class Statuses
 					{
@@ -602,53 +737,6 @@ namespace Skyline.Automation.DOM
 
 					public static class Transitions
 					{
-					}
-				}
-
-				public static class Capabilityenumvalue_Behavior
-				{
-					public static DomBehaviorDefinitionId Id
-					{
-						get;
-					}
-
-					= new DomBehaviorDefinitionId(new Guid("2850a8f6-36ad-4a60-8ced-1fe7d31c2115"))
-					{ ModuleId = "resourcemanagement" };
-					public static class Statuses
-					{
-						public const string Draft = "draft";
-					}
-
-					public static class Transitions
-					{
-					}
-				}
-
-				public static class Resourcepool_Behavior
-				{
-					public static DomBehaviorDefinitionId Id
-					{
-						get;
-					}
-
-					= new DomBehaviorDefinitionId(new Guid("cc539721-a544-415b-a45c-8ce7ed102975"))
-					{ ModuleId = "resourcemanagement" };
-					public static class Statuses
-					{
-						public const string Draft = "draft";
-						public const string Complete = "complete";
-						public const string Deprecated = "deprecated";
-						public const string Error = "9b95fc0e-71d1-42a2-8438-d285a4396105";
-					}
-
-					public static class Transitions
-					{
-						public const string Draft_To_Complete = "draft_to_complete";
-						public const string Complete_To_Deprecated = "complete_to_deprecated";
-						public const string Draft_To_Error = "draft_to_error";
-						public const string Complete_To_Error = "complete_to_error";
-						public const string Error_To_Complete = "error_to_complete";
-						public const string Error_To_Deprecated = "error_to_deprecated";
 					}
 				}
 			}
