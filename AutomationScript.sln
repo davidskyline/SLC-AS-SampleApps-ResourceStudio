@@ -276,6 +276,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{5FF6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_General_Sync_1", "ResourceManagement_General_Sync_1\ResourceManagement_General_Sync_1.csproj", "{2C8CB22A-3438-4B42-892B-EB7E7C826186}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_GQI_Get Resource Pool links", "ResourceManagement_GQI_Get Resource Pool links", "{EEFC05F7-450C-48A7-B31D-01F021C824D5}"
+	ProjectSection(SolutionItems) = preProject
+		ResourceManagement_GQI_Get Resource Pool links.xml = ResourceManagement_GQI_Get Resource Pool links.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{1EE23E6D-5E7D-4B89-93F4-BED2AC455116}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceManagement_GQI_Get Resource Pool links_1", "ResourceManagement_GQI_Get Resource Pool links_1\ResourceManagement_GQI_Get Resource Pool links_1.csproj", "{515B2315-7280-458D-ADD4-0FB04B49070A}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ResourceManagement_ResourcePool_Import", "ResourceManagement_ResourcePool_Import", "{ABA6BD32-7DDF-4E6F-A5EF-867006B95B65}"
 	ProjectSection(SolutionItems) = preProject
 		ResourceManagement_ResourcePool_Import.xml = ResourceManagement_ResourcePool_Import.xml
@@ -391,6 +400,10 @@ Global
 		{2C8CB22A-3438-4B42-892B-EB7E7C826186}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C8CB22A-3438-4B42-892B-EB7E7C826186}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C8CB22A-3438-4B42-892B-EB7E7C826186}.Release|Any CPU.Build.0 = Release|Any CPU
+		{515B2315-7280-458D-ADD4-0FB04B49070A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{515B2315-7280-458D-ADD4-0FB04B49070A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{515B2315-7280-458D-ADD4-0FB04B49070A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{515B2315-7280-458D-ADD4-0FB04B49070A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5E93D485-E1E1-4993-9711-816298A84963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5E93D485-E1E1-4993-9711-816298A84963}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E93D485-E1E1-4993-9711-816298A84963}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -487,6 +500,9 @@ Global
 		{07BAD0C4-324F-4722-B12B-C7EF8EBF8F1D} = {35AA9B75-F1B8-4F1D-95F4-A0A6ACFDE770}
 		{5FF6165D-01B9-4410-83FC-260F3A9A992F} = {07BAD0C4-324F-4722-B12B-C7EF8EBF8F1D}
 		{2C8CB22A-3438-4B42-892B-EB7E7C826186} = {5FF6165D-01B9-4410-83FC-260F3A9A992F}
+		{EEFC05F7-450C-48A7-B31D-01F021C824D5} = {9F06CC50-DD0E-4CF0-8F64-F80B301B4D90}
+		{1EE23E6D-5E7D-4B89-93F4-BED2AC455116} = {EEFC05F7-450C-48A7-B31D-01F021C824D5}
+		{515B2315-7280-458D-ADD4-0FB04B49070A} = {1EE23E6D-5E7D-4B89-93F4-BED2AC455116}
 		{ABA6BD32-7DDF-4E6F-A5EF-867006B95B65} = {26165E45-DBB0-4066-903B-EF2E17FB7E31}
 		{AA2231DB-9571-4AFF-8350-43DE4FDCE3F1} = {ABA6BD32-7DDF-4E6F-A5EF-867006B95B65}
 		{5E93D485-E1E1-4993-9711-816298A84963} = {AA2231DB-9571-4AFF-8350-43DE4FDCE3F1}
@@ -498,6 +514,7 @@ Global
 		DOM Code Library\DOM Code Library.projitems*{2d9ae24f-eeaa-4c82-a6d4-a431e02270cb}*SharedItemsImports = 4
 		DOM Code Library\DOM Code Library.projitems*{399fce35-67a8-46fa-a807-50fe77c36dc6}*SharedItemsImports = 4
 		DOM Code Library\DOM Code Library.projitems*{489350b1-1f70-4169-afe8-e377fba1f5d1}*SharedItemsImports = 4
+		DOM Code Library\DOM Code Library.projitems*{515b2315-7280-458d-add4-0fb04b49070a}*SharedItemsImports = 4
 		DOM Code Library\DOM Code Library.projitems*{5430f6d4-cf65-4152-8df0-ac6560472f69}*SharedItemsImports = 13
 		DOM Code Library\DOM Code Library.projitems*{6a35a96e-b098-403f-bd1f-49540c5ad9f0}*SharedItemsImports = 4
 		DOM Code Library\DOM Code Library.projitems*{aa9e83df-657c-441f-b22c-e4450a787a43}*SharedItemsImports = 4
